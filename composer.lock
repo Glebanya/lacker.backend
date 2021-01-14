@@ -4,8 +4,89 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ab601d5b8a4881b2382a1f3e886f6a5",
+    "content-hash": "f8b88e5121b537143f2d51c8121c7dc8",
     "packages": [
+        {
+            "name": "baldinof/roadrunner-bundle",
+            "version": "1.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Baldinof/roadrunner-bundle.git",
+                "reference": "c377846b5fe7529b207a4b803c91d752a532aa2f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Baldinof/roadrunner-bundle/zipball/c377846b5fe7529b207a4b803c91d752a532aa2f",
+                "reference": "c377846b5fe7529b207a4b803c91d752a532aa2f",
+                "shasum": ""
+            },
+            "require": {
+                "dflydev/fig-cookies": "^2.0",
+                "php": ">=7.3",
+                "php-http/discovery": "^1.9",
+                "psr/http-factory": "^1.0",
+                "psr/http-factory-implementation": "1.0.0",
+                "psr/http-server-handler": "^1.0",
+                "psr/http-server-middleware": "^1.0",
+                "psr/log": "^1.1",
+                "spiral/goridge": "^2.0.2",
+                "spiral/roadrunner": "^1.5",
+                "symfony/config": "^4.4 || ^5.0",
+                "symfony/dependency-injection": "^4.4 || ^5.0",
+                "symfony/http-kernel": "^4.4 || ^5.0",
+                "symfony/psr-http-message-bridge": "^1.1 || ^2.0",
+                "symfony/yaml": "^4.4 || ^5.0"
+            },
+            "require-dev": {
+                "blackfire/php-sdk": "^1.21",
+                "doctrine/doctrine-bundle": "^2.0",
+                "doctrine/mongodb-odm-bundle": "^4.1",
+                "doctrine/orm": "^2.7.3",
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "nyholm/psr7": "^1.2",
+                "ocramius/package-versions": "^1.10 || ^2.0",
+                "phpspec/prophecy": "^1.11",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpstan/phpstan": "^0.12.2",
+                "phpunit/phpunit": "^9.1",
+                "sentry/sentry-symfony": "^3.4",
+                "symfony/framework-bundle": "^4.0||^5.0",
+                "symfony/proxy-manager-bridge": "^4.0 || ^5.0",
+                "symfony/var-dumper": "^4.0||^5.0"
+            },
+            "suggest": {
+                "nyholm/psr7": "For a super lightweight PSR-7/17 implementation",
+                "symfony/proxy-manager-bridge": "For doctrine re-connection implementation"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Baldinof\\RoadRunnerBundle\\": "src",
+                    "Tests\\Baldinof\\RoadRunnerBundle\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent Baldino",
+                    "email": "baldinof@gmail.com"
+                }
+            ],
+            "description": "A RoadRunner worker as a Symfony Bundle",
+            "funding": [
+                {
+                    "url": "https://github.com/Baldinof",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-09-25T09:54:58+00:00"
+        },
         {
             "name": "composer/package-versions-deprecated",
             "version": "1.11.99.1",
@@ -74,6 +155,60 @@
                 }
             ],
             "time": "2020-11-11T10:22:58+00:00"
+        },
+        {
+            "name": "dflydev/fig-cookies",
+            "version": "v2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dflydev/dflydev-fig-cookies.git",
+                "reference": "aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dflydev/dflydev-fig-cookies/zipball/aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b",
+                "reference": "aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": "^7.2",
+                "psr/http-message": "^1"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^4",
+                "phpstan/phpstan": "^0.10.1",
+                "phpunit/phpunit": "^7.2.6",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dflydev\\FigCookies\\": "src/Dflydev/FigCookies"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Beau Simensen",
+                    "email": "beau@dflydev.com"
+                }
+            ],
+            "description": "Cookies for PSR-7 HTTP Message Interface.",
+            "keywords": [
+                "cookies",
+                "psr-7",
+                "psr7"
+            ],
+            "time": "2020-12-07T16:40:59+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1586,6 +1721,71 @@
             "time": "2020-09-14T14:23:00+00:00"
         },
         {
+            "name": "php-http/discovery",
+            "version": "1.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/discovery.git",
+                "reference": "788f72d64c43dc361e7fcc7464c3d947c64984a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/788f72d64c43dc361e7fcc7464c3d947c64984a7",
+                "reference": "788f72d64c43dc361e7fcc7464c3d947c64984a7",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "nyholm/psr7": "<1.0"
+            },
+            "require-dev": {
+                "graham-campbell/phpspec-skip-example-extension": "^5.0",
+                "php-http/httplug": "^1.0 || ^2.0",
+                "php-http/message-factory": "^1.0",
+                "phpspec/phpspec": "^5.1 || ^6.1",
+                "puli/composer-plugin": "1.0.0-beta10"
+            },
+            "suggest": {
+                "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories",
+                "puli/composer-plugin": "Sets up Puli which is recommended for Discovery to work. Check http://docs.php-http.org/en/latest/discovery.html for more details."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.9-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Discovery\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "Finds installed HTTPlug implementations and PSR-7 message factories",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "adapter",
+                "client",
+                "discovery",
+                "factory",
+                "http",
+                "message",
+                "psr7"
+            ],
+            "time": "2020-11-27T14:49:42+00:00"
+        },
+        {
             "name": "psr/cache",
             "version": "1.0.1",
             "source": {
@@ -1727,6 +1927,214 @@
             "time": "2019-01-08T18:20:26+00:00"
         },
         {
+            "name": "psr/http-factory",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-factory.git",
+                "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
+                "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0",
+                "psr/http-message": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for PSR-7 HTTP message factories",
+            "keywords": [
+                "factory",
+                "http",
+                "message",
+                "psr",
+                "psr-17",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2019-04-30T12:38:16+00:00"
+        },
+        {
+            "name": "psr/http-message",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "psr/http-server-handler",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-server-handler.git",
+                "reference": "aff2f80e33b7f026ec96bb42f63242dc50ffcae7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-server-handler/zipball/aff2f80e33b7f026ec96bb42f63242dc50ffcae7",
+                "reference": "aff2f80e33b7f026ec96bb42f63242dc50ffcae7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0",
+                "psr/http-message": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Server\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP server-side request handler",
+            "keywords": [
+                "handler",
+                "http",
+                "http-interop",
+                "psr",
+                "psr-15",
+                "psr-7",
+                "request",
+                "response",
+                "server"
+            ],
+            "time": "2018-10-30T16:46:14+00:00"
+        },
+        {
+            "name": "psr/http-server-middleware",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-server-middleware.git",
+                "reference": "2296f45510945530b9dceb8bcedb5cb84d40c5f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-server-middleware/zipball/2296f45510945530b9dceb8bcedb5cb84d40c5f5",
+                "reference": "2296f45510945530b9dceb8bcedb5cb84d40c5f5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0",
+                "psr/http-message": "^1.0",
+                "psr/http-server-handler": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Server\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP server-side middleware",
+            "keywords": [
+                "http",
+                "http-interop",
+                "middleware",
+                "psr",
+                "psr-15",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2018-10-30T17:12:04+00:00"
+        },
+        {
             "name": "psr/log",
             "version": "1.1.3",
             "source": {
@@ -1848,6 +2256,189 @@
                 "controllers"
             ],
             "time": "2020-08-25T19:10:18+00:00"
+        },
+        {
+            "name": "shapecode/doctrine-session-handler-bundle",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shapecode/doctrine-session-handler-bundle.git",
+                "reference": "02cabce611e8d4b7102498d9e23b4eba137b6516"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shapecode/doctrine-session-handler-bundle/zipball/02cabce611e8d4b7102498d9e23b4eba137b6516",
+                "reference": "02cabce611e8d4b7102498d9e23b4eba137b6516",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/common": "~2.13|~3.0",
+                "doctrine/dbal": "~2.10",
+                "doctrine/orm": "~2.7",
+                "doctrine/persistence": "~1.3|~2.0",
+                "ext-session": "*",
+                "php": "~7.2",
+                "symfony/config": "~4.4|~5.0",
+                "symfony/console": "~4.4|~5.0",
+                "symfony/dependency-injection": "~4.4|~5.0",
+                "symfony/http-kernel": "~4.4|~5.0"
+            },
+            "require-dev": {
+                "dg/bypass-finals": "~1.1",
+                "doctrine/coding-standard": "~8.0",
+                "icanhazstring/composer-unused": "~0.7",
+                "maglnet/composer-require-checker": "~2.0",
+                "phpstan/phpstan": "~0.12",
+                "phpstan/phpstan-deprecation-rules": "~0.12",
+                "phpstan/phpstan-phpunit": "~0.12",
+                "phpstan/phpstan-strict-rules": "~0.12",
+                "phpunit/phpunit": "~9.0",
+                "roave/security-advisories": "dev-master",
+                "squizlabs/php_codesniffer": "~3.4",
+                "symfony/var-dumper": "~5.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shapecode\\Bundle\\Doctrine\\SessionHandlerBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Loges",
+                    "email": "dev@loges.one",
+                    "homepage": "https://loges.one"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/shapecode/doctrine-session-handler-bundle/graphs/contributors"
+                }
+            ],
+            "description": "Adds a doctrine session handler to a Symfony project.",
+            "homepage": "https://github.com/shapecode/doctrine-session-handler-bundle",
+            "keywords": [
+                "bundle",
+                "doctrine",
+                "handler",
+                "session",
+                "symfony"
+            ],
+            "funding": [
+                {
+                    "url": "https://liberapay.com/nicklog",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "http://paypal.me/nloges",
+                    "type": "paypal"
+                }
+            ],
+            "time": "2020-06-19T14:37:00+00:00"
+        },
+        {
+            "name": "spiral/goridge",
+            "version": "v2.4.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spiral/goridge-php.git",
+                "reference": "a7373de7f86a5452f8ad61bd1340dc158626f7f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spiral/goridge-php/zipball/a7373de7f86a5452f8ad61bd1340dc158626f7f8",
+                "reference": "a7373de7f86a5452f8ad61bd1340dc158626f7f8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.23",
+                "phpunit/phpunit": "~8.0",
+                "spiral/code-style": "^1.0"
+            },
+            "type": "goridge",
+            "autoload": {
+                "psr-4": {
+                    "Spiral\\Goridge\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anton Titov / Wolfy-J",
+                    "email": "wolfy.jd@gmail.com"
+                }
+            ],
+            "description": "High-performance PHP-to-Golang RPC bridge",
+            "time": "2020-08-14T14:28:30+00:00"
+        },
+        {
+            "name": "spiral/roadrunner",
+            "version": "v1.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spiral/roadrunner.git",
+                "reference": "a62e379d537aa309fc687a273835f5b4b2541215"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spiral/roadrunner/zipball/a62e379d537aa309fc687a273835f5b4b2541215",
+                "reference": "a62e379d537aa309fc687a273835f5b4b2541215",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.0",
+                "spiral/goridge": "^2.0",
+                "symfony/console": "^2.5.0 || ^3.0.0 || ^4.0.0 || ^5.0.0",
+                "zendframework/zend-diactoros": "^1.3 || ^2.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "~0.12"
+            },
+            "bin": [
+                "bin/rr"
+            ],
+            "type": "server",
+            "autoload": {
+                "psr-4": {
+                    "Spiral\\RoadRunner\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anton Titov / Wolfy-J",
+                    "email": "wolfy.jd@gmail.com"
+                },
+                {
+                    "name": "RoadRunner Community",
+                    "homepage": "https://github.com/spiral/roadrunner/graphs/contributors"
+                }
+            ],
+            "description": "High-performance PHP application server, load-balancer and process manager written in Golang",
+            "time": "2020-02-23T13:52:02+00:00"
         },
         {
             "name": "symfony/cache",
@@ -3901,6 +4492,84 @@
             "time": "2020-05-20T17:38:26+00:00"
         },
         {
+            "name": "symfony/psr-http-message-bridge",
+            "version": "v2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/psr-http-message-bridge.git",
+                "reference": "51a21cb3ba3927d4b4bf8f25cc55763351af5f2e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/psr-http-message-bridge/zipball/51a21cb3ba3927d4b4bf8f25cc55763351af5f2e",
+                "reference": "51a21cb3ba3927d4b4bf8f25cc55763351af5f2e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "psr/http-message": "^1.0",
+                "symfony/http-foundation": "^4.4 || ^5.0"
+            },
+            "require-dev": {
+                "nyholm/psr7": "^1.1",
+                "symfony/phpunit-bridge": "^4.4 || ^5.0"
+            },
+            "suggest": {
+                "nyholm/psr7": "For a super lightweight PSR-7/17 implementation"
+            },
+            "type": "symfony-bridge",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Bridge\\PsrHttpMessage\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "PSR HTTP message bridge",
+            "homepage": "http://symfony.com",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr-17",
+                "psr-7"
+            ],
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-09-29T08:17:46+00:00"
+        },
+        {
             "name": "symfony/routing",
             "version": "v5.0.11",
             "source": {
@@ -4366,6 +5035,74 @@
                 }
             ],
             "time": "2020-05-20T17:38:26+00:00"
+        },
+        {
+            "name": "zendframework/zend-diactoros",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-diactoros.git",
+                "reference": "de5847b068362a88684a55b0dbb40d85986cfa52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/de5847b068362a88684a55b0dbb40d85986cfa52",
+                "reference": "de5847b068362a88684a55b0dbb40d85986cfa52",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.0"
+            },
+            "provide": {
+                "psr/http-factory-implementation": "1.0",
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "http-interop/http-factory-tests": "^0.5.0",
+                "php-http/psr7-integration-tests": "dev-master",
+                "phpunit/phpunit": "^7.0.2",
+                "zendframework/zend-coding-standard": "~1.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1.x-dev",
+                    "dev-develop": "2.2.x-dev",
+                    "dev-release-1.8": "1.8.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/functions/create_uploaded_file.php",
+                    "src/functions/marshal_headers_from_sapi.php",
+                    "src/functions/marshal_method_from_sapi.php",
+                    "src/functions/marshal_protocol_version_from_sapi.php",
+                    "src/functions/marshal_uri_from_sapi.php",
+                    "src/functions/normalize_server.php",
+                    "src/functions/normalize_uploaded_files.php",
+                    "src/functions/parse_cookie_header.php"
+                ],
+                "psr-4": {
+                    "Zend\\Diactoros\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "PSR HTTP Message implementations",
+            "keywords": [
+                "http",
+                "psr",
+                "psr-7"
+            ],
+            "abandoned": "laminas/laminas-diactoros",
+            "time": "2019-11-13T19:16:13+00:00"
         }
     ],
     "packages-dev": [

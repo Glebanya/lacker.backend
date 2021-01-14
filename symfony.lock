@@ -1,6 +1,21 @@
 {
+    "baldinof/roadrunner-bundle": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.2",
+            "ref": "47c159c44eb9e6902828da4acbb4199757dd378f"
+        },
+        "files": [
+            "config/packages/baldinof_road_runner.yaml"
+        ]
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
+    },
+    "dflydev/fig-cookies": {
+        "version": "v2.0.3"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -93,6 +108,9 @@
     "php": {
         "version": "7.4"
     },
+    "php-http/discovery": {
+        "version": "1.13.0"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -101,6 +119,18 @@
     },
     "psr/event-dispatcher": {
         "version": "1.0.0"
+    },
+    "psr/http-factory": {
+        "version": "1.0.1"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
+    "psr/http-server-handler": {
+        "version": "1.0.1"
+    },
+    "psr/http-server-middleware": {
+        "version": "1.0.1"
     },
     "psr/log": {
         "version": "1.1.3"
@@ -116,6 +146,15 @@
         "files": [
             "./config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "shapecode/doctrine-session-handler-bundle": {
+        "version": "3.1.0"
+    },
+    "spiral/goridge": {
+        "version": "v2.4.5"
+    },
+    "spiral/roadrunner": {
+        "version": "v1.6.2"
     },
     "symfony/cache": {
         "version": "v4.4.18"
@@ -247,6 +286,9 @@
     "symfony/proxy-manager-bridge": {
         "version": "v4.4.18"
     },
+    "symfony/psr-http-message-bridge": {
+        "version": "v2.0.2"
+    },
     "symfony/routing": {
         "version": "4.2",
         "recipe": {
@@ -284,5 +326,8 @@
     },
     "symfony/yaml": {
         "version": "v4.4.18"
+    },
+    "zendframework/zend-diactoros": {
+        "version": "2.2.1"
     }
 }
