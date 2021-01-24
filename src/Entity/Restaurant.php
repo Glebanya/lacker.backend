@@ -46,13 +46,19 @@ class Restaurant
      * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="restaurants")
      * @ORM\JoinColumn(name="business_id", referencedColumnName="id",nullable=false)
      */
-    private $business;
+    private ?Business $business;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Menu::class, mappedBy="restaurants")
+     */
+    private ArrayCollection $menus;
 
     public function __construct()
     {
         $this->halls = new ArrayCollection();
         $this->resourceText = new ArrayCollection();
         $this->settings = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -170,6 +176,33 @@ class Restaurant
     public function setBusiness(?Business $business): self
     {
         $this->business = $business;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Menu[]
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): self
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeRestaurant($this);
+        }
 
         return $this;
     }
