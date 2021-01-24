@@ -295,9 +295,6 @@
     "symfony/polyfill-uuid": {
         "version": "v1.22.0"
     },
-    "symfony/process": {
-        "version": "v5.0.11"
-    },
     "symfony/proxy-manager-bridge": {
         "version": "v4.4.18"
     },
