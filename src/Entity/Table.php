@@ -38,7 +38,7 @@ class Table
 
     /**
      * @ORM\ManyToOne(targetEntity=Hall::class, inversedBy="tables")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="hall_id", referencedColumnName="id",nullable=false)
      */
     private ?Hall $hall;
 

@@ -31,9 +31,9 @@ class RestaurantResourceSettings
 
     /**
      * @ORM\ManyToOne(targetEntity=restaurant::class, inversedBy="settings")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="restaurant_id", referencedColumnName="id",nullable=false)
      */
-    private $restaurant;
+    private ?Restaurant $restaurant;
 
     public function getId(): ?Uuid
     {
@@ -64,12 +64,12 @@ class RestaurantResourceSettings
         return $this;
     }
 
-    public function getRestaurant(): ?restaurant
+    public function getRestaurant(): ?Restaurant
     {
         return $this->restaurant;
     }
 
-    public function setRestaurant(?restaurant $restaurant): self
+    public function setRestaurant(?Restaurant $restaurant): self
     {
         $this->restaurant = $restaurant;
 

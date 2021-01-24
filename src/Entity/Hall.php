@@ -25,7 +25,7 @@ class Hall
 
     /**
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="halls")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="restaurant_id", referencedColumnName="id",nullable=false)
      */
     private ?Restaurant $restaurant;
 

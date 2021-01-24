@@ -44,7 +44,7 @@ class Restaurant
 
     /**
      * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="restaurants")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="business_id", referencedColumnName="id",nullable=false)
      */
     private $business;
 

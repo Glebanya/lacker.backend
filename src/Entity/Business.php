@@ -25,7 +25,7 @@ class Business
     /**
      * @ORM\OneToMany(targetEntity=restaurant::class, mappedBy="business", orphanRemoval=true)
      */
-    private $restaurants;
+    private ArrayCollection $restaurants;
 
     public function __construct()
     {

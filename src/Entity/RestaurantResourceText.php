@@ -37,9 +37,9 @@ class RestaurantResourceText
 
     /**
      * @ORM\ManyToOne(targetEntity=restaurant::class, inversedBy="resourceText")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="restaurant_id", referencedColumnName="id",nullable=false)
      */
-    private $restaurant;
+    private ?restaurant $restaurant;
 
     public function getId(): ?Uuid
     {
