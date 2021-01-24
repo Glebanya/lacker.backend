@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 use Symfony\Component\Uid\Uuid;
@@ -25,6 +27,16 @@ class Restaurant
      */
     private ?string $timezone;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Hall::class, mappedBy="restaurant_id", orphanRemoval=true)
+     */
+    private ArrayCollection $halls;
+
+    public function __construct()
+    {
+        $this->halls = new ArrayCollection();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -38,6 +50,36 @@ class Restaurant
     public function setTimezone(string $timezone): self
     {
         $this->timezone = $timezone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Hall[]
+     */
+    public function getHalls(): Collection
+    {
+        return $this->halls;
+    }
+
+    public function addHall(Hall $hall): self
+    {
+        if (!$this->halls->contains($hall)) {
+            $this->halls[] = $hall;
+            $hall->setRestaurantId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHall(Hall $hall): self
+    {
+        if ($this->halls->removeElement($hall)) {
+            // set the owning side to null (unless already changed)
+            if ($hall->getRestaurantId() === $this) {
+                $hall->setRestaurantId(null);
+            }
+        }
 
         return $this;
     }
