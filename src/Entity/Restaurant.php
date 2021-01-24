@@ -42,6 +42,12 @@ class Restaurant
      */
     private ArrayCollection $settings;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="restaurants")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $business;
+
     public function __construct()
     {
         $this->halls = new ArrayCollection();
@@ -152,6 +158,18 @@ class Restaurant
                 $setting->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBusiness(): ?Business
+    {
+        return $this->business;
+    }
+
+    public function setBusiness(?Business $business): self
+    {
+        $this->business = $business;
 
         return $this;
     }
