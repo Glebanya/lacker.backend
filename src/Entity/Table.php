@@ -40,7 +40,7 @@ class Table
      * @ORM\ManyToOne(targetEntity=Hall::class, inversedBy="tables")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $hall;
+    private ?Hall $hall;
 
 
     public function getId(): ?Uuid
@@ -68,7 +68,6 @@ class Table
     public function setStatus(string $status): self
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -80,7 +79,6 @@ class Table
     public function setNumber(int $number): self
     {
         $this->number = $number;
-
         return $this;
     }
 
@@ -92,7 +90,6 @@ class Table
     public function setHall(?Hall $hall): self
     {
         $this->hall = $hall;
-
         return $this;
     }
     

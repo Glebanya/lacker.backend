@@ -32,9 +32,21 @@ class Restaurant
      */
     private ArrayCollection $halls;
 
+    /**
+     * @ORM\OneToMany(targetEntity=RestaurantResourceText::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private ArrayCollection $resourceText;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RestaurantResourceSettings::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private ArrayCollection $settings;
+
     public function __construct()
     {
         $this->halls = new ArrayCollection();
+        $this->resourceText = new ArrayCollection();
+        $this->settings = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -78,6 +90,66 @@ class Restaurant
             // set the owning side to null (unless already changed)
             if ($hall->getRestaurantId() === $this) {
                 $hall->setRestaurantId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RestaurantResourceText[]
+     */
+    public function getResourceText(): Collection
+    {
+        return $this->resourceText;
+    }
+
+    public function addResourceText(RestaurantResourceText $resourceText): self
+    {
+        if (!$this->resourceText->contains($resourceText)) {
+            $this->resourceText[] = $resourceText;
+            $resourceText->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResourceText(RestaurantResourceText $resourceText): self
+    {
+        if ($this->resourceText->removeElement($resourceText)) {
+            // set the owning side to null (unless already changed)
+            if ($resourceText->getRestaurant() === $this) {
+                $resourceText->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RestaurantResourceSettings[]
+     */
+    public function getSettings(): Collection
+    {
+        return $this->settings;
+    }
+
+    public function addSetting(RestaurantResourceSettings $setting): self
+    {
+        if (!$this->settings->contains($setting)) {
+            $this->settings[] = $setting;
+            $setting->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSetting(RestaurantResourceSettings $setting): self
+    {
+        if ($this->settings->removeElement($setting)) {
+            // set the owning side to null (unless already changed)
+            if ($setting->getRestaurant() === $this) {
+                $setting->setRestaurant(null);
             }
         }
 
