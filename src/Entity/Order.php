@@ -43,6 +43,12 @@ class Order
      */
     private ?string $currency_type;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=client::class, inversedBy="orders")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $client;
+
     public function __construct()
     {
         $this->dishes = new ArrayCollection();
@@ -109,6 +115,18 @@ class Order
     public function setCurrencyType(string $currency_type): self
     {
         $this->currency_type = $currency_type;
+
+        return $this;
+    }
+
+    public function getClient(): ?client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?client $client): self
+    {
+        $this->client = $client;
 
         return $this;
     }
