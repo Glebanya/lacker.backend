@@ -36,6 +36,12 @@ class Table
      */
     private ?int $number;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Hall::class, inversedBy="tables")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $hall;
+
 
     public function getId(): ?Uuid
     {
@@ -74,6 +80,18 @@ class Table
     public function setNumber(int $number): self
     {
         $this->number = $number;
+
+        return $this;
+    }
+
+    public function getHall(): ?Hall
+    {
+        return $this->hall;
+    }
+
+    public function setHall(?Hall $hall): self
+    {
+        $this->hall = $hall;
 
         return $this;
     }
