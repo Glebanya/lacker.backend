@@ -27,24 +27,21 @@ RUN rm -rf vendor \
     && rm -rf var/log/* \
     && rm -rf var/sessions/*
 
+RUN apt-get update && apt-get install -qqy php7.4-xdebug
 COPY . /server
 
 #COPY .docker/etc/php/php.ini /etc/php/7.4/fpm/conf.d/50-dev.ini
 #COPY .docker/etc/php/php-cli.ini /etc/php/7.4/cli/conf.d/60-dev.ini
 #COPY .docker/etc/php/php-fpm-pool.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-
-RUN apt-get update && apt-get install -qqy php7.4-xdebug
-
 RUN cd /server \
-    && composer install -q \
     && composer dump-autoload --optimize \
     && chmod +x /server/bin/* \
     && chown www-data:www-data /server \
     && chown www-data:www-data /server/var -R \
     && chown www-data:www-data /server/public -R \
-    && bin/console cache:clear \
-    && bin/console cache:warmup \
+    && php bin/console cache:clear \
+    && php bin/console cache:warmup \
     && vendor/bin/rr get --location bin/
 EXPOSE 80
 CMD ["./bin/rr", "serve"]
