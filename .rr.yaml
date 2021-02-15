@@ -3,8 +3,10 @@ http:
   uploads:
     forbid: [".php", ".exe", ".bat"]
   workers:
+    numWorkers: 4
     command: "php bin/console baldinof:roadrunner:worker"
     relay: "unix://var/roadrunner.sock"
+
 
 limit:
   interval: 1
@@ -19,3 +21,14 @@ static:
   enable: true
   dir:   "public"
   forbid: [".php", ".htaccess"]
+
+reload:
+  enabled: true
+  interval: 1s
+  patterns: [ ".php" ]
+  services:
+    http:
+      recursive: true
+      ignore: [ "vendor" ]
+      patterns: [ ".php", ".go",".md", ]
+      dirs: [ "." ]
