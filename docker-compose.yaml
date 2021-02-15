@@ -1,13 +1,23 @@
 version: '3.5'
 
 services:
+    proxy:
+        image: jwilder/nginx-proxy
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        networks:
+            - dev-back
+
     service:
         build: '.'
         environment:
             APP_ENV: 'dev'
             APP_DEBUG: 'true'
             DATABASE_URL: 'mysql://dev:dev@mysql:3306/dev'
-            #VIRTUAL_HOST: dev.lacker
+            VIRTUAL_HOST: 'dev.lacker'
             PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
             APP_TYPE: 'dev'
         #command: tail -f /dev/null
@@ -21,8 +31,7 @@ services:
             - mysql
         networks:
             - dev-back
-        ports:
-            - "80:80"
+
     mysql:
         image: mysql:5.7
         restart: unless-stopped
