@@ -1,15 +1,14 @@
 version: '3.5'
 
 services:
-    service: &service
+    service:
         build: '.'
         environment:
             APP_ENV: 'dev'
             APP_DEBUG: 'true'
             DATABASE_URL: 'mysql://dev:dev@mysql:3306/dev'
-            VIRTUAL_HOST: dev.lacker
-            PHP_IDE_CONFIG: 'serverName=docker'
-            XDEBUG_CONFIG: '172.17.0.1'
+            #VIRTUAL_HOST: dev.lacker
+            PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
             APP_TYPE: 'dev'
         #command: tail -f /dev/null
 
