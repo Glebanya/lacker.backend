@@ -10,6 +10,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^2.2",
         "doctrine/orm": "^2.7",
+        "firebase/php-jwt": "dev-master",
         "sensio/framework-extra-bundle": "^5.5",
         "shapecode/doctrine-session-handler-bundle": "^3.1",
         "symfony/cache": "5.2.*",
