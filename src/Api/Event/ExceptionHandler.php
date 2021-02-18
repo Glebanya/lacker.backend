@@ -3,14 +3,16 @@
 
 namespace App\Api\Event;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
-class ExceptionHandler
-{
-    public function onKernelException(ExceptionEvent $event)
-    {
+class ExceptionHandler implements EventSubscriberInterface {
+
+    public function onKernelException(ExceptionEvent $event) {
+
         $exception = $event->getThrowable();
         $message = sprintf(
             'My Error says: %s with code: %s',
@@ -30,5 +32,12 @@ class ExceptionHandler
 
         // sends the modified response object to the event
         $event->setResponse($response);
+    }
+
+    public static function getSubscribedEvents(): array {
+
+       return [
+         KernelEvents::EXCEPTION => 'onKernelException'
+       ];
     }
 }
