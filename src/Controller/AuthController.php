@@ -2,33 +2,32 @@
 
 namespace App\Controller;
 
+use App\Api\Auth\AuthSignerObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Api\Auth\Signup;
+
 
 class AuthController extends AbstractController
 {
-    /**
-     * @Route("/login", name="login",methods={"GET"})
-     */
-    public function login(): Response
-    {
-
-    }
 
     /**
-     * @Route("/logout/{token}", name="logout", methods={"DELETE"})
+     * @Route("/register/{code}", name="auth",methods={"POST"})
+     * @return Response
      */
-    public function index($token): Response
+    public function register(string $code,Request $request): Response
     {
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($userData = Signup\SignUpFactory::create($code)->setData($request->request->all())->getUserData());
+        $manager->flush();
+        return $this->json([
+            'access_token' => AuthSignerObject::create()
+                ->setParams(['user_id' => $userData->getId()])
+                ->sign()
+        ]);
 
-    }
-
-    /**
-     * @Route("/register", name="auth",methods={"POST"})
-     */
-    public function register(): Response
-    {
 
     }
 

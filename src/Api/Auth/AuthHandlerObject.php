@@ -5,16 +5,18 @@ namespace App\Api\Auth;
 
 use Firebase\JWT\JWT;
 
-class AuthObject {
+class AuthHandlerObject {
 
     /**
-     * @var string
+     * @var string $key
      */
     private string $key;
-
+    /**
+     * @var array $params
+     */
     private array $params;
 
-    public static function create(): AuthObject {
+    public static function create(): AuthHandlerObject {
         return new static();
     }
 
@@ -23,15 +25,11 @@ class AuthObject {
         return $this;
     }
 
-    public static function decode(string $item) : array {
-        return (array) JWT::jsonDecode(base64_decode($item));
-    }
-
     public function validate() : bool {
         $result = false;
         try {
-            if($this->key && !empty($key)) {
-                $this->params = (array) JWT::decode($this->key, 'key', array_keys(JWT::$supported_algs));
+            if($this->key && !empty($this->key)) {
+                $this->params = (array) JWT::decode($this->key,AuthKey::getKey(), array_keys(JWT::$supported_algs));
                 $result = true;
             }
         } catch (\Throwable $exception) {
@@ -40,8 +38,8 @@ class AuthObject {
             return $result;
         }
     }
+
     public function getParams() : array {
         return $this->params;
     }
-
 }
