@@ -8,12 +8,14 @@ class SignUpFactory
 {
     public static function create(string $type) : ISignUp
     {
-        switch ($type)
+        return new Service\PureSignUpObject;
+        /*switch ($type)
         {
             case SignUpType::APPLE_AUTH_TYPE;
             case SignUpType::APPLE_AUTH_TYPE;
             case SignUpType::APPLE_AUTH_TYPE;
+
             default;
-        }
+        }*/
     }
 }

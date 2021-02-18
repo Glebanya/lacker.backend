@@ -3,9 +3,10 @@
 
 namespace App\Api\Auth\Signup;
 
+use App\Entity\Client;
 
 interface ISignUp
 {
     public function setData(array $params) : self;
-    public function getUserData();
+    public function getUserData() : Client;
 }
