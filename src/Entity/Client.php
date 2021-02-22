@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use \App\Api\Auth\Security\PasswordHandler;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 
@@ -61,7 +63,13 @@ class Client
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="client", orphanRemoval=true)
      */
-    private ArrayCollection $orders;
+    private $orders;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private ?string $google_id;
+
 
     public function __construct()
     {
@@ -76,6 +84,17 @@ class Client
     public function getFullName(): ?string
     {
         return $this->full_name;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->google_id;
+    }
+
+    public function setPassword(string $google_id): self
+    {
+        $this->google_id = $google_id;
+        return $this;
     }
 
     public function setFullName(string $full_name): self
