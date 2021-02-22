@@ -4,18 +4,25 @@
 namespace App\Api\Auth\Signup;
 
 
+use Doctrine\ORM\EntityManagerInterface;
+
 class SignUpFactory
 {
-    public static function create(string $type) : ISignUp
-    {
-        return new Service\PureSignUpObject;
-        /*switch ($type)
-        {
-            case SignUpType::APPLE_AUTH_TYPE;
-            case SignUpType::APPLE_AUTH_TYPE;
-            case SignUpType::APPLE_AUTH_TYPE;
+    private EntityManagerInterface $manager;
 
+    public function __construct(EntityManagerInterface $manager){
+        $this->manager = $manager;
+    }
+
+    public function create(string $type) : ISignUp
+    {
+
+        switch ($type)
+        {
+            case SignUpType::GOOGLE_AUTH_TYPE;
+                return new Service\GoogleSignUpObject($this->manager);
             default;
-        }*/
+                return new Service\PureSignUpObject($this->manager);
+        }
     }
 }
