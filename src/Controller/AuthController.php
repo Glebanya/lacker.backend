@@ -10,25 +10,27 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Api\Auth\Signup;
 
 
-class AuthController extends AbstractController
-{
+class AuthController extends AbstractController {
 
     /**
-     * @Route("/register/{code}", name="auth",methods={"POST"})
+     * @Route("/auth/{code}", name="auth",methods={"POST"})
+     * @param string $code
+     * @param Request $request
+     * @param Signup\SignUpFactory $factory
      * @return Response
      */
-    public function register(string $code,Request $request): Response
-    {
+    public function register(string $code,Request $request, Signup\SignUpFactory $factory): Response {
+
         $manager = $this->getDoctrine()->getManager();
-        $manager->persist($userData = Signup\SignUpFactory::create($code)->setData($request->request->all())->getUserData());
-        $manager->flush();
+        $signUpObject = $factory->create($code)->setData($request->request->all());
+        if (!$user = $signUpObject->findUser()) {
+            $manager->persist($user = $signUpObject->createUser());
+            $manager->flush();
+        }
         return $this->json([
             'access_token' => AuthSignerObject::create()
-                ->setParams(['user_id' => $userData->getId()])
+                ->setParams(['user_id' => $user->getId()])
                 ->sign()
         ]);
-
-
     }
-
 }
