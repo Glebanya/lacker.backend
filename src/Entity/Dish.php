@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\DishRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 
@@ -13,7 +15,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
  * @ORM\Entity(repositoryClass=DishRepository::class)
  * @ORM\Table(name="`lacker_dish`")
  */
-class Dish implements \JsonSerializable
+class Dish implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -26,12 +28,12 @@ class Dish implements \JsonSerializable
     /**
      * @ORM\Column(type="datetime")
      */
-    private ?\DateTimeInterface $created_date;
+    private ?DateTimeInterface $created_date;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private ?\DateTimeInterface $update_date;
+    private ?DateTimeInterface $update_date;
 
     /**
      * @ORM\Column(type="boolean")
@@ -63,20 +65,20 @@ class Dish implements \JsonSerializable
         return $this->id;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface {
+    public function getCreatedDate(): ?DateTimeInterface {
         return $this->created_date;
     }
 
-    public function setCreatedDate(\DateTimeInterface $created_date): self {
+    public function setCreatedDate(DateTimeInterface $created_date): self {
         $this->created_date = $created_date;
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTimeInterface {
+    public function getUpdateDate(): ?DateTimeInterface {
         return $this->update_date;
     }
 
-    public function setUpdateDate(\DateTimeInterface $update_date): self {
+    public function setUpdateDate(DateTimeInterface $update_date): self {
         $this->update_date = $update_date;
         return $this;
     }
@@ -136,6 +138,14 @@ class Dish implements \JsonSerializable
                     }
                     return null;
                 })->filter(function ($serialized) {
+                    return isset($serialized) && is_array($serialized);
+                })->toArray(),
+            'tags' => $this->getTags()->map(function ($portion) {
+                        if ($portion instanceof Tag) {
+                            return $portion->jsonSerialize();
+                        }
+                        return null;
+                    })->filter(function ($serialized) {
                     return isset($serialized) && is_array($serialized);
                 })->toArray()
         ];
