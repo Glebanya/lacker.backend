@@ -4,13 +4,14 @@ namespace App\Entity;
 
 use App\Repository\TagRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 
 /**
  * @ORM\Entity(repositoryClass=TagRepository::class)
  */
-class Tag
+class Tag implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -25,6 +26,11 @@ class Tag
      */
     private ?Dish $dish;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
     public function getId(): ?Uuid {
         return $this->id;
     }
@@ -35,6 +41,22 @@ class Tag
 
     public function setDish(?Dish $dish): self {
         $this->dish = $dish;
+        return $this;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->getId()->jsonSerialize(),
+            'name' => $this->getName()
+        ];
+    }
+
+    public function getName(): ?string {
+        return $this->name;
+    }
+
+    public function setName(string $name): self {
+        $this->name = $name;
         return $this;
     }
 }
