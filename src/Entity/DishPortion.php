@@ -33,6 +33,11 @@ class DishPortion implements JsonSerializable
      */
     private ?dish $dish;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private ?float $price;
+
     public function getId(): ?Uuid {
         return $this->id;
     }
@@ -58,7 +63,17 @@ class DishPortion implements JsonSerializable
     public function jsonSerialize() : array {
         return [
             'id' => $this->getId()->jsonSerialize(),
-            ''
+            'price' => $this->getPrice()
         ];
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): self {
+        $this->price = $price;
+        return $this;
     }
 }
