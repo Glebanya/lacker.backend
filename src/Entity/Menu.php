@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
  * @ORM\Entity(repositoryClass=MenuRepository::class)
  * @ORM\Table(name="`lacker_menu`")
  */
-class Menu
+class Menu implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -48,48 +48,39 @@ class Menu
      */
     private ArrayCollection $dishes;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->restaurants = new ArrayCollection();
         $this->dishes = new ArrayCollection();
     }
 
-    public function getId(): ?Uuid
-    {
+    public function getId(): ?Uuid {
         return $this->id;
     }
 
-    public function getCreationDate(): ?\DateTimeInterface
-    {
+    public function getCreationDate(): ?\DateTimeInterface {
         return $this->creation_date;
     }
 
-    public function setCreationDate(\DateTimeInterface $creation_date): self
-    {
+    public function setCreationDate(\DateTimeInterface $creation_date): self {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
+    public function getUpdateDate(): ?\DateTimeInterface {
         return $this->update_date;
     }
 
-    public function setUpdateDate(\DateTimeInterface $update_date): self
-    {
+    public function setUpdateDate(\DateTimeInterface $update_date): self {
         $this->update_date = $update_date;
-
         return $this;
     }
 
-    public function getEnable(): ?bool
-    {
+    public function getEnable(): ?bool {
         return $this->enable;
     }
 
-    public function setEnable(bool $enable): self
-    {
+    public function setEnable(bool $enable): self {
         $this->enable = $enable;
 
         return $this;
@@ -98,13 +89,11 @@ class Menu
     /**
      * @return Collection|restaurant[]
      */
-    public function getRestaurants(): Collection
-    {
+    public function getRestaurants(): Collection {
         return $this->restaurants;
     }
 
-    public function addRestaurant(restaurant $restaurant): self
-    {
+    public function addRestaurant(restaurant $restaurant): self {
         if (!$this->restaurants->contains($restaurant)) {
             $this->restaurants[] = $restaurant;
         }
@@ -112,8 +101,7 @@ class Menu
         return $this;
     }
 
-    public function removeRestaurant(restaurant $restaurant): self
-    {
+    public function removeRestaurant(restaurant $restaurant): self {
         $this->restaurants->removeElement($restaurant);
 
         return $this;
@@ -122,13 +110,11 @@ class Menu
     /**
      * @return Collection|Dish[]
      */
-    public function getDishes(): Collection
-    {
+    public function getDishes(): Collection {
         return $this->dishes;
     }
 
-    public function addDish(Dish $dish): self
-    {
+    public function addDish(Dish $dish): self {
         if (!$this->dishes->contains($dish)) {
             $this->dishes[] = $dish;
             $dish->setMenu($this);
@@ -137,8 +123,7 @@ class Menu
         return $this;
     }
 
-    public function removeDish(Dish $dish): self
-    {
+    public function removeDish(Dish $dish): self {
         if ($this->dishes->removeElement($dish)) {
             // set the owning side to null (unless already changed)
             if ($dish->getMenu() === $this) {
@@ -147,5 +132,11 @@ class Menu
         }
 
         return $this;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+
+        ];
     }
 }

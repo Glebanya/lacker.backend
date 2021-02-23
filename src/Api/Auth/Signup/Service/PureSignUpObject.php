@@ -11,7 +11,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PureSignUpObject implements ISignUp
 {
-    private array $container = [];
+    private array $container;
+
     private EntityManagerInterface $manager;
 
     /**
@@ -20,6 +21,7 @@ class PureSignUpObject implements ISignUp
      */
     public function __construct(EntityManagerInterface $entityManager) {
         $this->manager = $entityManager;
+        $this->container = [];
     }
 
     /**
@@ -45,19 +47,19 @@ class PureSignUpObject implements ISignUp
         return $this;
     }
 
+    /**
+     * @return Client|null
+     */
     public function findUser(): ?Client {
-        if (array_key_exists('sub',$this->params)) {
-            return $this->manager->getRepository(Client::class)->findByMail(
-                $this->container['email']
-            );
-        }
-        return null;
+        return $this->manager->getRepository(Client::class)->findByMail($this->container['email']);
     }
 
+    /**
+     * @return Client
+     */
     public function createUser(): Client
     {
         return (new Client())
-            ->setPassword($this->container['password'])
             ->setMail($this->container['email'] )
             ->setPhone($this->container['phone'])
             ->setFullName($this->container['name'])

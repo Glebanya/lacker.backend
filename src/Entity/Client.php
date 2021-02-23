@@ -86,12 +86,12 @@ class Client
         return $this->full_name;
     }
 
-    public function getPassword(): ?string
+    public function getGoogleId(): ?string
     {
         return $this->google_id;
     }
 
-    public function setPassword(string $google_id): self
+    public function setGoogleId(string $google_id): self
     {
         $this->google_id = $google_id;
         return $this;
