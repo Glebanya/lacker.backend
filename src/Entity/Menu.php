@@ -136,7 +136,16 @@ class Menu implements \JsonSerializable
 
     public function jsonSerialize(): array {
         return [
-
+            'id' => $this->getId()->jsonSerialize(),
+            'timestamp' => $this->getUpdateDate()->getTimestamp(),
+            'items' => $this->getDishes()->map(function ($dish) {
+                    if($dish instanceof Dish && $dish->getEnable()) {
+                        return $dish->jsonSerialize();
+                    }
+                    return null;
+                })->filter(function ($dishSerialized) {
+                return isset($dishSerialized) && is_array($dishSerialized);
+            })->toArray(),
         ];
     }
 }

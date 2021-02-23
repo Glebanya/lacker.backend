@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\DishPortionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 
@@ -11,7 +12,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
  * @ORM\Entity(repositoryClass=DishPortionRepository::class)
  * @ORM\Table(name="`lacker_dish_portion`")
  */
-class DishPortion
+class DishPortion implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -24,7 +25,7 @@ class DishPortion
     /**
      * @ORM\Column(type="boolean")
      */
-    private $enable;
+    private ?bool $enable;
 
     /**
      * @ORM\ManyToOne(targetEntity=dish::class, inversedBy="dishPortions")
@@ -32,32 +33,32 @@ class DishPortion
      */
     private ?dish $dish;
 
-    public function getId(): ?Uuid
-    {
+    public function getId(): ?Uuid {
         return $this->id;
     }
 
-    public function getEnable(): ?bool
-    {
+    public function getEnable(): ?bool {
         return $this->enable;
     }
 
-    public function setEnable(bool $enable): self
-    {
+    public function setEnable(bool $enable): self {
         $this->enable = $enable;
-
         return $this;
     }
 
-    public function getDish(): ?dish
-    {
+    public function getDish(): ?dish {
         return $this->dish;
     }
 
-    public function setDish(?dish $dish): self
-    {
+    public function setDish(?dish $dish): self {
         $this->dish = $dish;
-
         return $this;
+    }
+
+    public function jsonSerialize() : array {
+        return [
+            'id' => $this->getId()->jsonSerialize(),
+            ''
+        ];
     }
 }

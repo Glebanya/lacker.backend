@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
  * @ORM\Entity(repositoryClass=DishRepository::class)
  * @ORM\Table(name="`lacker_dish`")
  */
-class Dish
+class Dish implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -49,62 +49,55 @@ class Dish
      */
     private ?menu $menu;
 
-    public function __construct()
-    {
+    /**
+     * @ORM\OneToMany(targetEntity=Tag::class, mappedBy="dish")
+     */
+    private $tags;
+
+    public function __construct() {
         $this->dishPortions = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
-    public function getId(): ?Uuid
-    {
+    public function getId(): ?Uuid {
         return $this->id;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface
-    {
+    public function getCreatedDate(): ?\DateTimeInterface {
         return $this->created_date;
     }
 
-    public function setCreatedDate(\DateTimeInterface $created_date): self
-    {
+    public function setCreatedDate(\DateTimeInterface $created_date): self {
         $this->created_date = $created_date;
-
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
+    public function getUpdateDate(): ?\DateTimeInterface {
         return $this->update_date;
     }
 
-    public function setUpdateDate(\DateTimeInterface $update_date): self
-    {
+    public function setUpdateDate(\DateTimeInterface $update_date): self {
         $this->update_date = $update_date;
-
         return $this;
     }
 
-    public function getEnable(): ?bool
-    {
+    public function getEnable(): ?bool {
         return $this->enable;
     }
 
-    public function setEnable(bool $enable): self
-    {
+    public function setEnable(bool $enable): self {
         $this->enable = $enable;
-
         return $this;
     }
 
     /**
      * @return Collection|DishPortion[]
      */
-    public function getDishPortions(): Collection
-    {
+    public function getDishPortions(): Collection {
         return $this->dishPortions;
     }
 
-    public function addDishPortion(DishPortion $dishPortion): self
-    {
+    public function addDishPortion(DishPortion $dishPortion): self {
         if (!$this->dishPortions->contains($dishPortion)) {
             $this->dishPortions[] = $dishPortion;
             $dishPortion->setDish($this);
@@ -113,26 +106,67 @@ class Dish
         return $this;
     }
 
-    public function removeDishPortion(DishPortion $dishPortion): self
-    {
+    public function removeDishPortion(DishPortion $dishPortion): self {
         if ($this->dishPortions->removeElement($dishPortion)) {
             // set the owning side to null (unless already changed)
             if ($dishPortion->getDish() === $this) {
                 $dishPortion->setDish(null);
             }
         }
+        return $this;
+    }
+
+    public function getMenu(): ?menu {
+        return $this->menu;
+    }
+
+    public function setMenu(?menu $menu): self {
+        $this->menu = $menu;
+        return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId()->jsonSerialize(),
+            'name' => '',
+            'portions' => $this->getDishPortions()->map(function ($portion) {
+                    if ($portion instanceof DishPortion && $portion->getEnable()) {
+                        return $portion->jsonSerialize();
+                    }
+                    return null;
+                })->filter(function ($serialized) {
+                    return isset($serialized) && is_array($serialized);
+                })->toArray()
+        ];
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->setDish($this);
+        }
 
         return $this;
     }
 
-    public function getMenu(): ?menu
+    public function removeTag(Tag $tag): self
     {
-        return $this->menu;
-    }
-
-    public function setMenu(?menu $menu): self
-    {
-        $this->menu = $menu;
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getDish() === $this) {
+                $tag->setDish(null);
+            }
+        }
 
         return $this;
     }
