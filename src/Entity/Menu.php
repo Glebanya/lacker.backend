@@ -39,14 +39,14 @@ class Menu implements \JsonSerializable
     private ?bool $enable;
 
     /**
-     * @ORM\ManyToMany(targetEntity=restaurant::class, inversedBy="menus")
+     * @ORM\ManyToMany(targetEntity=Restaurant::class, inversedBy="menus")
      */
-    private ArrayCollection $restaurants;
+    private Collection $restaurants;
 
     /**
      * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="menu", orphanRemoval=true)
      */
-    private ArrayCollection $dishes;
+    private Collection $dishes;
 
     public function __construct() {
         $this->restaurants = new ArrayCollection();
@@ -87,13 +87,13 @@ class Menu implements \JsonSerializable
     }
 
     /**
-     * @return Collection|restaurant[]
+     * @return Collection|Restaurant[]
      */
     public function getRestaurants(): Collection {
         return $this->restaurants;
     }
 
-    public function addRestaurant(restaurant $restaurant): self {
+    public function addRestaurant(Restaurant $restaurant): self {
         if (!$this->restaurants->contains($restaurant)) {
             $this->restaurants[] = $restaurant;
         }
@@ -101,7 +101,7 @@ class Menu implements \JsonSerializable
         return $this;
     }
 
-    public function removeRestaurant(restaurant $restaurant): self {
+    public function removeRestaurant(Restaurant $restaurant): self {
         $this->restaurants->removeElement($restaurant);
 
         return $this;

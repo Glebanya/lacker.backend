@@ -23,14 +23,12 @@ class Business
     private ?Uuid $id;
 
     /**
-     * @ORM\OneToMany(targetEntity=restaurant::class, mappedBy="business", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Restaurant::class, mappedBy="business", orphanRemoval=true)
      */
-    private ArrayCollection $restaurants;
+    private $restaurants;
 
     public function __construct()
-    {
-        $this->restaurants = new ArrayCollection();
-    }
+    {}
 
     public function getId(): ?Uuid
     {
@@ -38,14 +36,14 @@ class Business
     }
 
     /**
-     * @return Collection|restaurant[]
+     * @return Collection|Restaurant[]
      */
     public function getRestaurants(): Collection
     {
         return $this->restaurants;
     }
 
-    public function addRestaurant(restaurant $restaurant): self
+    public function addRestaurant(Restaurant $restaurant): self
     {
         if (!$this->restaurants->contains($restaurant)) {
             $this->restaurants[] = $restaurant;
@@ -55,7 +53,7 @@ class Business
         return $this;
     }
 
-    public function removeRestaurant(restaurant $restaurant): self
+    public function removeRestaurant(Restaurant $restaurant): self
     {
         if ($this->restaurants->removeElement($restaurant)) {
             // set the owning side to null (unless already changed)
