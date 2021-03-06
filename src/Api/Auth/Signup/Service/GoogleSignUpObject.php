@@ -6,6 +6,7 @@ namespace App\Api\Auth\Signup\Service;
 use App\Api\Auth\Signup\Exception\SignUpException;
 use App\Api\Auth\Signup\ISignUp;
 use App\Entity\Client;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Google_Client;
 
@@ -58,6 +59,8 @@ class GoogleSignUpObject implements ISignUp
         return (new Client())
             ->setMail($this->params['email'])
             ->setFullName($this->params['name'])
-            ->setGoogleId($this->params['sub']);
+            ->setGoogleId($this->params['sub'])
+            ->setUpdateDate(new DateTime('NOW'))
+            ->setCreateDate(new DateTime('NOW'));
     }
 }

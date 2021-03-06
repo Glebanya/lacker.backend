@@ -4,11 +4,11 @@
 namespace App\Controller;
 
 
-use App\Api\Event\TokenEventSubscriber;
+use App\Api\Event\ApiManager;
 
 interface ITokenController
 {
-    function setAccessController(TokenEventSubscriber $accessController);
-    function getAccessController() : ?TokenEventSubscriber;
-    function getNonPublicMethods() : array;
+    public function setApiManager(ApiManager $apiManager);
+    public function getApiManager() : ?ApiManager;
+    public function getNonPublicMethods() : array;
 }

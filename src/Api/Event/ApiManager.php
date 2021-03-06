@@ -4,6 +4,7 @@
 namespace App\Api\Event;
 
 use App\Api\Auth;
+use App\Api\Request;
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ITokenController;
@@ -13,18 +14,21 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use App\Api\Auth\Access\AccessValidator;
 
-class TokenEventSubscriber implements EventSubscriberInterface
+class ApiManager implements EventSubscriberInterface
 {
 
     private AccessValidator $validator;
 
     private EntityManagerInterface $manager;
 
-    private $user;
+    private ?Client $user;
 
-    private  Auth\AuthHandlerObject $authObject;
+    private Auth\AuthHandlerObject $authObject;
+
+    private Request $request;
 
     private function validateAccessToken(string $token) : bool {
+
         return $this->authObject->setKey($token)->validate();
     }
 
@@ -36,10 +40,12 @@ class TokenEventSubscriber implements EventSubscriberInterface
     }
 
     public function __construct(
+        Request $request,
         EntityManagerInterface $entityManager,
         AccessValidator $validator,
         Auth\AuthHandlerObject $authObject
     ){
+        $this->request = $request;
         $this->manager = $entityManager;
         $this->validator = $validator;
         $this->authObject = $authObject;
@@ -51,25 +57,28 @@ class TokenEventSubscriber implements EventSubscriberInterface
             [$controller,$method] = $controller;
         }
 
-        if ($controller instanceof ITokenController && in_array($method, $controller->getNonPublicMethods())) {
-            if (
-                !$event->getRequest()->request->has('access_token') &&
-                !$this->validateAccessToken($event->getRequest()->request->get('access_token'))
-            ){
-                throw new AccessDeniedHttpException('This action needs a valid token!');
-            } elseif (!$this->user = $this->findUser()) {
-                throw new AccessDeniedHttpException('This user not exists!');
+        if ($controller instanceof ITokenController) {
+            if (in_array($method, $controller->getNonPublicMethods())){
+                if (!$event->getRequest()->request->has('access_token') && !$this->validateAccessToken($this->request->getAccessToken())){
+                    throw new AccessDeniedHttpException('This action needs a valid token!');
+                } elseif (!$this->user = $this->findUser()) {
+                    throw new AccessDeniedHttpException('This user not exists!');
+                }
             }
-            $controller->setAccessController($this);
+            $controller->setApiManager($this);
         }
+
     }
 
     public function getUser() : ?Client {
         return $this->user;
     }
 
-    public static function getSubscribedEvents(): array
-    {
+    public function getRequest() : ?Request {
+        return $this->request;
+    }
+
+    public static function getSubscribedEvents(): array {
         return [
             KernelEvents::CONTROLLER => 'onKernelController',
         ];

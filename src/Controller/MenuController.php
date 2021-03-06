@@ -2,25 +2,20 @@
 
 namespace App\Controller;
 
-use App\Api\Event\TokenEventSubscriber;
 use App\Entity\Menu;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use App\Api\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MenuController extends AbstractController implements ITokenController
+class MenuController extends ControllerBase
 {
-
-    private TokenEventSubscriber $subscriber;
 
     /**
      * @Route("/menu/{id}", name="menu_get", methods={"GET"})
      * @param string $id
-     * @param Request $request
      * @return Response
      */
-    public function getMenu(string $id,Request $request): Response {
+    public function get(string $id): Response {
         $user = $this->getAccessController()->getUser();
         return $this->json([$user->getMail()]);
     }
@@ -57,14 +52,6 @@ class MenuController extends AbstractController implements ITokenController
      */
     public function update(Request $request): Response {
 
-    }
-
-    function setAccessController(TokenEventSubscriber $accessController) {
-        $this->subscriber = $accessController;
-    }
-
-    function getAccessController(): ?TokenEventSubscriber {
-        return $this->subscriber;
     }
 
     function getNonPublicMethods() : array {
