@@ -30,17 +30,17 @@ class Restaurant
     /**
      * @ORM\OneToMany(targetEntity=Hall::class, mappedBy="restaurant_id", orphanRemoval=true)
      */
-    private ArrayCollection $halls;
+    private $halls;
 
     /**
      * @ORM\OneToMany(targetEntity=RestaurantResourceText::class, mappedBy="restaurant", orphanRemoval=true)
      */
-    private ArrayCollection $resourceText;
+    private $resourceText;
 
     /**
      * @ORM\OneToMany(targetEntity=RestaurantResourceSettings::class, mappedBy="restaurant", orphanRemoval=true)
      */
-    private ArrayCollection $settings;
+    private $settings;
 
     /**
      * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="restaurants")
@@ -51,14 +51,11 @@ class Restaurant
     /**
      * @ORM\ManyToMany(targetEntity=Menu::class, mappedBy="restaurants")
      */
-    private ArrayCollection $menus;
+    private $menus;
 
     public function __construct()
     {
-        $this->halls = new ArrayCollection();
-        $this->resourceText = new ArrayCollection();
-        $this->settings = new ArrayCollection();
-        $this->menus = new ArrayCollection();
+        $this->timezone = 'UTC';
     }
 
     public function getId(): ?Uuid
@@ -173,8 +170,7 @@ class Restaurant
         return $this->business;
     }
 
-    public function setBusiness(?Business $business): self
-    {
+    public function setBusiness(?Business $business): self {
         $this->business = $business;
 
         return $this;
