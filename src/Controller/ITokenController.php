@@ -10,4 +10,5 @@ interface ITokenController
 {
     function setAccessController(TokenEventSubscriber $accessController);
     function getAccessController() : ?TokenEventSubscriber;
+    function getNonPublicMethods() : array;
 }
