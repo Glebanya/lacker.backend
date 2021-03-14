@@ -1,0 +1,58 @@
+security:
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    encoders:
+        App\Entity\User:
+          algorithm: bcrypt
+        App\Entity\Staff:
+          algorithm: sha256
+        Symfony\Component\Security\Core\User\User:
+          algorithm: 'auto'
+
+    providers:
+        users_in_memory: { memory: null }
+        client_provider:
+          entity:
+            class: App\Entity\User
+        admin_provider:
+          entity:
+            class: App\Entity\Staff
+        super_admin:
+          memory:
+              users:
+                uber_admin: { password: 'qwerty90', roles: [ 'SUPER_ADMIN' ] }
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        client:
+            pattern: ^/client/*$
+            anonymous: false
+            lazy: true
+            provider: client_provider
+            guard:
+              authenticators:
+                - App\Utils\Authentication\UserTokenAuthenticator
+        public:
+            pattern: ^/public/*$
+            anonymous: true
+            lazy: true
+        main:
+            anonymous: true
+            lazy: true
+            provider: users_in_memory
+        admin:
+            pattern: ^/admin/*$
+            anonymous: false
+            lazy: true
+            provider: admin_provider
+            guard:
+                authenticators:
+                  - App\Utils\Authentication\UserTokenAuthenticator
+
+    access_control:
+         - { path: ^/profile, roles: ROLE_CLIENT }
+         #- { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

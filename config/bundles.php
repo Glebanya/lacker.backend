@@ -6,6 +6,6 @@ return [
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
     Baldinof\RoadRunnerBundle\BaldinofRoadRunnerBundle::class => ['all' => true],
-    Shapecode\Bundle\Doctrine\SessionHandlerBundle\ShapecodeDoctrineSessionHandlerBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
+    Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
 ];

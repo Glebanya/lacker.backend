@@ -2,40 +2,58 @@
 
 namespace App\Controller;
 
-use App\Api\Auth\AuthSignerObject;
-use App\Entity\Stuff;
+use App\Entity\User;
+use App\Utils\Login\PureStaffLoginObject;
+use App\Utils\Security\JWTObjectSigner;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Api\Auth\Signup;
+use App\Utils\Login\GoogleUserLoginObject;
 
-
-class AuthController extends ControllerBase {
-
-    /**
-     * @Route("/auth/{code}", name="auth",methods={"POST"})
-     * @param string $code
-     * @param Signup\SignUpFactory $factory
-     * @return Response
-     */
-    public function register(string $code, Signup\SignUpFactory $factory): Response {
-
-        $manager = $this->getDoctrine()->getManager();
-        $signUpObject = $factory->create($code)->setData($this->getApiManager()->getRequest()->getContent());
-        if (!$user = $signUpObject->findUser()) {
-            $manager->persist($user = $signUpObject->createUser());
-            $manager->flush();
+class AuthController extends AbstractController
+{
+    private function getContent(string $content) : ?array
+    {
+        if ($content <> "" && !$data = json_decode($content,true))
+        {
+            if (json_last_error() !== JSON_ERROR_NONE)
+            {
+                throw new BadRequestHttpException('invalid json body: ' . json_last_error_msg());
+            }
         }
-        return $this->json([
-            'access_token' => AuthSignerObject::create()
-                ->setParams([
-                    'type' => $user instanceof Stuff? 'stuff' : 'client',
-                    'user_id' => $user->getId()
-                ])
-                ->sign()
-        ]);
+        return $data ?? [];
     }
 
-    public function getMethodMap(): array {
-        return [];
+    #[Route('/public/auth/google', name: 'auth_google', methods: ['POST'])]
+    public function authGoogle(Request $request, GoogleUserLoginObject $object): Response
+    {
+        if ($user = $object->setData($this->getContent($request->getContent()))->findUser() ?? $object->createUser())
+        {
+            return $this->json([
+                'access_token' => (new JWTObjectSigner([
+                    'type' => 'client',
+                    'user_id' => $user->getId()
+                ]))->sign()
+            ]);
+        }
+        throw new BadRequestHttpException('invalid json body: ');
+    }
+
+    #[Route('/public/auth/staff', name: 'auth_staff', methods: ['POST'])]
+    public function authStaff(Request $request, PureStaffLoginObject $object): Response
+    {
+        $this->denyAccessUnlessGranted('View',new User());
+        if ($user = $object->setData($this->getContent($request->getContent()))->findUser())
+        {
+            return $this->json([
+                'access_token' => (new JWTObjectSigner([
+                    'type' => 'staff',
+                    'user_id' => $user->getId()
+                ]))->sign()
+            ]);
+        }
+        throw new BadRequestHttpException('invalid json body: ');
     }
 }
