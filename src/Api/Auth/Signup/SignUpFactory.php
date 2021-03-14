@@ -22,7 +22,7 @@ class SignUpFactory
             case SignUpType::GOOGLE_AUTH_TYPE;
                 return new Service\GoogleSignUpObject($this->manager);
             default;
-                return new Service\PureSignUpObject($this->manager);
+                return new Service\StuffSignUpObject($this->manager);
         }
     }
 }

@@ -8,19 +8,15 @@ use Firebase\JWT\JWT;
 class AuthHandlerObject {
 
     /**
-     * @var string $key
+     * @var ?string $key
      */
-    private string $key;
+    private ?string $key;
     /**
-     * @var array $params
+     * @var ?array $params
      */
-    private array $params;
+    private ?array $params;
 
-    public static function create(): AuthHandlerObject {
-        return new static();
-    }
-
-    public function setKey(string $key) : self {
+    public function setKey(?string $key) : self {
         $this->key = $key;
         return $this;
     }
@@ -41,5 +37,17 @@ class AuthHandlerObject {
 
     public function getParams() : array {
         return $this->params;
+    }
+    public function getType(): ?string {
+        if ($this->params && array_key_exists('type',$this->params) && is_string($this->params['type'])){
+            return $this->params['type'];
+        }
+        return null;
+    }
+    public function getUserId() : ?string {
+        if ($this->params && array_key_exists('user_id',$this->params) && is_string($this->params['user_id'])){
+            return $this->params['user_id'];
+        }
+        return null;
     }
 }

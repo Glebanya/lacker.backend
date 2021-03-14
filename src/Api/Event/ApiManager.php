@@ -5,52 +5,34 @@ namespace App\Api\Event;
 
 use App\Api\Auth;
 use App\Api\Request;
+use App\Entity\Access;
+use App\Entity\Business;
 use App\Entity\Client;
+use App\Entity\Stuff;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ITokenController;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
-use App\Api\Auth\Access\AccessValidator;
+use App\Api\Auth\Access\AccessEnum;
 
 class ApiManager implements EventSubscriberInterface
 {
 
-    private AccessValidator $validator;
-
-    private EntityManagerInterface $manager;
-
-    private ?Client $user;
-
-    private Auth\AuthHandlerObject $authObject;
 
     private Request $request;
 
-    private function validateAccessToken(string $token) : bool {
-
-        return $this->authObject->setKey($token)->validate();
-    }
-
-    private function findUser(): ?object {
-        $params = $this->authObject->getParams();
-        return is_array($params) && array_key_exists('user_id', $params)?
-            $this->manager->getRepository(Client::class)->find($params['user_id']) :
-            null;
-    }
-
     public function __construct(
         Request $request,
-        EntityManagerInterface $entityManager,
-        AccessValidator $validator,
         Auth\AuthHandlerObject $authObject
     ){
         $this->request = $request;
-        $this->manager = $entityManager;
-        $this->validator = $validator;
-        $this->authObject = $authObject;
     }
+    private function handleControllerEvent(ITokenController $controller, string $method){
 
+    }
     public function onKernelController(ControllerEvent $event) {
 
         if (is_array($controller = $event->getController())) {
@@ -58,26 +40,32 @@ class ApiManager implements EventSubscriberInterface
         }
 
         if ($controller instanceof ITokenController) {
-            if (in_array($method, $controller->getNonPublicMethods())){
-                if (!$event->getRequest()->request->has('access_token') && !$this->validateAccessToken($this->request->getAccessToken())){
-                    throw new AccessDeniedHttpException('This action needs a valid token!');
-                } elseif (!$this->user = $this->findUser()) {
-                    throw new AccessDeniedHttpException('This user not exists!');
+
+            if (in_array($method, array_keys($methods = $controller->getMethodMap()))){
+
+                ['type' => $accessType,'rights' => $accessRights] = $methods[$method];
+                if ($accessType === 'client'){
+                    if (!$this->request->getUser() instanceof Client){
+                        throw new AccessDeniedHttpException();
+                    }
+                } elseif ($accessType === 'stuff'){
+                    $user = $this->request->getUser();
+                    if (!$user instanceof Stuff){
+                        throw new AccessDeniedHttpException();
+                    } elseif ($user->getRole() & $accessRights === 0){
+                        throw new AccessDeniedHttpException();
+                    }
                 }
             }
             $controller->setApiManager($this);
         }
-
-    }
-
-    public function getUser() : ?Client {
-        return $this->user;
     }
 
     public function getRequest() : ?Request {
         return $this->request;
     }
 
+    #[ArrayShape([KernelEvents::CONTROLLER => "string"])]
     public static function getSubscribedEvents(): array {
         return [
             KernelEvents::CONTROLLER => 'onKernelController',

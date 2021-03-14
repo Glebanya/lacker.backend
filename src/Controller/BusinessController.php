@@ -23,4 +23,9 @@ class BusinessController extends ControllerBase
             'id' => $business->getId()
         ]);
     }
+
+    public function getMethodMap() : array {
+        return [
+        ];
+    }
 }

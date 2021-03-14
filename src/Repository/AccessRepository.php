@@ -19,6 +19,18 @@ class AccessRepository extends ServiceEntityRepository
         parent::__construct($registry, Access::class);
     }
 
+    public function findByUserAndBusiness($userId, $businessId)
+    {
+        return $this->createQueryBuilder('access')
+            ->andWhere('access.user = :user')
+            ->setParameter('user',$userId)
+            ->andWhere('access.business = :business')
+            ->setParameter('business',$businessId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+    }
+
     // /**
     //  * @return Access[] Returns an array of Access objects
     //  */

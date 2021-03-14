@@ -25,10 +25,23 @@ class Business
     /**
      * @ORM\OneToMany(targetEntity=Restaurant::class, mappedBy="business", orphanRemoval=true)
      */
-    private $restaurants;
+    private Collection $restaurants;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Access::class, mappedBy="business", orphanRemoval=true)
+     */
+    private Collection $accesses;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Stuff::class, mappedBy="business", orphanRemoval=true)
+     */
+    private $stuff;
 
     public function __construct()
-    {}
+    {
+        $this->accesses = new ArrayCollection();
+        $this->stuff = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -59,6 +72,66 @@ class Business
             // set the owning side to null (unless already changed)
             if ($restaurant->getBusiness() === $this) {
                 $restaurant->setBusiness(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAccesses(): Collection
+    {
+        return $this->accesses;
+    }
+
+    public function addAccess(Access $access): self
+    {
+        if (!$this->accesses->contains($access)) {
+            $this->accesses[] = $access;
+            $access->setBusiness($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAccess(Access $access): self
+    {
+        if ($this->accesses->removeElement($access)) {
+            // set the owning side to null (unless already changed)
+            if ($access->getBusiness() === $this) {
+                $access->setBusiness(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Stuff[]
+     */
+    public function getStuff(): Collection
+    {
+        return $this->stuff;
+    }
+
+    public function addStuff(Stuff $stuff): self
+    {
+        if (!$this->stuff->contains($stuff)) {
+            $this->stuff[] = $stuff;
+            $stuff->setBusiness($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStuff(Stuff $stuff): self
+    {
+        if ($this->stuff->removeElement($stuff)) {
+            // set the owning side to null (unless already changed)
+            if ($stuff->getBusiness() === $this) {
+                $stuff->setBusiness(null);
             }
         }
 

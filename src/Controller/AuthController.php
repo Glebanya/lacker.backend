@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Api\Auth\AuthSignerObject;
+use App\Entity\Stuff;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Api\Auth\Signup;
@@ -26,12 +27,15 @@ class AuthController extends ControllerBase {
         }
         return $this->json([
             'access_token' => AuthSignerObject::create()
-                ->setParams(['user_id' => $user->getId()])
+                ->setParams([
+                    'type' => $user instanceof Stuff? 'stuff' : 'client',
+                    'user_id' => $user->getId()
+                ])
                 ->sign()
         ]);
     }
 
-    public function getNonPublicMethods(): array {
+    public function getMethodMap(): array {
         return [];
     }
 }

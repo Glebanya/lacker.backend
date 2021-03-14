@@ -33,10 +33,10 @@ class Access
     private ?Business $business;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer", length=255)
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?string $role;
+    private ?int $role;
 
     public function getId(): ?Uuid
     {
@@ -67,12 +67,12 @@ class Access
         return $this;
     }
 
-    public function getRole(): ?string
+    public function getRole(): ?int
     {
         return $this->role;
     }
 
-    public function setRole(string $role): self
+    public function setRole(int $role): self
     {
         $this->role = $role;
 

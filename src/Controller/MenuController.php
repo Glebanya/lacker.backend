@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Menu;
 use App\Api\Request;
+use App\Entity\Stuff;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,8 +18,7 @@ class MenuController extends ControllerBase
      * @return Response
      */
     public function get(string $id): Response {
-        $user = $this->getAccessController()->getUser();
-        return $this->json([$user->getMail()]);
+        return $this->json(['hello']);
     }
 
     /**
@@ -54,11 +55,13 @@ class MenuController extends ControllerBase
 
     }
 
-    function getNonPublicMethods() : array {
+    #[ArrayShape(['get' => "string[]", 'update' => "array", 'delete' => "array", 'add' => "array"])]
+    public function getMethodMap() : array {
         return [
-            'update',
-            'delete',
-            'add'
+            'update'=> ['type' => 'stuff','rights' => Stuff::OWNER|Stuff::ADMIN],
+            'delete'=> ['type' => 'stuff','rights' => Stuff::OWNER|Stuff::ADMIN],
+            'add' => ['type' => 'stuff' ,'rights' => Stuff::OWNER|Stuff::ADMIN]
         ];
     }
+
 }

@@ -18,12 +18,4 @@ abstract class ControllerBase extends AbstractController implements ITokenContro
     public function getApiManager(): ?ApiManager {
         return $this->apiManager;
     }
-
-    public function getNonPublicMethods() : array {
-        return [
-            'update',
-            'delete',
-            'add'
-        ];
-    }
 }

@@ -10,5 +10,5 @@ interface ITokenController
 {
     public function setApiManager(ApiManager $apiManager);
     public function getApiManager() : ?ApiManager;
-    public function getNonPublicMethods() : array;
+    public function getMethodMap() : array;
 }
