@@ -29,7 +29,8 @@ class PureStaffLoginObject implements InterfaceLoginObject
      */
     public function setData(array $params): InterfaceLoginObject
     {
-        if (array_key_exists('email',$params)) {
+        if (array_key_exists('email',$params))
+        {
             $this->container['email'] = $params['email'];
         }
         else

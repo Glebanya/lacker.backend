@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Utils\Login\PureStaffLoginObject;
 use App\Utils\Security\JWTObjectSigner;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,17 +33,34 @@ class AuthController extends AbstractController
             return $this->json([
                 'access_token' => (new JWTObjectSigner([
                     'type' => 'client',
-                    'user_id' => $user->getId()
+                    'user_id' => $user->getId(),
+
                 ]))->sign()
             ]);
         }
         throw new BadRequestHttpException('invalid json body: ');
     }
 
+    #[Route('/public/auth/pure', name: 'auth_google', methods: ['POST'])]
+    public function authPure(Request $request, GoogleUserLoginObject $object): Response
+    {
+        if ($user = $object->setData($this->getContent($request->getContent()))->findUser() ?? $object->createUser())
+        {
+            return $this->json([
+                'access_token' => (new JWTObjectSigner([
+                    'type' => 'client',
+                    'user_id' => $user->getId(),
+
+                ]))->sign()
+            ]);
+        }
+        throw new BadRequestHttpException('invalid json body: ');
+    }
+
+
     #[Route('/public/auth/staff', name: 'auth_staff', methods: ['POST'])]
     public function authStaff(Request $request, PureStaffLoginObject $object): Response
     {
-        $this->denyAccessUnlessGranted('View',new User());
         if ($user = $object->setData($this->getContent($request->getContent()))->findUser())
         {
             return $this->json([
