@@ -18,7 +18,8 @@ class StaffRights extends EntityRightsBase implements InterfaceEntityRights
                 return match ($this->attribute){
                     static::ADD, static::DELETE => $this->accessVoter->security->isGranted('ROLE_MANAGER'),
                     static::EDIT => $this->object->isEqualTo($user) || $this->accessVoter->security->isGranted('ROLE_MANAGER'),
-                    static::VIEW => $this->accessVoter->security->isGranted('ROLE_STUFF'),
+                    static::VIEW => $user->getBusiness()->equalTo($this->object->getBusiness())
+                        && $this->accessVoter->security->isGranted('ROLE_STUFF'),
                     default => false
                 };
 

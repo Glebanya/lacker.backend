@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Utils\Exception\Oauth\LoginException;
 use App\Utils\Login\PureStaffLoginObject;
 use App\Utils\Security\JWTObjectSigner;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +27,12 @@ class AuthController extends AbstractController
         return $data ?? [];
     }
 
+    /**
+     * @param Request $request
+     * @param GoogleUserLoginObject $object
+     * @return Response
+     * @throws LoginException|Exception
+     */
     #[Route('/public/auth/google', name: 'auth_google', methods: ['POST'])]
     public function authGoogle(Request $request, GoogleUserLoginObject $object): Response
     {
@@ -34,30 +42,19 @@ class AuthController extends AbstractController
                 'access_token' => (new JWTObjectSigner([
                     'type' => 'client',
                     'user_id' => $user->getId(),
-
+                    'rand' => md5(random_bytes(32),true)
                 ]))->sign()
             ]);
         }
         throw new BadRequestHttpException('invalid json body: ');
     }
 
-    #[Route('/public/auth/pure', name: 'auth_google', methods: ['POST'])]
-    public function authPure(Request $request, GoogleUserLoginObject $object): Response
-    {
-        if ($user = $object->setData($this->getContent($request->getContent()))->findUser() ?? $object->createUser())
-        {
-            return $this->json([
-                'access_token' => (new JWTObjectSigner([
-                    'type' => 'client',
-                    'user_id' => $user->getId(),
-
-                ]))->sign()
-            ]);
-        }
-        throw new BadRequestHttpException('invalid json body: ');
-    }
-
-
+    /**
+     * @param Request $request
+     * @param PureStaffLoginObject $object
+     * @return Response
+     * @throws LoginException|Exception
+     */
     #[Route('/public/auth/staff', name: 'auth_staff', methods: ['POST'])]
     public function authStaff(Request $request, PureStaffLoginObject $object): Response
     {
@@ -66,7 +63,8 @@ class AuthController extends AbstractController
             return $this->json([
                 'access_token' => (new JWTObjectSigner([
                     'type' => 'staff',
-                    'user_id' => $user->getId()
+                    'user_id' => $user->getId(),
+                    'rand' => md5(random_bytes(32),true)
                 ]))->sign()
             ]);
         }

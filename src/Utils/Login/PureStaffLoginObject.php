@@ -37,14 +37,6 @@ class PureStaffLoginObject implements InterfaceLoginObject
         {
             throw new LoginException();
         }
-        if (array_key_exists('name',$params))
-        {
-            $this->container['name'] = $params['name'];
-        }
-        else
-        {
-            throw new LoginException();
-        }
         if (array_key_exists('password',$params))
         {
             $this->container['password'] = $params['password'];
@@ -76,9 +68,7 @@ class PureStaffLoginObject implements InterfaceLoginObject
     {
         $this->manager->persist(($staff = new Staff())
             ->setEmail($this->container['email'] )
-            ->setUsername($this->container['name'])
             ->setPassword($this->encoder->encodePassword($staff,$this->container['password']))
-            ->setRoles($this->container['roles'])
         );
         $this->manager->flush();
         return $staff;

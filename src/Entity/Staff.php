@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Utils\Environment;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +42,22 @@ class Staff implements UserInterface,EquatableInterface
      * @ORM\Column(type="simple_array")
      */
     private array $roles = [];
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="Staff")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private ?Business $business;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="pinnedStaff")
+     */
+    private Collection $restaurants;
+
+    public function __construct()
+    {
+        $this->restaurants = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -115,5 +133,44 @@ class Staff implements UserInterface,EquatableInterface
             return $this->getId() === $this->getId();
         }
         return false;
+    }
+
+    public function getBusiness(): ?Business
+    {
+        return $this->business;
+    }
+
+    public function setBusiness(?Business $business): self
+    {
+        $this->business = $business;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getRestaurants(): Collection
+    {
+        return $this->restaurants;
+    }
+
+    public function addRestaurant(Restaurant $restaurant): self
+    {
+        if (!$this->restaurants->contains($restaurant)) {
+            $this->restaurants[] = $restaurant;
+            $restaurant->addPinnedStaff($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRestaurant(Restaurant $restaurant): self
+    {
+        if ($this->restaurants->removeElement($restaurant)) {
+            $restaurant->removePinnedStaff($this);
+        }
+
+        return $this;
     }
 }

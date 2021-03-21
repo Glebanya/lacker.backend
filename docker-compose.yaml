@@ -16,11 +16,10 @@ services:
         environment:
             APP_ENV: 'dev'
             APP_DEBUG: 'true'
-            DATABASE_URL: 'mysql://dev:dev@mysql:3306/dev'
-            VIRTUAL_HOST: 'dev.lacker'
+            DATABASE_URL: $DATABASE_URL
+            VIRTUAL_HOST: $VIRTUAL_HOST
             PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
             APP_TYPE: 'dev'
-        #command: tail -f /dev/null
 
         volumes:
             - ".:/server"
@@ -40,11 +39,10 @@ services:
         networks:
             - dev-back
         environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: dev
-            MYSQL_USER: dev
-            MYSQL_PASSWORD: dev
-            VIRTUAL_HOST: mysql.dev.lacker
+            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+            MYSQL_DATABASE: $MYSQL_DATABASE
+            MYSQL_USER: $MYSQL_USER
+            MYSQL_PASSWORD: $MYSQL_PASSWORD
         volumes:
             - mysql-data:/var/lib/mysql
 

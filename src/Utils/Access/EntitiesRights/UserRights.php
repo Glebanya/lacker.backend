@@ -16,8 +16,8 @@ class UserRights extends EntityRightsBase implements InterfaceEntityRights
         {
             if ($this->object instanceof User)
             {
-                return match ($this->attribute){
-                    static::EDIT,static::DELETE => $this->object->isEqualTo($user) || $this->accessVoter->security->isGranted('ROLE_ADMIN'),
+                return match ($this->attribute) {
+                    static::EDIT,static::DELETE => $this->object->isEqualTo($user),
                     static::VIEW => $this->object->isEqualTo($user) || $this->accessVoter->security->isGranted('ROLE_STUFF'),
                     default => false
                 };

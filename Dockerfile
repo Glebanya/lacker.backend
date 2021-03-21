@@ -22,7 +22,7 @@ RUN cd /server \
     && chown www-data:www-data /server/public -R \
     && php bin/console cache:clear \
     && php bin/console cache:warmup \
-    && vendor/bin/rr get --location bin/
+    && vendor/bin/rr get --location /server/bin/
 
 RUN apt-get update && apt-get install -y libmemcached-dev\
     && pecl install xdebug-3.0.2 \
