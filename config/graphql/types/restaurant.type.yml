@@ -1,0 +1,9 @@
+Restaurant:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\RestaurantResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      name: {type: String!}
+      menus: {type: '[Menu]'}
+      staff: {type: '[Staff]'}

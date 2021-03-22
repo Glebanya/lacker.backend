@@ -147,6 +147,20 @@
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
+    "overblog/graphql-bundle": {
+        "version": "0.12",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.12",
+            "ref": "c01dcfb85a6e93f1a43ef36151fcff11cf17f791"
+        },
+        "files": [
+            "config/graphql/types/.gitignore",
+            "config/packages/graphql.yaml",
+            "config/routes/graphql.yaml"
+        ]
+    },
     "paragonie/constant_time_encoding": {
         "version": "v2.4.0"
     },
@@ -253,6 +267,9 @@
     "symfony/event-dispatcher-contracts": {
         "version": "v1.1.9"
     },
+    "symfony/expression-language": {
+        "version": "v5.2.4"
+    },
     "symfony/filesystem": {
         "version": "v4.4.18"
     },
@@ -309,6 +326,9 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/options-resolver": {
+        "version": "v5.2.4"
     },
     "symfony/orm-pack": {
         "version": "v2.1.0"
@@ -425,6 +445,9 @@
     },
     "symfony/yaml": {
         "version": "v4.4.18"
+    },
+    "webonyx/graphql-php": {
+        "version": "v0.13.9"
     },
     "zendframework/zend-diactoros": {
         "version": "2.2.1"
