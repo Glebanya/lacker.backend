@@ -4,10 +4,11 @@
 namespace App\GraphQL\Resolver;
 
 use App\Entity\Dish;
+use GraphQL\Type\Definition\ResolveInfo;
 use Overblog\GraphQLBundle\Definition\Argument;
 use Overblog\GraphQLBundle\Definition\Resolver\ResolverInterface;
 
-class DishResolver  extends AbstractResolver implements ResolverInterface
+class PrivateDishResolver extends AbstractResolver implements ResolverInterface
 {
 
     public function resolve(int $id) : object|null
@@ -18,6 +19,7 @@ class DishResolver  extends AbstractResolver implements ResolverInterface
         }
         return null;
     }
+
 
     public function portions(Dish $menu)
     {

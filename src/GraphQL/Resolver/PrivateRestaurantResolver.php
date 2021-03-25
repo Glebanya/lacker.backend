@@ -8,8 +8,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Overblog\GraphQLBundle\Definition\Argument;
 use Overblog\GraphQLBundle\Definition\Resolver\ResolverInterface;
 
-class RestaurantResolver extends AbstractResolver implements ResolverInterface
+class PrivateRestaurantResolver extends AbstractResolver implements ResolverInterface
 {
+
     public function resolve(int $id) : object|null
     {
         if ($restaurant = $this->manager->find(Restaurant::class,$id))
@@ -18,7 +19,6 @@ class RestaurantResolver extends AbstractResolver implements ResolverInterface
         }
         return null;
     }
-
 
     public function business(Restaurant $restaurant)
     {

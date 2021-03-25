@@ -1,0 +1,78 @@
+Private:
+  type: object
+  config:
+    fields:
+      Portion:
+        type: PrivatePortion
+        args: {id: {type: Int}}
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PrivatePortionResolver::resolve", [args["id"]])'
+      Dish:
+        type: PrivateDish
+        args: { id: { type: Int } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PrivateDishResolver::resolve", [args["id"]])'
+      Restaurant:
+        type: PrivateRestaurant
+        args: { id: { type: Int } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PrivateRestaurantResolver::resolve", [args["id"]])'
+      Business:
+        type: PrivateBusiness
+        args: { id: { type: Int } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PrivateBusinessResolver::resolve", [args["id"]])'
+      Menu:
+        type: PrivateMenu
+        args: { id: { type: Int } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PrivateMenuResolver::resolve", [args["id"]])'
+PrivateStaff:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivateStaffResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      email: {type: String!}
+      name: {type: String!}
+      business: {type: PrivateBusiness!}
+      restaurants: {type: '[PrivateRestaurant]'}
+      roles: {type: '[String]'}
+PrivateBusiness:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivateBusinessResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      name: {type: String!}
+      restaurants : {type: '[PrivateRestaurant]'}
+      staff: {type: '[PrivateStaff]'}
+PrivateRestaurant:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivateRestaurantResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      name: {type: String!}
+      menus: {type: '[PrivateMenu]'}
+      staff: {type: '[PrivateStaff]'}
+PrivateMenu:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivateMenuResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      name: {type: String!}
+      dishes: {type: '[PrivateDish]'}
+PrivateDish:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivateDishResolver",[info, value, args])'
+    fields:
+      id: {type: ID!}
+      description: {type: String!}
+      name: {type: String!}
+      portions: {type: '[PrivatePortion]'}
+PrivatePortion:
+  type: object
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PrivatePortionResolver",[info, value, args])'
+    fields:
+      id: {type: String!}
+      size: {type: String!}
+      price: {type: String!}

@@ -1,9 +1,0 @@
-Dish:
-  type: object
-  config:
-    resolveField: '@=resolver("App\\GraphQL\\Resolver\\DishResolver",[info, value, args])'
-    fields:
-      id: {type: ID!}
-      description: {type: String!}
-      name: {type: String!}
-      portions: {type: '[Portion]'}

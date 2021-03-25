@@ -1,7 +1,8 @@
 overblog_graphql:
     definitions:
         schema:
-            query: Query
+            public:
+                query: Public
         mappings:
             types:
                 -

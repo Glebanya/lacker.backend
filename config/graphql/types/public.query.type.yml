@@ -1,0 +1,65 @@
+Public:
+  type: 'object'
+  config:
+    fields:
+      Portion:
+        type: 'PublicPortion'
+        args: { id: { type: 'Int' } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\PortionResolver::resolve", [args["id"]])'
+      Dish:
+        type: 'PublicDish'
+        args: { id: { type: 'Int' } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\DishResolver::resolve", [args["id"]])'
+      Restaurant:
+        type: 'PublicRestaurant'
+        args: { id: { type: 'Int' } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\RestaurantResolver::resolve", [args["id"]])'
+      Business:
+        type: 'PublicBusiness'
+        args: { id: { type: 'Int'} }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\BusinessResolver::resolve", [args["id"]])'
+      Menu:
+        type: 'PublicMenu'
+        args: { id: { type: 'Int' } }
+        resolve: '@=resolver("App\\GraphQL\\Resolver\\MenuResolver::resolve", [args["id"]])'
+PublicBusiness:
+  type: 'object'
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\BusinessResolver",[info, value, args])'
+    fields:
+      id: { type: 'ID!' }
+      name: { type: 'String!' }
+      restaurants: { type: '[PublicRestaurant]' }
+PublicRestaurant:
+  type: 'object'
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\RestaurantResolver",[info, value, args])'
+    fields:
+      id: { type: 'ID!' }
+      name: { type: 'String!' }
+      menus: { type: '[PublicMenu]' }
+PublicMenu:
+  type: 'object'
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\MenuResolver",[info, value, args])'
+    fields:
+      id: { type: 'ID!' }
+      name: { type: 'String!' }
+      dishes: { type: '[PublicDish]' }
+PublicDish:
+  type: 'object'
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\DishResolver",[info, value, args])'
+    fields:
+      id: { type: 'ID!' }
+      description: { type: 'String!' }
+      name: { type: 'String!' }
+      portions: {type: '[PublicPortion]' }
+PublicPortion:
+  type: 'object'
+  config:
+    resolveField: '@=resolver("App\\GraphQL\\Resolver\\PortionResolver",[info, value, args])'
+    fields:
+      id: { type: 'String!' }
+      size: { type: 'String!' }
+      price: { type: 'String!' }

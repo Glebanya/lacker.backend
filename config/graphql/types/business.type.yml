@@ -1,9 +1,0 @@
-Business:
-  type: object
-  config:
-    resolveField: '@=resolver("App\\GraphQL\\Resolver\\BusinessResolver",[info, value, args])'
-    fields:
-      id: {type: ID!}
-      name: {type: String!}
-      restaurants : {type: '[Restaurant]'}
-      staff: {type: '[Staff]'}

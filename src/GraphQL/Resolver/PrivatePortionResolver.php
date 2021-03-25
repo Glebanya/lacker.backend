@@ -8,7 +8,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Overblog\GraphQLBundle\Definition\Argument;
 use Overblog\GraphQLBundle\Definition\Resolver\ResolverInterface;
 
-class PortionResolver  extends AbstractResolver implements ResolverInterface
+class PrivatePortionResolver extends AbstractResolver implements ResolverInterface
 {
 
     public function resolve(int $id) : object|null
@@ -20,12 +20,12 @@ class PortionResolver  extends AbstractResolver implements ResolverInterface
         return null;
     }
 
-    public function size(?Portion $portion)
+    public function size(Portion $portion)
     {
         return $portion->getSize()['ru'];
     }
 
-    public function price(?Portion $portion)
+    public function price(Portion $portion)
     {
         return $portion->getPrice()['ru'];
     }

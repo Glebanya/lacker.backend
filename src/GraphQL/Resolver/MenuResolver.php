@@ -4,17 +4,11 @@
 namespace App\GraphQL\Resolver;
 
 use App\Entity\Menu;
-use Doctrine\ORM\EntityManagerInterface;
-use GraphQL\Type\Definition\ResolveInfo;
 use Overblog\GraphQLBundle\Definition\Argument;
 use Overblog\GraphQLBundle\Definition\Resolver\ResolverInterface;
 
-class MenuResolver implements ResolverInterface
+class MenuResolver  extends AbstractResolver implements ResolverInterface
 {
-    public function __construct(
-        public EntityManagerInterface $manager,
-    )
-    {}
 
     public function resolve(int $id) : object|null
     {
@@ -25,11 +19,6 @@ class MenuResolver implements ResolverInterface
         return null;
     }
 
-    public function __invoke(ResolveInfo $info, $value, Argument $args)
-    {
-        $method = $info->fieldName;
-        return $this->$method($value, $args);
-    }
 
     public function dishes(Menu $menu)
     {

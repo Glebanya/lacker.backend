@@ -4,11 +4,13 @@
 namespace App\GraphQL\Resolver;
 
 use App\Entity\Business;
+use GraphQL\Type\Definition\ResolveInfo;
 use Overblog\GraphQLBundle\Definition\Argument;
 use Overblog\GraphQLBundle\Definition\Resolver\ResolverInterface;
 
-class BusinessResolver extends AbstractResolver implements ResolverInterface
+class PrivateBusinessResolver extends AbstractResolver implements ResolverInterface
 {
+
 
     public function resolve(int $id) : object|null
     {
@@ -17,6 +19,11 @@ class BusinessResolver extends AbstractResolver implements ResolverInterface
             return $portion;
         }
         return null;
+    }
+
+    public function staff(Business $business)
+    {
+        return $business->getStaff();
     }
 
     public function name(Business $business)

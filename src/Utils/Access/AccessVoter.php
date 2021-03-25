@@ -35,10 +35,6 @@ class AccessVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN'))
-        {
-           return true;
-        }
         return EntityRightsFactory::getObject($attribute,$subject,$token,$this)->checkAccess();
     }
 }
