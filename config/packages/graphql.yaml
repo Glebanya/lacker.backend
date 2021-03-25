@@ -3,6 +3,8 @@ overblog_graphql:
         schema:
             public:
                 query: Public
+            private:
+                query: Private
         mappings:
             types:
                 -

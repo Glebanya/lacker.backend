@@ -44,7 +44,7 @@ security:
             lazy: true
             provider: users_in_memory
         admin:
-            pattern: ^/admin/*$
+            pattern: ^/private/*$
             anonymous: false
             lazy: true
             provider: admin_provider
