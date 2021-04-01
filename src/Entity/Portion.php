@@ -9,15 +9,8 @@ use App\API\Attributes\ReferenceField;
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
  */
-class Portion
+class Portion extends BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    #[Field(name: 'id')]
-    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
@@ -37,11 +30,6 @@ class Portion
      */
     #[Field(name: 'size')]
     private array $size = [];
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getDish(): ?Dish
     {

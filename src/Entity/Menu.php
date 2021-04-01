@@ -11,16 +11,8 @@ use App\API\Attributes\ReferenceField;
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
  */
-class Menu
+class Menu extends BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    #[Field(name: 'id',default: true)]
-    private ?int $id;
-
     /**
      * @ORM\Column(type="json")
      */
@@ -40,13 +32,6 @@ class Menu
      */
     #[Field(name: 'description')]
     private array $description = [];
-
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
 
     public function getName(): ?array
     {

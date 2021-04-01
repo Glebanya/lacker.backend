@@ -12,16 +12,8 @@ use App\API\Attributes\ReferenceField;
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
  */
-class Dish
+class Dish extends BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    #[Field(name: 'id',default: true)]
-    private ?int $id;
-
     /**
      * @ORM\Column(type="json")
      */
@@ -57,12 +49,6 @@ class Dish
     public function __construct()
     {
         $this->portions = new ArrayCollection();
-    }
-
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getDescription(): ?array

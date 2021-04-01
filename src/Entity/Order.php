@@ -11,15 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
  */
-class Order
+class Order extends BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id;
-
     /**
      * @ORM\Column(type="string", length=255)
      */
@@ -50,13 +43,7 @@ class Order
 
 
     public function __construct()
-    {
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    {}
 
     public function getStatus(): ?string
     {

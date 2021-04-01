@@ -13,16 +13,8 @@ use App\API\Attributes\ReferenceField;
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
  */
-class Restaurant
+class Restaurant extends BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    #[Field(name: 'id')]
-    private ?int $id;
-
 
     /**
      * @ORM\Column(type="json")
@@ -46,10 +38,6 @@ class Restaurant
     #[ReferenceField(name: 'dish',reference: Dish::class)]
     private Collection $dishes;
 
-    /*
-     * @ORM\Column(type="simple_array")
-     */
-    #private array $stopList = [];
 
     #[Pure] public function __construct()
     {
@@ -58,11 +46,6 @@ class Restaurant
         $this->dishes = new ArrayCollection();
     }
 
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getName(): ?array
     {
@@ -177,10 +160,6 @@ class Restaurant
         return $this;
     }
 
-    public function getStopList(): ?array
-    {
-        return $this->stopList;
-    }
 
     public function setStopList(array $stopList): self
     {
