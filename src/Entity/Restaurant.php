@@ -7,116 +7,61 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use App\API\Attributes\Field;
+use App\API\Attributes\ReferenceField;
 
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
  */
-class Restaurant implements IExportable
+class Restaurant
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Field(name: 'id')]
     private ?int $id;
 
 
     /**
-     * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="restaurants")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private ?Business $business;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Staff::class, inversedBy="restaurants")
-     */
-    private Collection $pinnedStaff;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="restaurant", orphanRemoval=true)
-     */
-    private Collection $menus;
-
-    /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'name')]
     private array $name = [];
+
+    /**
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private Collection $orders;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private Collection $staff;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="restaurant")
+     */
+    #[ReferenceField(name: 'dish',reference: Dish::class)]
+    private Collection $dishes;
+
+    /*
+     * @ORM\Column(type="simple_array")
+     */
+    #private array $stopList = [];
 
     #[Pure] public function __construct()
     {
-        $this->pinnedStaff = new ArrayCollection();
-        $this->menus = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->staff = new ArrayCollection();
+        $this->dishes = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getBusiness(): ?Business
-    {
-        return $this->business;
-    }
-
-    public function setBusiness(?Business $business): self
-    {
-        $this->business = $business;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getPinnedStaff(): Collection
-    {
-        return $this->pinnedStaff;
-    }
-
-    public function addPinnedStaff(Staff $pinnedStaff): self
-    {
-        if (!$this->pinnedStaff->contains($pinnedStaff)) {
-            $this->pinnedStaff[] = $pinnedStaff;
-        }
-
-        return $this;
-    }
-
-    public function removePinnedStaff(Staff $pinnedStaff): self
-    {
-        $this->pinnedStaff->removeElement($pinnedStaff);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getMenus(): Collection
-    {
-        return $this->menus;
-    }
-
-    public function addMenu(Menu $menu): self
-    {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->setRestaurant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMenu(Menu $menu): self
-    {
-        if ($this->menus->removeElement($menu)) {
-            // set the owning side to null (unless already changed)
-            if ($menu->getRestaurant() === $this) {
-                $menu->setRestaurant(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getName(): ?array
@@ -131,19 +76,116 @@ class Restaurant implements IExportable
         return $this;
     }
 
-    public function export(string $locale): array
+    /**
+     * @return Collection
+     */
+    public function getOrders(): Collection
     {
-        return [
-            'name' => array_key_exists($locale, $this->name)? $this->name[$locale] ?? '' : '',
-            'menus' => $this->getMenus()->map(function ($menu) use ($locale) {
-                if ($menu instanceof Menu)
-                {
-                    return $menu->export($locale);
-                }
-                return null;
-            })->filter(function ($serialized) {
-                return isset($serialized) && is_array($serialized);
-            })->toArray(),
-        ];
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getRestaurant() === $this) {
+                $order->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getStaff(): Collection
+    {
+        return $this->staff;
+    }
+
+    public function addStaff(Staff $staff): self
+    {
+        if (!$this->staff->contains($staff)) {
+            $this->staff[] = $staff;
+            $staff->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStaff(Staff $staff): self
+    {
+        if ($this->staff->removeElement($staff)) {
+            // set the owning side to null (unless already changed)
+            if ($staff->getRestaurant() === $this) {
+                $staff->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAllDishes(): Collection
+    {
+        return $this->dishes;
+    }
+
+//    public function getValidDishes(): Collection
+//    {
+//        return $this->dishes->filter(function (Dish $dish){
+//           return in_array($dish->getId(),$this->stopList);
+//        });
+//    }
+
+//    public function getNotValidDishes() : Collection
+//    {
+//        return $this->dishes->filter(function (Dish $dish){
+//            return !in_array($dish->getId(),$this->stopList);
+//        });
+//    }
+
+    public function addDish(Dish $dish): self
+    {
+        if (!$this->dishes->contains($dish)) {
+            $this->dishes[] = $dish;
+            $dish->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDish(Dish $dish): self
+    {
+        if ($this->dishes->removeElement($dish)) {
+            // set the owning side to null (unless already changed)
+            if ($dish->getRestaurant() === $this) {
+                $dish->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getStopList(): ?array
+    {
+        return $this->stopList;
+    }
+
+    public function setStopList(array $stopList): self
+    {
+        $this->stopList = $stopList;
+
+        return $this;
     }
 }

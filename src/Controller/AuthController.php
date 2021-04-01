@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Utils\Exception\Oauth\LoginException;
 use App\Utils\Login\PureStaffLoginObject;
 use App\Utils\Security\JWTObjectSigner;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,11 +39,16 @@ class AuthController extends AbstractController
         if ($user = $object->setData($this->getContent($request->getContent()))->findUser() ?? $object->createUser())
         {
             return $this->json([
-                'access_token' => (new JWTObjectSigner([
-                    'type' => 'client',
-                    'user_id' => $user->getId(),
-                    'rand' => md5(random_bytes(32),true)
-                ]))->sign()
+                'data' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'name' => $user->getUsername(),
+                    'access_token' => (new JWTObjectSigner([
+                        'type' => 'client',
+                        'user_id' => $user->getId(),
+                        'rand' => md5(random_bytes(32),true)
+                    ]))->sign(),
+                ]
             ]);
         }
         throw new BadRequestHttpException('invalid json body: ');
@@ -61,12 +66,16 @@ class AuthController extends AbstractController
         if ($user = $object->setData($this->getContent($request->getContent()))->findUser())
         {
             return $this->json([
-                'access_token' => (new JWTObjectSigner([
-                    'type' => 'staff',
-                    'user_id' => $user->getId(),
-                    'rand' => md5(random_bytes(32),true)
-                ]))->sign()
-            ]);
+                'data' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'name' => $user->getUsername(),
+                    'access_token' => (new JWTObjectSigner([
+                        'type' => 'staff',
+                        'user_id' => $user->getId(),
+                        'rand' => md5(random_bytes(32),true)
+                    ]))->sign(),
+            ]]);
         }
         throw new BadRequestHttpException('invalid json body: ');
     }
