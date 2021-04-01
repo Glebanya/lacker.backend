@@ -3,53 +3,50 @@
 namespace App\Entity;
 
 use App\Repository\MenuRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\API\Attributes\Field;
+use App\API\Attributes\ReferenceField;
+
 
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
  */
-class Menu implements IExportable
+class Menu
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Field(name: 'id',default: true)]
     private ?int $id;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'name')]
     private array $name = [];
-
-    /**
-     * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="menu")
-     */
-    private Collection $dishes;
 
 
     /**
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[ReferenceField(name:'restaurant',reference: Restaurant::class)]
     private ?Restaurant $restaurant;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'description')]
     private array $description = [];
 
-    public function __construct()
-    {
-        $this->dishes = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
+
 
     public function getName(): ?array
     {
@@ -63,35 +60,6 @@ class Menu implements IExportable
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
-    public function getDishes(): Collection
-    {
-        return $this->dishes;
-    }
-
-    public function addDish(Dish $dish): self
-    {
-        if (!$this->dishes->contains($dish)) {
-            $this->dishes[] = $dish;
-            $dish->setMenu($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDish(Dish $dish): self
-    {
-        if ($this->dishes->removeElement($dish)) {
-            // set the owning side to null (unless already changed)
-            if ($dish->getMenu() === $this) {
-                $dish->setMenu(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getRestaurant(): ?Restaurant
     {
@@ -114,21 +82,5 @@ class Menu implements IExportable
     {
         $this->description = $description;
         return $this;
-    }
-
-    public function export(string $locale): array
-    {
-        return [
-            'name' => array_key_exists($locale, $this->name)? $this->name[$locale] ?? '' : '',
-            'dishes' => $this->getDishes()->map(function ($dish) use ($locale) {
-                if ($dish instanceof Dish)
-                {
-                    return $dish->export($locale);
-                }
-                return null;
-            })->filter(function ($serialized) {
-                return isset($serialized) && is_array($serialized);
-            })->toArray(),
-        ];
     }
 }

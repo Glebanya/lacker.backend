@@ -40,9 +40,13 @@ security:
             anonymous: true
             lazy: true
         main:
+            pattern: ^/*$
             anonymous: true
             lazy: true
             provider: users_in_memory
+            #guard:
+            #  authenticators:
+            #    - App\Utils\Authentication\UserTokenAuthenticator
         admin:
             pattern: ^/private/*$
             anonymous: false

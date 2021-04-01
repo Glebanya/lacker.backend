@@ -44,15 +44,10 @@ class Staff implements UserInterface,EquatableInterface
     private array $roles = [];
 
     /**
-     * @ORM\ManyToOne(targetEntity=Business::class, inversedBy="Staff")
+     * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Business $business;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="pinnedStaff")
-     */
-    private Collection $restaurants;
+    private $restaurant;
 
     public function __construct()
     {
@@ -128,48 +123,20 @@ class Staff implements UserInterface,EquatableInterface
     #[Pure]
     public function isEqualTo(UserInterface $user): bool
     {
-        if ($user instanceof static)
-        {
+        if ($user instanceof static) {
             return $this->getId() === $this->getId();
         }
         return false;
     }
 
-    public function getBusiness(): ?Business
+    public function getRestaurant(): ?Restaurant
     {
-        return $this->business;
+        return $this->restaurant;
     }
 
-    public function setBusiness(?Business $business): self
+    public function setRestaurant(?Restaurant $restaurant): self
     {
-        $this->business = $business;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getRestaurants(): Collection
-    {
-        return $this->restaurants;
-    }
-
-    public function addRestaurant(Restaurant $restaurant): self
-    {
-        if (!$this->restaurants->contains($restaurant)) {
-            $this->restaurants[] = $restaurant;
-            $restaurant->addPinnedStaff($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRestaurant(Restaurant $restaurant): self
-    {
-        if ($this->restaurants->removeElement($restaurant)) {
-            $restaurant->removePinnedStaff($this);
-        }
+        $this->restaurant = $restaurant;
 
         return $this;
     }

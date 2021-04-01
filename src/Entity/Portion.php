@@ -4,34 +4,38 @@ namespace App\Entity;
 
 use App\Repository\PortionRepository;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\ArrayShape;
-
+use App\API\Attributes\Field;
+use App\API\Attributes\ReferenceField;
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
  */
-class Portion implements IExportable
+class Portion
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Field(name: 'id')]
     private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[ReferenceField(name: 'dish',reference: Restaurant::class)]
     private ?Dish $dish;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'price')]
     private array $price = [];
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'size')]
     private array $size = [];
 
     public function getId(): ?int
@@ -70,15 +74,5 @@ class Portion implements IExportable
     {
         $this->size = $size;
         return $this;
-    }
-
-    #[ArrayShape(['id' => "int|null", 'size' => "mixed|string", 'price' => "mixed|string"])]
-    public function export(string $locale): array
-    {
-        return [
-            'id' => $this->getId(),
-            'size' => array_key_exists($locale, $this->size)? $this->size[$locale] : '',
-            'price' => array_key_exists($locale, $this->price)? $this->price[$locale] : '',
-        ];
     }
 }

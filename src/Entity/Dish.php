@@ -6,38 +6,53 @@ use App\Repository\DishRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\API\Attributes\Field;
+use App\API\Attributes\ReferenceField;
 
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
  */
-class Dish implements IExportable
+class Dish
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Field(name: 'id',default: true)]
     private ?int $id;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'description')]
     private array $description = [];
 
     /**
      * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
      */
+    #[ReferenceField(name: 'description', reference: Portion::class)]
     private Collection $portions;
 
     /**
      * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
      */
+
+    #[ReferenceField(name: 'menu',reference: Menu::class)]
     private ?Menu $menu;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Field(name: 'name')]
     private array $name = [];
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="dishes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    #[ReferenceField(name: 'restaurant',reference: Restaurant::class)]
+    private ?Restaurant $restaurant;
 
     public function __construct()
     {
@@ -103,6 +118,7 @@ class Dish implements IExportable
         return $this;
     }
 
+
     public function getName(): ?array
     {
         return $this->name;
@@ -115,21 +131,15 @@ class Dish implements IExportable
         return $this;
     }
 
-    public function export(string $locale) : array
+    public function getRestaurant(): ?Restaurant
     {
-        return [
-            'id' => $this->getId(),
-            'description' => array_key_exists($locale, $this->description)? $this->description[$locale] ?? '': '',
-            'name' => array_key_exists($locale, $this->name)? $this->name[$locale] ?? '' : '',
-            'portions' => $this->getPortions()->map(function ($portion) use ($locale) {
-                        if ($portion instanceof Portion)
-                        {
-                            return $portion->export($locale);
-                        }
-                        return null;
-                    })->filter(function ($serialized) {
-                        return isset($serialized) && is_array($serialized);
-                    })->toArray(),
-        ];
+        return $this->restaurant;
+    }
+
+    public function setRestaurant(?Restaurant $restaurant): self
+    {
+        $this->restaurant = $restaurant;
+
+        return $this;
     }
 }

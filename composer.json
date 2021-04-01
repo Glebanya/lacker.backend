@@ -13,7 +13,6 @@
         "doctrine/orm": "^2.7",
         "firebase/php-jwt": "5.*",
         "google/apiclient": "^2.9",
-        "overblog/graphql-bundle": "^0.13.5",
         "sensio/framework-extra-bundle": "^5.5",
         "symfony/cache": "5.2.*",
         "symfony/config": "5.2.*",
