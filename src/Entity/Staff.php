@@ -14,25 +14,8 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class Staff implements UserInterface,EquatableInterface
+class Staff extends BaseUser
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $name;
-
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $email;
-
     /**
      * @ORM\Column(type="string", length=255)
      */
@@ -47,42 +30,7 @@ class Staff implements UserInterface,EquatableInterface
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $restaurant;
-
-    public function __construct()
-    {
-        $this->restaurants = new ArrayCollection();
-    }
-
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setUsername(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
+    private ?Restaurant $restaurant;
 
 
     public function getPassword(): ?string
@@ -112,21 +60,6 @@ class Staff implements UserInterface,EquatableInterface
     #[Pure] public function getSalt(): ?string
     {
         return Environment::get('STAFF_SALT');
-    }
-
-
-    public function eraseCredentials()
-    {
-
-    }
-
-    #[Pure]
-    public function isEqualTo(UserInterface $user): bool
-    {
-        if ($user instanceof static) {
-            return $this->getId() === $this->getId();
-        }
-        return false;
     }
 
     public function getRestaurant(): ?Restaurant

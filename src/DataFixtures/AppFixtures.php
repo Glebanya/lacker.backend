@@ -24,12 +24,9 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $roles = ['ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_STAFF','ROLE_MANAGER','ROLE_STAFF'];
-        $business = (new Business())->setName('ASSHOLE');
-        $manager->persist($business);
         for ($i = 0; $i < 5; $i++)
         {
             $rest = (new Restaurant())
-                ->setBusiness($business)
                 ->setName(['ru' => 'cum' . $i]);
             $manager->persist($rest);
             for ($j = 0; $j < 5; $j++)
@@ -37,10 +34,9 @@ class AppFixtures extends Fixture
                 $mgn = ($staff = new Staff())
                     ->setUsername($i .'lol' . $j)
                     ->setRoles([$roles[$j]])
-                    ->setBusiness($business)
                     ->setPassword($this->encoder->encodePassword($staff,'kek'))
                     ->setEmail('kek'.$i.$j.'@mail.com');
-                $rest->addPinnedStaff($mgn);
+                $rest->addStaff($mgn);
                 $manager->persist($mgn);
             }
             for ($j = 0; $j < 5; $j++)
@@ -55,6 +51,7 @@ class AppFixtures extends Fixture
                     $dish = (new Dish())
                         ->setName(['ru' => 'имя' . $j])
                         ->setDescription(['ru' => 'описания' . $j])
+                        ->setRestaurant($rest)
                         ->setMenu($menu);
                     $manager->persist($dish);
                     for ($l = 0; $l < 3; $l++)

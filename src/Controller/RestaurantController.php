@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\API\EntityMeta;
+use App\API\ApiObject;
 use App\Entity\Dish;
 use App\Entity\Menu;
 use App\Entity\Portion;
@@ -27,7 +27,7 @@ class RestaurantController extends AbstractController
     public const DELETE = 'Delete';
     public const ADD = 'Add';
 
-    private EntityMeta $restMeta;
+    private ApiObject $restMeta;
 
     public function __construct(
         private Security $security,
@@ -35,7 +35,7 @@ class RestaurantController extends AbstractController
         private RestaurantRepository $restaurantRepository,
     )
     {
-        $this->restMeta = new EntityMeta(Restaurant::class);
+        $this->restMeta = new ApiObject(Restaurant::class);
     }
 
     private function getContent(string $content) : ?array
@@ -131,17 +131,17 @@ class RestaurantController extends AbstractController
         throw new BadRequestException();
     }
 
-    #[Route('private/restaurant/{id}', name: 'restaurant_update',methods: ['POST'])]
-    public function updateRestaurant($id,Request $request) : Response
+    #[Route('kek/restaurant', name: 'restaurant_update',methods: ['GET'])]
+    public function updateRestaurant(Request $request) : Response
     {
 
-        if ($restaurant = $this->restaurantRepository->find($id))
+        if ($restaurant = $this->restaurantRepository->findAll())
         {
-            $this->security->isGranted(static::EDIT,$restaurant);
-
-            $content = $this->getContent($request->getContent());
-            $this->manager->flush();
-
+            return $this->json([
+                'kek' => array_map(function ($kek){
+                    return [$kek->getId()];
+                },$restaurant)
+            ]);
         }
         throw new BadRequestException();
     }

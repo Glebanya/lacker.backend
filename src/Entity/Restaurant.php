@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\API\Attributes\Property;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +20,7 @@ class Restaurant extends BaseObject
     /**
      * @ORM\Column(type="json")
      */
+    #[Property]
     #[Field(name: 'name')]
     private array $name = [];
 
@@ -35,7 +37,6 @@ class Restaurant extends BaseObject
     /**
      * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="restaurant")
      */
-    #[ReferenceField(name: 'dish',reference: Dish::class)]
     private Collection $dishes;
 
 
@@ -119,6 +120,8 @@ class Restaurant extends BaseObject
     /**
      * @return Collection
      */
+    #[Property]
+    #[ReferenceField(name: 'dish',referenceClass: Dish::class)]
     public function getAllDishes(): Collection
     {
         return $this->dishes;

@@ -3,14 +3,12 @@
 
 namespace App\API\Attributes;
 
-use Attribute;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
-final class Field implements ApiAttribute
+#[\Attribute(\Attribute::TARGET_METHOD)]
+final class Method implements ApiAttribute
 {
     public function __construct(
-      public string $name,
-      public bool $default = false
+        public string $name
     )
     {}
 

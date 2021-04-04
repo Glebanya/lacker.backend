@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\API\Attributes\Property;
 use App\Repository\DishRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,25 +18,24 @@ class Dish extends BaseObject
     /**
      * @ORM\Column(type="json")
      */
+    #[Property]
     #[Field(name: 'description')]
     private array $description = [];
 
     /**
      * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
      */
-    #[ReferenceField(name: 'description', reference: Portion::class)]
     private Collection $portions;
 
     /**
      * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
      */
-
-    #[ReferenceField(name: 'menu',reference: Menu::class)]
     private ?Menu $menu;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Property]
     #[Field(name: 'name')]
     private array $name = [];
 
@@ -43,7 +43,7 @@ class Dish extends BaseObject
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="dishes")
      * @ORM\JoinColumn(nullable=false)
      */
-    #[ReferenceField(name: 'restaurant',reference: Restaurant::class)]
+
     private ?Restaurant $restaurant;
 
     public function __construct()
@@ -66,6 +66,8 @@ class Dish extends BaseObject
     /**
      * @return Collection
      */
+    #[Property]
+    #[ReferenceField(name: 'portion', referenceClass: Portion::class)]
     public function getPortions(): Collection
     {
         return $this->portions;
@@ -92,6 +94,8 @@ class Dish extends BaseObject
         return $this;
     }
 
+    #[Property]
+    #[ReferenceField(name: 'menu',referenceClass: Menu::class)]
     public function getMenu(): ?Menu
     {
         return $this->menu;
@@ -117,6 +121,8 @@ class Dish extends BaseObject
         return $this;
     }
 
+    #[Property]
+    #[ReferenceField(name: 'restaurant',referenceClass: Restaurant::class)]
     public function getRestaurant(): ?Restaurant
     {
         return $this->restaurant;
