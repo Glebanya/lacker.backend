@@ -7,6 +7,7 @@ use App\Entity\Dish;
 use App\Entity\Menu;
 use App\Entity\Portion;
 use App\Entity\Restaurant;
+use App\Repository\DishRepository;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,9 +34,9 @@ class RestaurantController extends AbstractController
         private Security $security,
         private EntityManagerInterface $manager,
         private RestaurantRepository $restaurantRepository,
+        private DishRepository $rep
     )
     {
-        $this->restMeta = new ApiObject(Restaurant::class);
     }
 
     private function getContent(string $content) : ?array
@@ -146,4 +147,18 @@ class RestaurantController extends AbstractController
         throw new BadRequestException();
     }
 
+    #[Route('kek/dish', name: 'restaurant_update',methods: ['GET'])]
+    public function lllll(Request $request) : Response
+    {
+
+        if ($restaurant = $this->rep->findAll())
+        {
+            return $this->json([
+                'kek' => array_map(function ($kek){
+                    return [$kek->getId()];
+                },$restaurant)
+            ]);
+        }
+        throw new BadRequestException();
+    }
 }

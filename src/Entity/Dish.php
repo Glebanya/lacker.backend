@@ -18,32 +18,32 @@ class Dish extends BaseObject
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'description')]
     private array $description = [];
 
     /**
      * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
      */
+    #[ReferenceField(name: 'portion', referenceClass: Portion::class)]
     private Collection $portions;
 
     /**
      * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
      */
+    #[ReferenceField(name: 'menu',referenceClass: Menu::class)]
     private ?Menu $menu;
 
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'name')]
     private array $name = [];
 
     /**
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="dishes")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
-
+    #[ReferenceField(name: 'restaurant',referenceClass: Restaurant::class)]
     private ?Restaurant $restaurant;
 
     public function __construct()
@@ -66,8 +66,6 @@ class Dish extends BaseObject
     /**
      * @return Collection
      */
-    #[Property]
-    #[ReferenceField(name: 'portion', referenceClass: Portion::class)]
     public function getPortions(): Collection
     {
         return $this->portions;
@@ -94,8 +92,7 @@ class Dish extends BaseObject
         return $this;
     }
 
-    #[Property]
-    #[ReferenceField(name: 'menu',referenceClass: Menu::class)]
+
     public function getMenu(): ?Menu
     {
         return $this->menu;
@@ -121,8 +118,7 @@ class Dish extends BaseObject
         return $this;
     }
 
-    #[Property]
-    #[ReferenceField(name: 'restaurant',referenceClass: Restaurant::class)]
+
     public function getRestaurant(): ?Restaurant
     {
         return $this->restaurant;
@@ -131,7 +127,7 @@ class Dish extends BaseObject
     public function setRestaurant(?Restaurant $restaurant): self
     {
         $this->restaurant = $restaurant;
-
         return $this;
     }
+
 }

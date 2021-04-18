@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Property;
+use App\API\Attributes\Method;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use App\API\Attributes\Field;
 use App\API\Attributes\ReferenceField;
 
@@ -20,27 +19,26 @@ class Restaurant extends BaseObject
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'name')]
     private array $name = [];
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant",orphanRemoval=true)
      */
     private Collection $orders;
 
     /**
-     * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant",orphanRemoval=true)
      */
     private Collection $staff;
 
     /**
-     * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="restaurant")
+     * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="restaurant",orphanRemoval=true)
      */
+    #[ReferenceField(name: 'dish',referenceClass: Dish::class)]
     private Collection $dishes;
 
-
-    #[Pure] public function __construct()
+    public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->staff = new ArrayCollection();
@@ -105,7 +103,8 @@ class Restaurant extends BaseObject
         return $this;
     }
 
-    public function removeStaff(Staff $staff): self
+    #[Method('remove_dish')]
+    public function removeStaff(#[ObjectProperty(Staff::class)] Staff $staff) : bool
     {
         if ($this->staff->removeElement($staff)) {
             // set the owning side to null (unless already changed)
@@ -114,32 +113,16 @@ class Restaurant extends BaseObject
             }
         }
 
-        return $this;
+        return true;
     }
 
     /**
      * @return Collection
      */
-    #[Property]
-    #[ReferenceField(name: 'dish',referenceClass: Dish::class)]
     public function getAllDishes(): Collection
     {
         return $this->dishes;
     }
-
-//    public function getValidDishes(): Collection
-//    {
-//        return $this->dishes->filter(function (Dish $dish){
-//           return in_array($dish->getId(),$this->stopList);
-//        });
-//    }
-
-//    public function getNotValidDishes() : Collection
-//    {
-//        return $this->dishes->filter(function (Dish $dish){
-//            return !in_array($dish->getId(),$this->stopList);
-//        });
-//    }
 
     public function addDish(Dish $dish): self
     {
@@ -151,16 +134,19 @@ class Restaurant extends BaseObject
         return $this;
     }
 
-    public function removeDish(Dish $dish): self
+    #[Method('remove_dish')]
+    public function removeDish(#[ObjectProperty(Dish::class)] Dish $dish): bool
     {
-        if ($this->dishes->removeElement($dish)) {
-            // set the owning side to null (unless already changed)
-            if ($dish->getRestaurant() === $this) {
+        if ($dish->getRestaurant() === $this)
+        {
+            if ($this->dishes->removeElement($dish))
+            {
                 $dish->setRestaurant(null);
+                return true;
             }
         }
 
-        return $this;
+        return false;
     }
 
 

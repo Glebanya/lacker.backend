@@ -19,6 +19,13 @@ class BaseObjectRepository extends ServiceEntityRepository
         parent::__construct($registry, BaseObject::class);
     }
 
+    public function findByIds($ids)
+    {
+        return ($builder = $this->createQueryBuilder('base'))
+            ->where($builder->expr()->in('id',$ids))
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return BaseObject[] Returns an array of BaseObject objects
     //  */
