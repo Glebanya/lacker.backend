@@ -10,16 +10,14 @@ use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\LangProperty;
 
-abstract class AbstractPropertyBuilderCollection implements PropertyBuilderCollectionInterface
+class AnnotationPropertyBuilderCollection implements PropertyBuilderCollectionInterface
 {
-    protected const ENTITY_CLASS = '';
-
     protected \ArrayObject $array;
 
     protected function getProperties() : array
     {
         $result = [];
-        foreach ((new \ReflectionClass(static::ENTITY_CLASS))->getProperties() as $property)
+        foreach ((new \ReflectionClass($this->entity))->getProperties() as $property)
         {
             if (!empty($values = $property->getAttributes(Field::class)))
             {
@@ -30,7 +28,9 @@ abstract class AbstractPropertyBuilderCollection implements PropertyBuilderColle
         return $result;
     }
 
-    public function __construct()
+    public function __construct(
+        protected string $entity
+    )
     {
         $this->array = new \ArrayObject($this->getProperties());
     }

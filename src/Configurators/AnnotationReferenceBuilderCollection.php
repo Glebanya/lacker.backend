@@ -6,24 +6,20 @@ namespace App\Configurators;
 
 use App\Api\Builders\ReferenceBuilderInterface;
 use App\Api\Collections\ReferenceBuilderCollectionInterface;
-use App\Api\Properties\PropertyInterface;
 use App\Api\Properties\ReferenceInterface;
 use App\Configurators\Attributes\Collection;
-use App\Configurators\Attributes\Reference;
-use App\Api\Builders\PropertyBuilderInterface;
+use App\Configurators\Attributes\Field;
 
-abstract class AbstractReferenceBuilderCollection implements ReferenceBuilderCollectionInterface
+class AnnotationReferenceBuilderCollection implements ReferenceBuilderCollectionInterface
 {
-    protected const ENTITY_CLASS = '';
-
     protected \ArrayObject $array;
 
     protected function getProperties() : array
     {
         $result = [];
-        foreach ((new \ReflectionClass(static::ENTITY_CLASS))->getProperties() as $property)
+        foreach ((new \ReflectionClass($this->entity))->getProperties() as $property)
         {
-            if (!empty($values = $property->getAttributes(Reference::class)))
+            if (!empty($values = $property->getAttributes(Field::class)))
             {
                 $field = current($values)->newInstance()->name;
                 $result[$field] = $property;
@@ -32,7 +28,9 @@ abstract class AbstractReferenceBuilderCollection implements ReferenceBuilderCol
         return $result;
     }
 
-    public function __construct()
+    public function __construct(
+        protected string $entity
+    )
     {
         $this->array = new \ArrayObject($this->getProperties());
     }
