@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Property;
+use App\Configurators\Attributes\Collection;
 use App\Repository\PortionRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\API\Attributes\Field;
-use App\API\Attributes\ReferenceField;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
+
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
  */
@@ -17,21 +18,19 @@ class Portion extends BaseObject
      * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
      * @ORM\JoinColumn(nullable=false)
      */
-    #[Property]
-    #[ReferenceField(name: 'dish',referenceClass: Restaurant::class)]
+    #[Reference(name: 'dish')]
+    #[Collection]
     private ?Dish $dish;
 
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'price')]
     private array $price = [];
 
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'size')]
     private array $size = [];
 

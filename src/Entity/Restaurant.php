@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Method;
+
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\LangProperty;
+use App\Configurators\Attributes\Reference;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\API\Attributes\Field;
-use App\API\Attributes\ReferenceField;
+
 
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
@@ -20,11 +22,14 @@ class Restaurant extends BaseObject
      * @ORM\Column(type="json")
      */
     #[Field(name: 'name')]
+    #[LangProperty('ru')]
     private array $name = [];
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant",orphanRemoval=true)
      */
+    #[Reference('orders')]
+    #[\App\Configurators\Attributes\Collection]
     private Collection $orders;
 
     /**
@@ -35,7 +40,8 @@ class Restaurant extends BaseObject
     /**
      * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="restaurant",orphanRemoval=true)
      */
-    #[ReferenceField(name: 'dish',referenceClass: Dish::class)]
+    #[Reference('dishes')]
+    #[\App\Configurators\Attributes\Collection]
     private Collection $dishes;
 
     public function __construct()
@@ -103,8 +109,7 @@ class Restaurant extends BaseObject
         return $this;
     }
 
-    #[Method('remove_dish')]
-    public function removeStaff(#[ObjectProperty(Staff::class)] Staff $staff) : bool
+    public function removeStaff(Staff $staff) : bool
     {
         if ($this->staff->removeElement($staff)) {
             // set the owning side to null (unless already changed)
@@ -134,8 +139,7 @@ class Restaurant extends BaseObject
         return $this;
     }
 
-    #[Method('remove_dish')]
-    public function removeDish(#[ObjectProperty(Dish::class)] Dish $dish): bool
+    public function removeDish(Dish $dish): bool
     {
         if ($dish->getRestaurant() === $this)
         {

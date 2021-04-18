@@ -2,14 +2,12 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Property;
+use App\Configurators\Attributes\Reference;
 use App\Repository\DishRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\API\Attributes\Field;
-use App\API\Attributes\ReferenceField;
-
+use App\Configurators\Attributes\Field;
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
  */
@@ -24,13 +22,14 @@ class Dish extends BaseObject
     /**
      * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
      */
-    #[ReferenceField(name: 'portion', referenceClass: Portion::class)]
+    #[Reference(name: 'portion')]
+    #[\App\Configurators\Attributes\Collection]
     private Collection $portions;
 
     /**
      * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
      */
-    #[ReferenceField(name: 'menu',referenceClass: Menu::class)]
+    #[Reference(name: 'menu')]
     private ?Menu $menu;
 
     /**
@@ -43,7 +42,8 @@ class Dish extends BaseObject
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="dishes")
      * @ORM\JoinColumn(nullable=true)
      */
-    #[ReferenceField(name: 'restaurant',referenceClass: Restaurant::class)]
+    #[Reference('restaurant')]
+    #[\App\Configurators\Attributes\Collection]
     private ?Restaurant $restaurant;
 
     public function __construct()

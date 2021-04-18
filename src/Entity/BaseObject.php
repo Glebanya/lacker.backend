@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Field;
-use App\API\Attributes\Property;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
@@ -11,6 +9,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
+use App\Configurators\Attributes\Field;
 
 /**
  * @ORM\InheritanceType("JOINED")
@@ -33,23 +32,20 @@ abstract class BaseObject
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
      */
-    #[Property]
-    #[Field(name: 'id',default: true)]
+    #[Field(name: 'id')]
     protected ?Uuid $id;
 
 
     /**
      * @ORM\Column(type="datetime")
      */
-    #[Property]
-    #[Field(name: 'create_data',default: true)]
+    #[Field(name: 'create_data')]
     protected ?\DateTimeInterface $crateDate;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    #[Property]
-    #[Field(name: 'update_date',default: true)]
+    #[Field(name: 'update_date')]
     protected ?\DateTimeInterface $updateDate;
 
     public function getId(): ?Uuid
