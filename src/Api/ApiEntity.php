@@ -6,7 +6,7 @@ namespace App\Api;
 
 final class ApiEntity
 {
-    public function __construct(private object $object, private ConfiguratorInterface $resolver)
+    public function __construct(private object $object, private ConfiguratorInterface $resolver, private ApiService $service)
     {}
 
     /**
@@ -25,13 +25,15 @@ final class ApiEntity
 
     /**
      * @param string $key
+     * @param int $offset
+     * @param int $limit
      * @return ApiEntity|ApiEntity[]|null
      */
-    public function reference(string $key) : ApiEntity|array|null
+    public function reference(string $key,int $offset = 0,int $limit = 0) : ApiEntity|array|null
     {
-        if ($this->resolver->getMethodBuilderCollection()->has($key))
+        if ($this->resolver->getReferenceBuilderCollection()->has($key))
         {
-            if ($result = $collection->get($key)->getValue($this->object))
+            if ($result = ($this->resolver->getReferenceBuilderCollection()->get($key)->build($this->object)->value($offset,$limit)))
             {
                 if (is_iterable($result))
                 {

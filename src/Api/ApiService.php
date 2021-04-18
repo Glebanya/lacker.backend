@@ -19,7 +19,7 @@ final class ApiService
         {
             if ($this->container->has($resolver = current($attributes)->newInstance()->entity))
             {
-                return new ApiEntity($object, $this->container->get($resolver));
+                return new ApiEntity($object, $this->container->get($resolver),$this);
             }
         }
         return null;
