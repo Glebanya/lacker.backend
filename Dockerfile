@@ -27,12 +27,12 @@ RUN cd /server \
 RUN apt-get update && apt-get install -y libmemcached-dev\
     && pecl install xdebug-3.0.2 \
     && pecl install memcached \
-    && docker-php-ext-enable xdebug memcached \
-    && echo xdebug.mode=debug >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
-    && echo xdebug.client_host=172.17.0.1 >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
-    && echo xdebug.client_port=9003 >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
-    && echo xdebug.start_with_request=yes >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
-    && echo "error_reporting = E_ALL & ~E_NOTICE" >> "$PHP_INI_DIR/php.ini"
+    && docker-php-ext-enable xdebug memcached
+    #&& echo xdebug.mode=debug >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    #&& echo xdebug.client_host=172.17.0.1 >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    #&& echo xdebug.client_port=9003 >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    #&& echo xdebug.start_with_request=yes >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    #&& echo "error_reporting = E_ALL & ~E_NOTICE" >> "$PHP_INI_DIR/php.ini"
 
 EXPOSE 80
 CMD ["./bin/rr", "serve"]

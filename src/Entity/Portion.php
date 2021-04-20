@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection;
+use App\Configurators\Entity\DishConfigurator;
 use App\Repository\PortionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Configurators\Attributes\Field;
@@ -11,6 +13,7 @@ use App\Configurators\Attributes\Reference;
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
  */
+#[ConfiguratorAttribute('app.config.portion')]
 class Portion extends BaseObject
 {
 

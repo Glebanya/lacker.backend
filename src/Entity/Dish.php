@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
+use App\Configurators\Entity\DishConfigurator;
 use App\Repository\DishRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,12 +14,14 @@ use App\Configurators\Attributes\Field;
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
  */
+#[ConfiguratorAttribute('app.config.dish')]
 class Dish extends BaseObject
 {
     /**
      * @ORM\Column(type="json")
      */
     #[Field(name: 'description')]
+    #[LangProperty('ru')]
     private array $description = [];
 
     /**
@@ -36,6 +41,7 @@ class Dish extends BaseObject
      * @ORM\Column(type="json")
      */
     #[Field(name: 'name')]
+    #[LangProperty('ru')]
     private array $name = [];
 
     /**
@@ -104,7 +110,6 @@ class Dish extends BaseObject
 
         return $this;
     }
-
 
     public function getName(): ?array
     {

@@ -21,7 +21,6 @@ use Symfony\Component\Security\Core\Security;
 
 class RestaurantController extends AbstractController
 {
-    use FieldTrait;
 
     public const VIEW = 'View';
     public const EDIT = 'Edit';

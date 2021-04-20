@@ -29,7 +29,7 @@ final class ApiEntity
      * @param int $limit
      * @return ApiEntity|ApiEntity[]|null
      */
-    public function reference(string $key,int $offset = 0,int $limit = 0) : ApiEntity|array|null
+    public function reference(string $key,int $offset = 0,int $limit = 1000) : ApiEntity|array|null
     {
         if ($this->resolver->getReferenceBuilderCollection()->has($key))
         {

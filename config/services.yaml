@@ -21,7 +21,15 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
-
+    app.config.restaurant:
+        public: true
+        class: App\Configurators\Entity\RestaurantConfigurator
+    app.config.dish:
+        public: true
+        class: App\Configurators\Entity\DishConfigurator
+    app.config.portion:
+        public: true
+        class: App\Configurators\Entity\PortionConfigurator
     Google_Client:
         class: Google_Client
         calls:

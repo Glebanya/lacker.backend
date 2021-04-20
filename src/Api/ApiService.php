@@ -5,7 +5,7 @@ namespace App\Api;
 
 
 use App\Api\Attributes\ConfiguratorAttribute;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class ApiService
 {
@@ -17,9 +17,9 @@ final class ApiService
     {
         if (!empty($attributes = (new \ReflectionClass($object))->getAttributes(ConfiguratorAttribute::class)))
         {
-            if ($this->container->has($resolver = current($attributes)->newInstance()->entity))
+            if ($this->container->get($configurator = current($attributes)->newInstance()->entity))
             {
-                return new ApiEntity($object, $this->container->get($resolver),$this);
+                return new ApiEntity($object, $this->container->get($configurator),$this);
             }
         }
         return null;

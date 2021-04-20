@@ -51,16 +51,18 @@ class CommonController extends AbstractController
 
     protected function getObject(string $id) : null|object
     {
-        return ($object = $id === 'me'? $this->getUser() :$this->repository->find($id));
+        return $id === 'me'? $this->getUser() : $this->repository->find($id);
     }
 
     protected function formatObject(ApiEntity $entity, array $fields) : array
     {
-        return array_map(
-            function (string $field) use ($entity) : string {
-                return $entity->property($field);
+        return array_reduce(
+            $fields,
+            function (array $result, string $field) use ($entity) : array {
+                $result[$field] = $entity->property($field);
+                return $result;
             },
-            $fields
+            array()
         );
     }
 
@@ -72,35 +74,39 @@ class CommonController extends AbstractController
             return $this->json([
                 'data' => $this->formatObject(
                  entity: $this->service->buildApiEntityObject($object),
-                 fields: $this->getRequestedFields(request: $request)
+                 fields: $this->getRequestedFields($request)
                 )
             ]);
         }
         throw new BadRequestException();
     }
 
-    #[Route('/api/{id}/{ref}', name: 'common_ref', methods: ['GET'])]
+    #[Route('/api/{id}/{reference}', name: 'common_ref', methods: ['GET'])]
     public function reference (string $id, string $reference, Request $request): Response
     {
         if ($object = $this->getObject($id))
         {
             $fields = $this->getRequestedFields(request: $request);
-            if (is_array($ref = $this->service->buildApiEntityObject($object)->reference($reference)))
+            if ($reference = $this->service->buildApiEntityObject($object)->reference($reference))
             {
+                if (is_array($reference))
+                {
+                    return $this->json([
+                        'data' => array_map(
+                            function ($entity) use ($fields) {
+                                return $this->formatObject($entity,$fields);
+                            },
+                            $reference
+                        )
+                    ]);
+                }
                 return $this->json([
-                    'data' => array_map(
-                        function ($entity) use ($fields) {
-                            return $this->formatObject($entity,$fields);
-                        },
-                        $ref
-                    )
+                    'data' => $this->formatObject(entity: $reference, fields: $fields)
                 ]);
             }
-            return $this->json([
-                'data' => $this->formatObject(entity: $ref, fields: $fields)
-            ]);
+            throw new BadRequestException('tut');
         }
-        throw new BadRequestException("govno");
+        throw new BadRequestException('kek');
     }
 
     #[Route('/api/{id}/{method}', name: 'method', methods: ['POST'])]

@@ -8,7 +8,7 @@ use App\Api\Builders\ReferenceBuilderInterface;
 use App\Api\Collections\ReferenceBuilderCollectionInterface;
 use App\Api\Properties\ReferenceInterface;
 use App\Configurators\Attributes\Collection;
-use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
 
 class AnnotationReferenceBuilderCollection implements ReferenceBuilderCollectionInterface
 {
@@ -19,7 +19,7 @@ class AnnotationReferenceBuilderCollection implements ReferenceBuilderCollection
         $result = [];
         foreach ((new \ReflectionClass($this->entity))->getProperties() as $property)
         {
-            if (!empty($values = $property->getAttributes(Field::class)))
+            if (!empty($values = $property->getAttributes(Reference::class)))
             {
                 $field = current($values)->newInstance()->name;
                 $result[$field] = $property;
@@ -55,7 +55,7 @@ class AnnotationReferenceBuilderCollection implements ReferenceBuilderCollection
 
                         public function __construct(private object $object, private \ReflectionProperty $property)
                         {}
-                        public function value(int $offset = 0, int $limit = 0): object|array
+                        public function value(int $offset = 0, int $limit = 1000): object|array
                         {
                             $this->property->setAccessible(true);
                             $value = $this->property->getValue($this->object);

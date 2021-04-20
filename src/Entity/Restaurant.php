@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 
+use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
+use App\Configurators\Entity\RestaurantConfigurator;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
  */
+#[ConfiguratorAttribute('app.config.restaurant')]
 class Restaurant extends BaseObject
 {
 
