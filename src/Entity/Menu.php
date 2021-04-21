@@ -2,23 +2,24 @@
 
 namespace App\Entity;
 
-use App\API\Attributes\Property;
+use App\Api\Attributes\ConfiguratorAttribute;
 use App\Repository\MenuRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\API\Attributes\Field;
-use App\API\Attributes\ReferenceField;
-
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\LangProperty;
+use App\Configurators\Attributes\Reference;
 
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
  */
+#[ConfiguratorAttribute('app.config.menu')]
 class Menu extends BaseObject
 {
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'name')]
+    #[LangProperty('ru')]
     private array $name = [];
 
 
@@ -26,15 +27,14 @@ class Menu extends BaseObject
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
      * @ORM\JoinColumn(nullable=false)
      */
-    #[Property]
-    #[ReferenceField(name:'restaurant',referenceClass: Restaurant::class)]
+    #[Reference(name:'restaurant')]
     private ?Restaurant $restaurant;
 
     /**
      * @ORM\Column(type="json")
      */
-    #[Property]
     #[Field(name: 'description')]
+    #[LangProperty('ru')]
     private array $description = [];
 
     public function getName(): ?array
@@ -48,7 +48,6 @@ class Menu extends BaseObject
 
         return $this;
     }
-
 
     public function getRestaurant(): ?Restaurant
     {

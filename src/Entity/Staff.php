@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
 use App\Repository\UserRepository;
 use App\Utils\Environment;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,6 +17,7 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
+#[ConfiguratorAttribute('app.config.staff')]
 class Staff extends BaseUser
 {
     /**
@@ -24,12 +28,14 @@ class Staff extends BaseUser
     /**
      * @ORM\Column(type="simple_array")
      */
+    #[Field(name: 'roles')]
     private array $roles = [];
 
     /**
      * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[Reference('restaurant')]
     private ?Restaurant $restaurant;
 
 

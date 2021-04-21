@@ -9,6 +9,7 @@ use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\LangProperty;
+use Symfony\Component\Uid\Uuid;
 
 class AnnotationPropertyBuilderCollection implements PropertyBuilderCollectionInterface
 {
@@ -66,6 +67,14 @@ class AnnotationPropertyBuilderCollection implements PropertyBuilderCollectionIn
                                 {
                                     return $value[$lang];
                                 }
+                            }
+                            elseif ($value instanceof \DateTimeInterface)
+                            {
+                                $value = $value->getTimestamp();
+                            }
+                            elseif ($value instanceof Uuid)
+                            {
+                                $value = base64_encode($value->jsonSerialize());
                             }
                             return $value;
                         }

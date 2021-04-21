@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection;
-use App\Configurators\Entity\DishConfigurator;
+use App\Configurators\Entity\Dish;
 use App\Repository\PortionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Configurators\Attributes\Field;

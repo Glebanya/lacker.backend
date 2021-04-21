@@ -22,13 +22,16 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
     app.config.restaurant:
+        lazy: true
         public: true
         class: App\Configurators\Entity\RestaurantConfigurator
     app.config.dish:
         public: true
+        lazy: true
         class: App\Configurators\Entity\DishConfigurator
     app.config.portion:
         public: true
+        lazy: true
         class: App\Configurators\Entity\PortionConfigurator
     Google_Client:
         class: Google_Client

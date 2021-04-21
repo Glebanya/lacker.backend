@@ -5,12 +5,12 @@ namespace App\Entity;
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
-use App\Configurators\Entity\DishConfigurator;
 use App\Repository\DishRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Collection as CollectionAttribute;
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
  */
@@ -28,7 +28,7 @@ class Dish extends BaseObject
      * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
      */
     #[Reference(name: 'portion')]
-    #[\App\Configurators\Attributes\Collection]
+    #[CollectionAttribute]
     private Collection $portions;
 
     /**
@@ -49,7 +49,7 @@ class Dish extends BaseObject
      * @ORM\JoinColumn(nullable=true)
      */
     #[Reference('restaurant')]
-    #[\App\Configurators\Attributes\Collection]
+    #[CollectionAttribute]
     private ?Restaurant $restaurant;
 
     public function __construct()

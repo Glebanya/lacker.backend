@@ -51,7 +51,7 @@ class CommonController extends AbstractController
 
     protected function getObject(string $id) : null|object
     {
-        return $id === 'me'? $this->getUser() : $this->repository->find($id);
+        return $id === 'me'? $this->getUser() : $this->repository->find(base64_decode($id));
     }
 
     protected function formatObject(ApiEntity $entity, array $fields) : array

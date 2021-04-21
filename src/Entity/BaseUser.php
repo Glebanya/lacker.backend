@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use App\Configurators\Attributes\Field;
 use JetBrains\PhpStorm\Pure;
 use App\Repository\BaseUserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -29,11 +30,13 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Field(name: 'name')]
     protected ?string $name;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
+    #[Field(name: 'email')]
     protected ?string $email;
 
     public function getUsername(): ?string
