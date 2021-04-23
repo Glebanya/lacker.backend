@@ -24,15 +24,15 @@ services:
     app.config.restaurant:
         lazy: true
         public: true
-        class: App\Configurators\Entity\RestaurantConfigurator
+        class: App\Configurators\Entity\RestaurantConfig
     app.config.dish:
         public: true
         lazy: true
-        class: App\Configurators\Entity\DishConfigurator
+        class: App\Configurators\Entity\DishConfig
     app.config.portion:
         public: true
         lazy: true
-        class: App\Configurators\Entity\PortionConfigurator
+        class: App\Configurators\Entity\PortionConfig
     Google_Client:
         class: Google_Client
         calls:

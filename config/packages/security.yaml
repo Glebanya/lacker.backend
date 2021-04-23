@@ -12,51 +12,24 @@ security:
 
     providers:
         users_in_memory: { memory: null }
-        client_provider:
+        user_provider:
           entity:
-            class: App\Entity\User
-        admin_provider:
-          entity:
-            class: App\Entity\Staff
-        super_admin:
-          memory:
-              users:
-                uber_admin: { password: 'qwerty90', roles: [ 'SUPER_ADMIN' ] }
+            class: App\Entity\BaseUser
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        client:
-            pattern: ^/client/*$
-            anonymous: false
-            lazy: true
-            provider: client_provider
-            guard:
-              authenticators:
-                - App\Utils\Authentication\UserTokenAuthenticator
-        public:
-            pattern: ^/public/*$
-            anonymous: true
-            lazy: true
         main:
             pattern: ^/*$
             anonymous: true
             lazy: true
-            provider: users_in_memory
-            #guard:
-            #  authenticators:
-            #    - App\Utils\Authentication\UserTokenAuthenticator
-        admin:
-            pattern: ^/private/*$
-            anonymous: false
-            lazy: true
-            provider: admin_provider
+            provider: user_provider
             guard:
-                authenticators:
-                  - App\Utils\Authentication\UserTokenAuthenticator
+              authenticators:
+                - App\Utils\Authentication\UserTokenAuthenticator
 
     access_control:
-         - { path: ^/profile, roles: ROLE_CLIENT }
+         #- { path: ^/profile, roles: ROLE_CLIENT }
          #- { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

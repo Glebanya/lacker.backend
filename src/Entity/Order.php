@@ -13,83 +13,82 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Order extends BaseObject
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $status;
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	private ?string $status;
 
+	/**
+	 * @ORM\Column(type="json")
+	 */
+	private array $positions = [];
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private array $positions = [];
+	/**
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	private ?string $comment;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private ?string $comment;
+	/**
+	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private ?User $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private ?User $user;
+	/**
+	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private ?Restaurant $restaurant;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private ?Restaurant $restaurant;
+	public function __construct()
+	{
+	}
 
+	public function getStatus(): ?string
+	{
+		return $this->status;
+	}
 
-    public function __construct()
-    {}
+	public function setStatus(string $status): self
+	{
+		$this->status = $status;
 
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
+		return $this;
+	}
 
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
+	public function getComment(): ?string
+	{
+		return $this->comment;
+	}
 
-        return $this;
-    }
+	public function setComment(?string $comment): self
+	{
+		$this->comment = $comment;
 
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
+		return $this;
+	}
 
-    public function setComment(?string $comment): self
-    {
-        $this->comment = $comment;
+	public function getUser(): ?User
+	{
+		return $this->user;
+	}
 
-        return $this;
-    }
+	public function setUser(?User $user): self
+	{
+		$this->user = $user;
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
+		return $this;
+	}
 
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
+	public function getRestaurant(): ?Restaurant
+	{
+		return $this->restaurant;
+	}
 
-        return $this;
-    }
+	public function setRestaurant(?Restaurant $restaurant): self
+	{
+		$this->restaurant = $restaurant;
 
-    public function getRestaurant(): ?Restaurant
-    {
-        return $this->restaurant;
-    }
-
-    public function setRestaurant(?Restaurant $restaurant): self
-    {
-        $this->restaurant = $restaurant;
-
-        return $this;
-    }
+		return $this;
+	}
 }

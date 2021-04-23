@@ -17,7 +17,6 @@ use App\Configurators\Attributes\Field;
  * @ORM\Entity(repositoryClass=BaseObjectRepository::class)
  * @ORM\DiscriminatorMap({
  *     "dish" = "App\Entity\Dish",
- *     "menu" = "App\Entity\Menu",
  *     "order" = "App\Entity\Order",
  *     "portion" = "App\Entity\Portion",
  *     "restaurant" = "App\Entity\Restaurant",

@@ -16,81 +16,81 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
  */
 class User extends BaseUser
 {
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $googleId;
+	/**
+	 * @ORM\Column(type="string", length=255, unique=true)
+	 */
+	private ?string $googleId;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $password;
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	private ?string $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user")
-     */
-    private Collection $orders;
+	/**
+	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user")
+	 */
+	private Collection $orders;
 
-    public function __construct()
-    {
-        $this->orders = new ArrayCollection();
-    }
+	public function __construct()
+	{
+		$this->orders = new ArrayCollection();
+	}
 
-    public function getGoogleId(): ?string
-    {
-        return $this->googleId;
-    }
+	public function getGoogleId(): ?string
+	{
+		return $this->googleId;
+	}
 
-    public function setGoogleId(string $googleId): self
-    {
-        $this->googleId = $googleId;
+	public function setGoogleId(string $googleId): self
+	{
+		$this->googleId = $googleId;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+	public function getPassword(): ?string
+	{
+		return $this->password;
+	}
 
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-        return $this;
-    }
+	public function setPassword(string $password): self
+	{
+		$this->password = $password;
 
-    public function getRoles(): ?array
-    {
-        return ['ROLE_CLIENT'];
-    }
+		return $this;
+	}
 
+	public function getRoles(): ?array
+	{
+		return ['ROLE_CLIENT'];
+	}
 
-    #[Pure] public function getSalt(): ?string
-    {
-        return Environment::get('USER_SALT');
-    }
+	#[Pure] public function getSalt(): ?string
+	{
+		return Environment::get('USER_SALT');
+	}
 
+	public function eraseCredentials()
+	{
 
-    public function eraseCredentials()
-    {
+	}
 
-    }
+	/**
+	 * @return Collection
+	 */
+	public function getOrders(): Collection
+	{
+		return $this->orders;
+	}
 
-    /**
-     * @return Collection
-     */
-    public function getOrders(): Collection
-    {
-        return $this->orders;
-    }
+	public function addOrder(Order $order): self
+	{
+		if (!$this->orders->contains($order))
+		{
+			$this->orders[] = $order;
+			$order->setUser($this);
+		}
 
-    public function addOrder(Order $order): self
-    {
-        if (!$this->orders->contains($order)) {
-            $this->orders[] = $order;
-            $order->setUser($this);
-        }
-
-        return $this;
-    }
+		return $this;
+	}
 }

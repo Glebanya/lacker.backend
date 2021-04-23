@@ -1,14 +1,13 @@
 <?php
 
-
 namespace App\Entity;
-
 
 use App\Configurators\Attributes\Field;
 use JetBrains\PhpStorm\Pure;
 use App\Repository\BaseUserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
@@ -27,53 +26,58 @@ use Doctrine\ORM\Mapping\PreUpdate;
  */
 abstract class BaseUser extends BaseObject implements UserInterface, EquatableInterface
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    #[Field(name: 'name')]
-    protected ?string $name;
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	#[Field(name: 'name')]
+	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid email.')]
+	#[Assert\Length(min: 10)]
+	protected ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    #[Field(name: 'email')]
-    protected ?string $email;
+	/**
+	 * @ORM\Column(type="string", length=255, unique=true)
+	 */
+	#[Field(name: 'email')]
+	#[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
+	protected ?string $email;
 
-    public function getUsername(): ?string
-    {
-        return $this->name;
-    }
+	public function getUsername(): ?string
+	{
+		return $this->name;
+	}
 
-    public function setUsername(string $name): self
-    {
-        $this->name = $name;
+	public function setUsername(string $name): self
+	{
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+	public function getEmail(): ?string
+	{
+		return $this->email;
+	}
 
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-        return $this;
-    }
+	public function setEmail(string $email): self
+	{
+		$this->email = $email;
 
-    public function isEqualTo(UserInterface $user): bool
-    {
-        if (is_a($user,static::class,false))
-        {
-            return $this->getId()->compare($user->getId());
-        }
-        return false;
-    }
+		return $this;
+	}
 
-    public function eraseCredentials()
-    {
+	public function isEqualTo(UserInterface $user): bool
+	{
+		if (is_a($user, static::class, false))
+		{
+			return $this->getId()->compare($user->getId());
+		}
 
-    }
+		return false;
+	}
+
+	public function eraseCredentials()
+	{
+
+	}
 
 }

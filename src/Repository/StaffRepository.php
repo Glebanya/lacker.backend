@@ -16,31 +16,26 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
  */
 class StaffRepository extends ServiceEntityRepository implements UserLoaderInterface
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Staff::class);
-    }
+	public function __construct(ManagerRegistry $registry)
+	{
+		parent::__construct($registry, Staff::class);
+	}
 
-    public function loadUserByUsername(string $username)
-    {
-        return $this->createQueryBuilder('user')
-            ->where('user.id = :id')
-            ->setParameter('id',$username)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
+	public function loadUserByUsername(string $username)
+	{
+		return $this->createQueryBuilder('user')->where('user.id = :id')->setParameter('id', $username)->getQuery()
+			->getOneOrNullResult();
+	}
 
-    /**
-     * @param $mail
-     * @return Staff|null
-     * @throws NonUniqueResultException
-     */
-    public function findByMail(string $mail): ?Staff
-    {
-        return $this->createQueryBuilder('user')
-            ->andWhere('user.email = :email')
-            ->setParameter('email',$mail)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
+	/**
+	 * @param $mail
+	 *
+	 * @return Staff|null
+	 * @throws NonUniqueResultException
+	 */
+	public function findByMail(string $mail): ?Staff
+	{
+		return $this->createQueryBuilder('user')->andWhere('user.email = :email')->setParameter('email', $mail)
+			->getQuery()->getOneOrNullResult();
+	}
 }

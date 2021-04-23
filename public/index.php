@@ -1,5 +1,6 @@
 <?php
 
+use App\ContainerFacade;
 use App\Kernel;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,8 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
 }
 
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+$kernel->boot();
+ContainerFacade::init($kernel->getContainer());
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
