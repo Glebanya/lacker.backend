@@ -30,8 +30,13 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: 'name')]
-	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid email.')]
-	#[Assert\Length(min: 10)]
+	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.')]
+	#[Assert\Length(
+		min: 1,
+		max: 255,
+		minMessage: 'Name must be at least {{ limit }} characters long',
+		maxMessage: 'Name cannot be longer than {{ limit }} characters',
+	)]
 	protected ?string $name;
 
 	/**
@@ -39,6 +44,13 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 */
 	#[Field(name: 'email')]
 	#[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
+	#[Assert\Unique]
+	#[Assert\Length(
+		min:1 ,
+		max: 255,
+		minMessage: 'Email must be at least {{ limit }} characters long',
+		maxMessage: 'Email cannot be longer than {{ limit }} characters',
+	)]
 	protected ?string $email;
 
 	public function getUsername(): ?string

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Types\Lang;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
 use App\Api\Attributes\ConfiguratorAttribute;
@@ -11,6 +12,7 @@ use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
@@ -20,11 +22,12 @@ class Restaurant extends BaseObject
 {
 
 	/**
-	 * @ORM\Column(type="json")
+	 * @ORM\Column(type="lang")
 	 */
 	#[Field(name: 'name')]
 	#[LangProperty('ru')]
-	private array $name = [];
+	#[Assert\Valid]
+	private Lang $name;
 
 	/**
 	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant",orphanRemoval=true)
@@ -52,14 +55,14 @@ class Restaurant extends BaseObject
 		$this->dishes = new ArrayCollection();
 	}
 
-	public function getName(): ?array
+	public function getName(): ?Lang
 	{
 		return $this->name;
 	}
 
 	public function setName(array $name): self
 	{
-		$this->name = $name;
+		$this->name = new Lang($name);
 
 		return $this;
 	}

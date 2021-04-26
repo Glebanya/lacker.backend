@@ -6,9 +6,12 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection;
 use App\Entity\Dish;
 use App\Repository\PortionRepository;
+use App\Types\Lang;
+use App\Types\Price;
 use Doctrine\ORM\Mapping as ORM;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
@@ -26,26 +29,28 @@ class Portion extends BaseObject
 	private ?Dish $dish;
 
 	/**
-	 * @ORM\Column(type="json")
+	 * @ORM\Column(type="price")
 	 */
 	#[Field(name: 'price')]
-	private array $price = [];
+	#[Assert\Valid]
+	private Price $price;
 
 	/**
-	 * @ORM\Column(type="json")
+	 * @ORM\Column(type="lang")
 	 */
 	#[Field(name: 'size')]
-	private array $size = [];
+	#[Assert\Valid]
+	private Lang $size;
 
 	public function __construct($params = [])
 	{
 		if (array_key_exists('price', $params) && is_array($params['price']))
 		{
-			$this->price = $params['price'];
+			$this->price = new Price($params['price']);
 		}
 		if (array_key_exists('size', $params) && is_array($params['size']))
 		{
-			$this->size = $params['size'];
+			$this->size = new Lang($params['size']);
 		}
 	}
 
@@ -61,26 +66,26 @@ class Portion extends BaseObject
 		return $this;
 	}
 
-	public function getPrice(): ?array
+	public function getPrice(): ?Price
 	{
 		return $this->price;
 	}
 
 	public function setPrice(array $price): self
 	{
-		$this->price = $price;
+		$this->price = new Price($price);
 
 		return $this;
 	}
 
-	public function getSize(): ?array
+	public function getSize(): ?Lang
 	{
 		return $this->size;
 	}
 
 	public function setSize(array $size): self
 	{
-		$this->size = $size;
+		$this->size = new Lang($size);
 
 		return $this;
 	}
