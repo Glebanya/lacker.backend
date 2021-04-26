@@ -5,6 +5,7 @@ namespace App\Configurators\Entity;
 use ArrayAccess;
 use ArrayObject;
 use DateTimeInterface;
+use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -49,7 +50,7 @@ abstract class BaseConfigurator implements ConfiguratorInterface
 	{
 		if (!class_exists($class = $this->getEntity()))
 		{
-			throw new \Exception("$class not exists");
+			throw new Exception("$class not exists");
 		}
 	}
 
@@ -264,70 +265,42 @@ abstract class BaseConfigurator implements ConfiguratorInterface
 	{
 		return $this->methodBuilderCollection = $this->methodBuilderCollection
 			??
-			new class ($this->getEntity()) implements MethodBuilderCollectionInterface {
-
-				/**
-				 * @var ArrayObject
-				 */
+			new class () implements MethodBuilderCollectionInterface {
 				protected ArrayObject $array;
 
-				/**
-				 *  constructor.
-				 *
-				 * @param string $entity
-				 */
-				public function __construct(protected string $entity)
+				public function __construct(array $methods)
 				{
-					$result = [];
-					foreach ((new ReflectionClass($this->entity))->getMethods() as $method)
-					{
-						if (!empty($values = $method->getAttributes(Field::class)))
-						{
-							$field = current($values)->newInstance()->name;
-							$result[$field] = $method;
-						}
-					}
-					$this->array = new ArrayObject($result);
+					$this->array = new ArrayObject(array_filter($methods,
+						function($item): bool {
+							return is_callable($item);
+						}));
 				}
 
-				/**
-				 * @param string $property
-				 *
-				 * @return bool
-				 */
 				public function has(string $property): bool
 				{
 					return $this->array->offsetExists($property);
 				}
 
-				/**
-				 * @param string $property
-				 *
-				 * @return MethodBuilderInterface|null
-				 */
 				public function get(string $property): MethodBuilderInterface|null
 				{
 					if ($this->has($property))
 					{
-						return new class ($this->array->offsetGet($property)) implements MethodBuilderInterface {
+						return new class($this->array->offsetGet($property)) implements MethodBuilderInterface {
 
-							public function __construct(private ReflectionMethod $method)
+							public function __construct(protected $callable)
 							{
 							}
 
 							public function build(object $object): MethodInterface
 							{
-								return new class($object, $this->method) implements MethodInterface {
-
-									public function __construct(private object $object,
-										private ReflectionMethod $method)
+								return new class($this->callable, $object) implements MethodInterface {
+									public function __construct(protected $callable, protected object $object)
 									{
 									}
 
-									public function execute(array $parameters = []): mixed
+									public function execute(array $parameters): mixed
 									{
-										$this->method->setAccessible(true);
-
+										return call_user_func($this->callable, $this->object, $parameters);
 									}
 								};
 							}
