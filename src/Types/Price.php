@@ -29,9 +29,9 @@ class Price extends \ArrayObject implements \JsonSerializable
 			{
 				$context->buildViolation("incorrect price value")->atPath("price")->addViolation();
 			}
-			elseif (preg_match('/^(?!0+)([0-9]+)(\.[0-9]{1,2}){0,1}$/',(string) $value))
+			elseif (!preg_match('/^(?!0+)([0-9]+)(\.[0-9]{1,2}){0,1}$/',(string) $value))
 			{
-				$context->buildViolation("incorrect precision price")->atPath("price")->addViolation();
+				$context->buildViolation("incorrect price precision")->atPath("price")->addViolation();
 			}
 		}
 	}
