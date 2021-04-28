@@ -11,4 +11,9 @@ class StaffConfig extends BaseConfigurator
 	{
 		return StaffEntity::class;
 	}
+
+	protected function getMethodsList(): array
+	{
+		// TODO: Implement getMethodsList() method.
+	}
 }

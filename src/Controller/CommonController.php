@@ -31,7 +31,8 @@ class CommonController extends AbstractController
 		if ($object = $this->getObject($id))
 		{
 			return $this->json([
-				'data' => $this->formatObject(entity: $this->service->buildApiEntityObject($object),
+				'data' => $this->formatObject(
+					entity: $this->service->buildApiEntityObject($object),
 					fields: $this->getRequestedFields($request))
 			]);
 		}
@@ -40,7 +41,7 @@ class CommonController extends AbstractController
 
 	protected function getObject(string $id): null|object
 	{
-		return $id === 'me' ? $this->getUser() : $this->repository->find(base64_decode($id));
+		return $id === 'me' ? $this->getUser() : $this->repository->find($id);
 	}
 
 	protected function formatObject(ApiEntity $entity, array $fields): array

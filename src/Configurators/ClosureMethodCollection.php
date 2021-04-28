@@ -7,7 +7,11 @@ use App\Api\Collections\MethodBuilderCollectionInterface;
 use App\Api\Properties\MethodInterface;
 use ArrayObject;
 
-class ClosureMethodBuilderCollection implements MethodBuilderCollectionInterface
+/**
+ * Class ClosureMethodCollection
+ * @package App\Configurators
+ */
+class ClosureMethodCollection implements MethodBuilderCollectionInterface
 {
 	protected ArrayObject $array;
 
@@ -53,3 +57,4 @@ class ClosureMethodBuilderCollection implements MethodBuilderCollectionInterface
 		return $this->array->offsetExists($property);
 	}
 }
+

@@ -4,8 +4,7 @@ namespace App\Api;
 
 final class ApiEntity
 {
-	public function __construct(private object $object, private ConfiguratorInterface $resolver,
-		private ApiService $service)
+	public function __construct(private object $object, private ConfiguratorInterface $resolver, private ApiService $service)
 	{
 	}
 

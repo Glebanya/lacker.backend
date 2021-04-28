@@ -27,7 +27,7 @@ security:
             provider: user_provider
             guard:
               authenticators:
-                - App\Utils\Authentication\UserTokenAuthenticator
+                - App\Security\UserTokenAuthenticator
 
     access_control:
          #- { path: ^/profile, roles: ROLE_CLIENT }

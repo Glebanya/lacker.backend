@@ -11,4 +11,9 @@ class UserConfig extends BaseConfigurator
 	{
 		return UserEntity::class;
 	}
+
+	protected function getMethodsList(): array
+	{
+
+	}
 }

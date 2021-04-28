@@ -2,14 +2,33 @@ version: '3.5'
 
 services:
     proxy:
-        image: jwilder/nginx-proxy
+        container_name: proxy
+        image: jwilder/nginx-proxy:alpine
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
+            - nginx_certs:/etc/nginx/certs:ro
+            - nginx_vhosts:/etc/nginx/vhost.d
+            - nginx_html:/usr/share/nginx/html
         networks:
             - dev-back
+    letsencrypt:
+      image: jrcs/letsencrypt-nginx-proxy-companion
+      environment:
+        DEFAULT_EMAIL: 'azzar.bam@gmail.com'
+        NGINX_PROXY_CONTAINER: proxy
+        NGINX_DOCKER_GEN_CONTAINER: proxy
+      volumes_from:
+        - proxy
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - nginx_certs:/etc/nginx/certs:rw
+      restart: always
+      networks:
+        - dev-back
+
 
     service:
         build: '.'
@@ -17,6 +36,7 @@ services:
             APP_ENV: 'dev'
             APP_DEBUG: 'true'
             DATABASE_URL: $DATABASE_URL
+            LETSENCRYPT_HOST: $VIRTUAL_HOST
             VIRTUAL_HOST: $VIRTUAL_HOST
             PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
             APP_TYPE: 'dev'
@@ -48,8 +68,11 @@ services:
 
 
 volumes:
-    mysql-data:
+  mysql-data:
         name: dev_mysql_data
+  nginx_certs:
+  nginx_vhosts:
+  nginx_html:
 
 networks:
     dev-back:
