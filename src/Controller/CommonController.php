@@ -8,6 +8,7 @@ use App\Repository\BaseObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -20,8 +21,12 @@ class CommonController extends AbstractController
 	const FIELDS_REQUEST = 'fields';
 	const FIELDS_SEPARATOR_REQUEST = ',';
 
-	public function __construct(private Security $security, private EntityManagerInterface $manager,
-		private BaseObjectRepository $repository, private ApiService $service)
+	public function __construct(
+		private Security $security,
+		private EntityManagerInterface $manager,
+		private BaseObjectRepository $repository,
+		private ApiService $service,
+	)
 	{
 	}
 
@@ -46,13 +51,15 @@ class CommonController extends AbstractController
 
 	protected function formatObject(ApiEntity $entity, array $fields): array
 	{
-		return array_reduce($fields,
+		return array_reduce(
+			$fields,
 			function(array $result, string $field) use ($entity): array {
+				$this->security->isGranted($field . '.view', $entity->getObject());
 				$result[$field] = $entity->getProperty($field);
-
 				return $result;
 			},
-			[]);
+			[]
+		);
 	}
 
 	protected function getRequestedFields(Request $request): array|null
@@ -75,6 +82,7 @@ class CommonController extends AbstractController
 			$keys = [];
 			foreach ($content as $key => $value)
 			{
+				$this->security->isGranted($key . '.update', $apiObject->getObject());
 				$apiObject->setProperty($key, $value);
 				$keys[] = $key;
 			}
@@ -101,7 +109,7 @@ class CommonController extends AbstractController
 		{
 			if (json_last_error() !== JSON_ERROR_NONE)
 			{
-				throw new BadRequestHttpException('invalid json body: '.json_last_error_msg());
+				throw new BadRequestHttpException('invalid json body: '. json_last_error_msg());
 			}
 		}
 
@@ -119,10 +127,12 @@ class CommonController extends AbstractController
 				if (is_array($reference))
 				{
 					return $this->json([
-						'data' => array_map(function($entity) use ($fields) {
-							return $this->formatObject($entity, $fields);
-						},
-							$reference)
+						'data' => array_map(
+							function($entity) use ($fields) {
+								return $this->formatObject($entity, $fields);
+							},
+							$reference
+						)
 					]);
 				}
 
@@ -136,13 +146,16 @@ class CommonController extends AbstractController
 	}
 
 	#[Route('/api/{id}/{method}', name: 'method', methods: ['POST'])]
-	public function method(string $id, string $method, Request $request)
+	public function method(string $id, string $method, Request $request): JsonResponse
 	{
 		if ($object = $this->getObject($id))
 		{
+			$this->security->isGranted($method . 'execute',$object);
 			return $this->json([
-				'data' => $this->service->buildApiEntityObject($object)->method($method,
-					$this->getContent($request))
+				'data' => $this->service->buildApiEntityObject($object)->method(
+					$method,
+					$this->getContent($request)
+				)
 			]);
 		}
 		throw new BadRequestException("govno");

@@ -9,6 +9,7 @@ use App\Configurators\Attributes\Collection;
 use App\Configurators\Attributes\Reference;
 use ArrayObject;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
 
 /**
@@ -28,7 +29,7 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 	 *
 	 * @param string|object $entity
 	 *
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function __construct(protected string|object $entity)
 	{
@@ -42,16 +43,6 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 			}
 		}
 		$this->array = new ArrayObject($result);
-	}
-
-	/**
-	 * @param string $property
-	 *
-	 * @return bool
-	 */
-	public function has(string $property): bool
-	{
-		return $this->array->offsetExists($property);
 	}
 
 	/**
@@ -72,8 +63,7 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 				{
 					return new class($object, $this->property) implements ReferenceInterface {
 
-						public function __construct(private object $object,
-							private ReflectionProperty $property)
+						public function __construct(private object $object, private ReflectionProperty $property)
 						{
 						}
 
@@ -102,4 +92,15 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 
 		return null;
 	}
-};
+
+	/**
+	 * @param string $property
+	 *
+	 * @return bool
+	 */
+	public function has(string $property): bool
+	{
+		return $this->array->offsetExists($property);
+	}
+}
+

@@ -2,6 +2,8 @@
 
 namespace App\Configurators;
 
+use App\Entity\Currency;
+use App\Types\Lang;
 use DateTimeInterface;
 use \ReflectionClass;
 use \ArrayObject;
@@ -10,7 +12,6 @@ use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
 use ReflectionProperty;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * Class ReflectionPropertyCollection
@@ -93,6 +94,12 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 						public function set($parameter)
 						{
 							$this->property->setAccessible(true);
+							$parameter = match ($this->property->class)
+							{
+								Lang::class => new Lang($parameter),
+								Currency::class => new Currency($parameter),
+								default => $parameter
+							};
 							$this->property->setValue($this->object, $parameter);
 						}
 					};

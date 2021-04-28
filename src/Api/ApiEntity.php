@@ -8,6 +8,10 @@ final class ApiEntity
 	{
 	}
 
+	public function getObject (): object
+	{
+		return $this->object;
+	}
 	public function setProperty(string $key,$value)
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
