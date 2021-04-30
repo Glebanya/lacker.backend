@@ -6,8 +6,9 @@ doctrine:
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '13'
         types:
-          custom_first: App\Types\LangDoctrine
-          custom_second: App\Types\PriceDoctrine
+          lang_phrase: App\Types\LangDoctrine
+          price: App\Types\PriceDoctrine
+          image: App\Types\ImageDoctrine
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

@@ -35,6 +35,7 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
+			$this->denyAccessUnlessGranted('view',$object);
 			return $this->json([
 				'data' => $this->formatObject(
 					entity: $this->service->buildApiEntityObject($object),
@@ -54,7 +55,7 @@ class CommonController extends AbstractController
 		return array_reduce(
 			$fields,
 			function(array $result, string $field) use ($entity): array {
-				$this->security->isGranted($field . '.view', $entity->getObject());
+				$this->denyAccessUnlessGranted($field . '.view', $entity->getObject());
 				$result[$field] = $entity->getProperty($field);
 				return $result;
 			},
@@ -78,11 +79,11 @@ class CommonController extends AbstractController
 		if ($object = $this->getObject($id))
 		{
 			$apiObject = $this->service->buildApiEntityObject($object);
-			$content = $this->getContent($request->getContent());
+			$content = $this->getContent($request->getContent()) + $request->files->all();
 			$keys = [];
 			foreach ($content as $key => $value)
 			{
-				$this->security->isGranted($key . '.update', $apiObject->getObject());
+				$this->denyAccessUnlessGranted($key . '.update', $apiObject->getObject());
 				$apiObject->setProperty($key, $value);
 				$keys[] = $key;
 			}
@@ -150,7 +151,7 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-			$this->security->isGranted($method . 'execute',$object);
+			$this->denyAccessUnlessGranted($method . 'execute',$object);
 			return $this->json([
 				'data' => $this->service->buildApiEntityObject($object)->method(
 					$method,

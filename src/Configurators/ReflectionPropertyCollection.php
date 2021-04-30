@@ -3,6 +3,7 @@
 namespace App\Configurators;
 
 use App\Entity\Currency;
+use App\Types\Image;
 use App\Types\Lang;
 use DateTimeInterface;
 use \ReflectionClass;
@@ -12,6 +13,7 @@ use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
 use ReflectionProperty;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class ReflectionPropertyCollection
@@ -94,12 +96,27 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 						public function set($parameter)
 						{
 							$this->property->setAccessible(true);
-							$parameter = match ($this->property->class)
+							if ($this->property->class === Lang::class)
 							{
-								Lang::class => new Lang($parameter),
-								Currency::class => new Currency($parameter),
-								default => $parameter
-							};
+								if (is_array($parameter))
+								{
+									$parameter = new Lang($parameter);
+								}
+							}
+							elseif ($this->property->class === Currency::class)
+							{
+								if (is_array($parameter))
+								{
+									$parameter = new Currency($parameter);
+								}
+							}
+							elseif ($this->property->class === Image::class)
+							{
+								if ($parameter instanceof UploadedFile)
+								{
+									$parameter = new Image($parameter);
+								}
+							}
 							$this->property->setValue($this->object, $parameter);
 						}
 					};
