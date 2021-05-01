@@ -4,6 +4,7 @@ namespace App\Events;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -25,10 +26,12 @@ class ExceptionHandler implements EventSubscriberInterface
 	{
 
 		$exception = $event->getThrowable();
-		$message = sprintf('My Error says: %s with code: %s', $exception->getMessage(), $exception->getCode());
-		$response = new Response();
-		$response->setContent($message);
-
+		$response = new JsonResponse([
+			'error' => [
+				'message' => $exception->getMessage(),
+				'code' => $exception->getCode()
+			]
+		]);
 		if ($exception instanceof HttpExceptionInterface)
 		{
 			$response->setStatusCode($exception->getStatusCode());
@@ -39,7 +42,6 @@ class ExceptionHandler implements EventSubscriberInterface
 			$response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
-		// sends the modified response object to the event
 		$event->setResponse($response);
 	}
 }

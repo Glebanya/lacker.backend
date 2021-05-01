@@ -27,7 +27,7 @@ final class UserTokenAuthenticator extends AbstractGuardAuthenticator
 
 	public function getCredentials(Request $request)
 	{
-		return $request->query->get('access_token');
+		return $request->headers->get('Authorization');
 	}
 
 	public function checkCredentials($credentials, UserInterface $user): bool
@@ -38,7 +38,12 @@ final class UserTokenAuthenticator extends AbstractGuardAuthenticator
 	public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
 	{
 		return new JsonResponse(
-			['message' => strtr($exception->getMessageKey(), $exception->getMessageData())],
+			[
+				'error' => [
+					'message' => $exception->getMessageKey(),
+					'code' => $exception->getCode()
+				]
+			],
 			Response::HTTP_UNAUTHORIZED
 		);
 	}
@@ -55,8 +60,7 @@ final class UserTokenAuthenticator extends AbstractGuardAuthenticator
 
 	public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
 	{
-		$jwtObject = new JWTObject($credentials);
-		if ($id = $jwtObject->getUserId())
+		if ($id = (new JWTObject($credentials))->getUserId())
 		{
 			return $userProvider->loadUserByUsername($id);
 		}

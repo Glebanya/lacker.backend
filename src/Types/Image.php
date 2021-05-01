@@ -5,24 +5,18 @@ namespace App\Types;
 use App\Utils\Environment;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Image implements \JsonSerializable
 {
+	#[Assert\Url]
 	protected string|null $url;
 
-	public function __construct(UploadedFile|string $file)
+	public function __construct(string $file)
 	{
 		if (is_string($file))
 		{
 			$this->url = $file;
-		}
-		elseif ($file instanceof UploadedFile)
-		{
-			try
-			{
-				$this->url = $file->move(Environment::get('uploads'), $fileName = uniqid().'.'.$file->guessExtension())->getPath();
-			}
-			catch (FileException $exception) {}
 		}
 		else
 		{

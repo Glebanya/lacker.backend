@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
@@ -20,6 +21,7 @@ use App\Configurators\Attributes\Field;
  *     "order" = "App\Entity\Order",
  *     "portion" = "App\Entity\Portion",
  *     "restaurant" = "App\Entity\Restaurant",
+ *     "table" = "App\Entity\Table"
  * })
  * @HasLifecycleCallbacks
  */
@@ -68,20 +70,20 @@ abstract class BaseObject
         return $this;
     }
 
-    /**
-     * @PrePersist
-     */
-    public function onAdd()
-    {
-        $this->crateDate = new \DateTime('now');
-        $this->updateDate = new \DateTime('now');
-    }
+	/**
+	 * @PrePersist
+	 */
+	public function onAdd()
+	{
+		$this->crateDate = new DateTime('now');
+		$this->updateDate = new DateTime('now');
+	}
 
-    /**
-     * @PreUpdate
-     */
-    public function onUpdate()
-    {
-        $this->updateDate = new \DateTime('now');
-    }
+	/**
+	 * @PreUpdate
+	 */
+	public function onUpdate()
+	{
+		$this->updateDate = new DateTime('now');
+	}
 }

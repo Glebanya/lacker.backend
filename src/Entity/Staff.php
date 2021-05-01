@@ -38,6 +38,12 @@ class Staff extends BaseUser
 	#[Reference('restaurant')]
 	private ?Restaurant $restaurant;
 
+	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	#[Field(name: 'firebase_token')]
+	private ?string $firebaseToken;
+
 	public function getPassword(): ?string
 	{
 		return $this->password;
@@ -75,6 +81,18 @@ class Staff extends BaseUser
 	public function setRestaurant(?Restaurant $restaurant): self
 	{
 		$this->restaurant = $restaurant;
+
+		return $this;
+	}
+
+	public function getFirebaseToken(): ?string
+	{
+		return $this->firebaseToken;
+	}
+
+	public function setFirebaseToken(?string $firebaseToken): self
+	{
+		$this->firebaseToken = $firebaseToken;
 
 		return $this;
 	}

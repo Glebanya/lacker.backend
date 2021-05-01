@@ -30,7 +30,7 @@ class Restaurant extends BaseObject
 	private Lang $name;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant",orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant")
 	 */
 	#[Reference('orders')]
 	#[CollectionAttribute]
@@ -48,11 +48,17 @@ class Restaurant extends BaseObject
 	#[CollectionAttribute]
 	private Collection $dishes;
 
+	/**
+	 * @ORM\OneToMany(targetEntity=Table::class, mappedBy="restaurant", orphanRemoval=true)
+	 */
+	private Collection $tables;
+
 	public function __construct($params = [])
 	{
 		$this->orders = new ArrayCollection();
 		$this->staff = new ArrayCollection();
 		$this->dishes = new ArrayCollection();
+		$this->tables = new ArrayCollection();
 	}
 
 	public function getName(): ?Lang
@@ -167,6 +173,39 @@ class Restaurant extends BaseObject
 	public function setStopList(array $stopList): self
 	{
 		$this->stopList = $stopList;
+
+		return $this;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getTables(): Collection
+	{
+		return $this->tables;
+	}
+
+	public function addTable(Table $table): self
+	{
+		if (!$this->tables->contains($table))
+		{
+			$this->tables[] = $table;
+			$table->setRestaurant($this);
+		}
+
+		return $this;
+	}
+
+	public function removeTable(Table $table): self
+	{
+		if ($this->tables->removeElement($table))
+		{
+			// set the owning side to null (unless already changed)
+			if ($table->getRestaurant() === $this)
+			{
+				$table->setRestaurant(null);
+			}
+		}
 
 		return $this;
 	}
