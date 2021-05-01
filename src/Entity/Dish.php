@@ -25,7 +25,6 @@ class Dish extends BaseObject
 	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'description')]
-	#[LangProperty('ru')]
 	#[Assert\Valid]
 	private Lang $description;
 
@@ -40,7 +39,6 @@ class Dish extends BaseObject
 	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'name')]
-	#[LangProperty('ru')]
 	#[Assert\Valid]
 	private Lang $name;
 

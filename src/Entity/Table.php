@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
 use App\Repository\TableRepository;
 use App\Types\Lang;
@@ -38,7 +37,6 @@ class Table extends BaseObject
 	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'title')]
-	#[LangProperty('ru')]
 	private Lang $title;
 
 

@@ -25,7 +25,6 @@ class Restaurant extends BaseObject
 	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'name')]
-	#[LangProperty('ru')]
 	#[Assert\Valid]
 	private Lang $name;
 
