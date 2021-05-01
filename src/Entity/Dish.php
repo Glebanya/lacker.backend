@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Dish extends BaseObject
 {
 	/**
-	 * @ORM\Column(type="lang")
+	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'description')]
 	#[LangProperty('ru')]
@@ -37,7 +37,7 @@ class Dish extends BaseObject
 	private Collection $portions;
 
 	/**
-	 * @ORM\Column(type="lang")
+	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'name')]
 	#[LangProperty('ru')]

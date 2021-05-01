@@ -36,7 +36,7 @@ class Portion extends BaseObject
 	private Price $price;
 
 	/**
-	 * @ORM\Column(type="lang")
+	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'size')]
 	#[Assert\Valid]
