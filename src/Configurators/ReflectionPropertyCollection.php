@@ -2,16 +2,19 @@
 
 namespace App\Configurators;
 
+use App\Configurators\Attributes\Immutable;
 use App\Entity\Currency;
 use App\Types\Image;
 use App\Types\Lang;
 use DateTimeInterface;
+use Exception;
 use \ReflectionClass;
 use \ArrayObject;
 use App\Api\Builders\PropertyBuilderInterface;
 use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
+use ReflectionException;
 use ReflectionProperty;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -32,7 +35,7 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	 *
 	 * @param string|object $entity
 	 *
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function __construct(protected string|object $entity)
 	{
@@ -46,16 +49,6 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 			}
 		}
 		$this->array = new ArrayObject($result);
-	}
-
-	/**
-	 * @param string $property
-	 *
-	 * @return bool
-	 */
-	public function has(string $property): bool
-	{
-		return $this->array->offsetExists($property);
 	}
 
 	/**
@@ -76,8 +69,7 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 				{
 					return new class($object, $this->property) implements PropertyInterface {
 
-						public function __construct(private object $object,
-							private ReflectionProperty $property)
+						public function __construct(private object $object, private ReflectionProperty $property)
 						{
 						}
 
@@ -95,29 +87,33 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 
 						public function set($parameter)
 						{
-							$this->property->setAccessible(true);
-							if ($this->property->class === Lang::class)
+							if (empty($this->property->getAttributes(Immutable::class)))
 							{
-								if (is_array($parameter))
+								$this->property->setAccessible(true);
+								if ($this->property->class === Lang::class)
 								{
-									$parameter = new Lang($parameter);
+									if (is_array($parameter))
+									{
+										$parameter = new Lang($parameter);
+									}
 								}
-							}
-							elseif ($this->property->class === Currency::class)
-							{
-								if (is_array($parameter))
+								elseif ($this->property->class === Currency::class)
 								{
-									$parameter = new Currency($parameter);
+									if (is_array($parameter))
+									{
+										$parameter = new Currency($parameter);
+									}
 								}
-							}
-							elseif ($this->property->class === Image::class)
-							{
-								if ($parameter instanceof UploadedFile)
+								elseif ($this->property->class === Image::class)
 								{
-									$parameter = new Image($parameter);
+									if ($parameter instanceof UploadedFile)
+									{
+										$parameter = new Image($parameter);
+									}
 								}
+								$this->property->setValue($this->object, $parameter);
 							}
-							$this->property->setValue($this->object, $parameter);
+							throw new Exception("property in immutable");
 						}
 					};
 				}
@@ -126,4 +122,15 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 
 		return null;
 	}
-};
+
+	/**
+	 * @param string $property
+	 *
+	 * @return bool
+	 */
+	public function has(string $property): bool
+	{
+		return $this->array->offsetExists($property);
+	}
+}
+

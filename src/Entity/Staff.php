@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
 use App\Repository\UserRepository;
 use App\Utils\Environment;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -20,6 +22,32 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 #[ConfiguratorAttribute('app.config.staff')]
 class Staff extends BaseUser
 {
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	private ?string $password;
+	/**
+	 * @ORM\Column(type="simple_array")
+	 * @Assert\All({
+	 *     @Assert\NotBlank,
+	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"}),
+	 * })
+	 */
+	#[Field(name: "roles")]
+	private array $roles = [];
+	/**
+	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	#[Reference('restaurant')]
+	private ?Restaurant $restaurant;
+	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	#[Field(name: 'firebase_token')]
+	#[Immutable]
+	private ?string $firebaseToken;
+
 	public function __construct($params = [])
 	{
 		parent::__construct($params);
@@ -32,34 +60,6 @@ class Staff extends BaseUser
 			$this->firebaseToken = $params['firebase_token'];
 		}
 	}
-
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 */
-	private ?string $password;
-
-	/**
-	 * @ORM\Column(type="simple_array")
-	 * @Assert\All({
-	 *     @Assert\NotBlank,
-	 *     @Assert\Choice(['ROLE_ADMIN','ROLE_MANAGER','ROLE_STAFF'])
-	 * })
-	 */
-	#[Field(name: 'roles')]
-	private array $roles = [];
-
-	/**
-	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	#[Reference('restaurant')]
-	private ?Restaurant $restaurant;
-
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=true)
-	 */
-	#[Field(name: 'firebase_token')]
-	private ?string $firebaseToken;
 
 	public function getPassword(): ?string
 	{

@@ -13,6 +13,7 @@ use App\Configurators\Attributes\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
@@ -189,4 +190,12 @@ class Dish extends BaseObject
 		return $this;
 	}
 
+//	#[Assert\Callback]
+//	public function validate(ExecutionContextInterface $context)
+//	{
+//		foreach ($this->portions as $portion)
+//		{
+//			$context->addViolation($context->getValidator()->validate($portion));
+//		}
+//	}
 }

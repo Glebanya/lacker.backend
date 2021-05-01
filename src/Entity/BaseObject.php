@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Configurators\Attributes\Immutable;
 use DateTime;
+use DateTimeInterface;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
@@ -29,48 +31,51 @@ use App\Configurators\Attributes\Field;
  */
 abstract class BaseObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
-     */
-    #[Field(name: 'id')]
-    protected ?Uuid $id;
+	/**
+	 * @ORM\Id
+	 * @ORM\Column(type="uuid", unique=true)
+	 * @ORM\GeneratedValue(strategy="CUSTOM")
+	 * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
+	 */
+	#[Field(name: 'id')]
+	#[Immutable]
+	protected ?Uuid $id;
 
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	#[Field(name: 'create_data')]
+	#[Immutable]
+	protected ?DateTimeInterface $crateDate;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    #[Field(name: 'create_data')]
-    protected ?\DateTimeInterface $crateDate;
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	#[Field(name: 'update_date')]
+	#[Immutable]
+	protected ?DateTimeInterface $updateDate;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    #[Field(name: 'update_date')]
-    protected ?\DateTimeInterface $updateDate;
+	public function getId(): ?Uuid
+	{
+		return $this->id;
+	}
 
-    public function getId(): ?Uuid
-    {
-        return $this->id;
-    }
+	public function getCrateDate(): ?DateTimeInterface
+	{
+		return $this->crateDate;
+	}
 
-    public function getCrateDate(): ?\DateTimeInterface
-    {
-        return $this->crateDate;
-    }
+	public function getUpdateDate(): ?DateTimeInterface
+	{
+		return $this->updateDate;
+	}
 
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
-        return $this->updateDate;
-    }
+	public function setUpdateDate(DateTimeInterface $updateDate): self
+	{
+		$this->updateDate = $updateDate;
 
-    public function setUpdateDate(\DateTimeInterface $updateDate): self
-    {
-        $this->updateDate = $updateDate;
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * @PrePersist

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
 use App\Repository\UserRepository;
 use App\Utils\Environment;
@@ -25,6 +26,7 @@ class User extends BaseUser
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
 	#[Field(name: 'google_id')]
+	#[Immutable]
 	private ?string $googleId;
 
 	/**
