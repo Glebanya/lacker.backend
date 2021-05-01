@@ -3,6 +3,7 @@
 namespace App\Notification;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class Notificator
 {
@@ -19,6 +20,12 @@ class Notificator
 
 	public function notify()
 	{
-		$this->client->request('POST','https://fcm.googleapis.com/fcm/send');
+		try
+		{
+			$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send');
+		}
+		catch (GuzzleException $e)
+		{
+		}
 	}
 }

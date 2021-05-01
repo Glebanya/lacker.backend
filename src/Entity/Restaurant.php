@@ -8,7 +8,6 @@ use App\Repository\RestaurantRepository;
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,6 +37,8 @@ class Restaurant extends BaseObject
 	/**
 	 * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant",orphanRemoval=true)
 	 */
+	#[Reference('staff')]
+	#[CollectionAttribute]
 	private Collection $staff;
 
 	/**
@@ -50,6 +51,8 @@ class Restaurant extends BaseObject
 	/**
 	 * @ORM\OneToMany(targetEntity=Table::class, mappedBy="restaurant", orphanRemoval=true)
 	 */
+	#[Reference('tables')]
+	#[CollectionAttribute]
 	private Collection $tables;
 
 	public function __construct($params = [])

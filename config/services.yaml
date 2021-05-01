@@ -29,10 +29,23 @@ services:
         public: true
         lazy: true
         class: App\Configurators\Entity\DishConfig
-    app.config.portion:
+    app.config.staff:
         public: true
         lazy: true
-        class: App\Configurators\Entity\PortionConfig
+        class: App\Configurators\Entity\StaffConfig
+    app.config.table:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\TableConfig
+    app.config.user:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\UserConfig
+    app.config.order:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\OrderConfig
+
     Google_Client:
         class: Google_Client
         calls:

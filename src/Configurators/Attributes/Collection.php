@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Configurators\Attributes;
 
 use Attribute;

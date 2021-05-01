@@ -20,6 +20,19 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 #[ConfiguratorAttribute('app.config.staff')]
 class Staff extends BaseUser
 {
+	public function __construct($params = [])
+	{
+		parent::__construct($params);
+		if (array_key_exists('roles', $params) && is_array($params['roles']))
+		{
+			$this->roles = $params['roles'];
+		}
+		if (array_key_exists('firebase_token', $params) && is_string($params['firebase_token']))
+		{
+			$this->firebaseToken = $params['firebase_token'];
+		}
+	}
+
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
@@ -27,6 +40,10 @@ class Staff extends BaseUser
 
 	/**
 	 * @ORM\Column(type="simple_array")
+	 * @Assert\All({
+	 *     @Assert\NotBlank,
+	 *     @Assert\Choice(['ROLE_ADMIN','ROLE_MANAGER','ROLE_STAFF'])
+	 * })
 	 */
 	#[Field(name: 'roles')]
 	private array $roles = [];

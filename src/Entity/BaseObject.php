@@ -21,7 +21,9 @@ use App\Configurators\Attributes\Field;
  *     "order" = "App\Entity\Order",
  *     "portion" = "App\Entity\Portion",
  *     "restaurant" = "App\Entity\Restaurant",
- *     "table" = "App\Entity\Table"
+ *     "table" = "App\Entity\Table",
+ *     "staff" = "App\Entity\Staff",
+ *     "user" = "App\Entity\User",
  * })
  * @HasLifecycleCallbacks
  */

@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Configurators\Attributes\Collection as CollectionAttribute;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
 use App\Repository\OrderRepository;
 use App\Types\Price;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,49 +21,64 @@ use Doctrine\ORM\Mapping\PreUpdate;
  * @ORM\Table(name="`order`")
  * @HasLifecycleCallbacks
  */
+#[ConfiguratorAttribute('app.config.order')]
 class Order extends BaseObject
 {
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
+	#[Field('status')]
+	#[Assert\Choice(['PAID','NEW','CANCELED'])]
 	private ?string $status;
 
 	/**
 	 * @ORM\Column(type="text", nullable=true)
 	 */
+	#[Field('comment')]
 	private ?string $comment;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
+	#[Reference('user')]
 	private ?User $user;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
+	#[Reference('restaurant')]
 	private ?Restaurant $restaurant;
 
 	/**
 	 * @ORM\ManyToMany(targetEntity=Portion::class)
 	 */
+	#[Reference('portion')]
+	#[CollectionAttribute]
 	private Collection $portions;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
 	private ?string $currency;
 
 	/**
 	 * @ORM\Column(type="price")
 	 */
+	#[Field('price')]
+	#[Assert\Valid]
 	private Price $sum;
 
-	public function __construct()
+	public function __construct(array $params = [])
 	{
 		$this->portions = new ArrayCollection();
+		if (array_key_exists('comment', $params) && is_string($params['comment']))
+		{
+			$this->comment = $params['comment'];
+		}
 	}
+
 	public function getStatus(): ?string
 	{
 		return $this->status;

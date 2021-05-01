@@ -26,6 +26,19 @@ use Doctrine\ORM\Mapping\PreUpdate;
  */
 abstract class BaseUser extends BaseObject implements UserInterface, EquatableInterface
 {
+
+	public function __construct($params = [])
+	{
+		if (array_key_exists('name', $params) && is_string($params['name']))
+		{
+			$this->name = $params['name'];
+		}
+		if (array_key_exists('email', $params) && is_string($params['email']))
+		{
+			$this->email = $params['email'];
+		}
+	}
+
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
@@ -81,7 +94,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	{
 		if (is_a($user, static::class, false))
 		{
-			return $this->getId()->compare($user->getId());
+			return $this->getId()->compare($user->getId()) === 0;
 		}
 
 		return false;

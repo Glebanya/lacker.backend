@@ -4,11 +4,11 @@ namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Dish;
 use App\Repository\PortionRepository;
 use App\Types\Lang;
 use App\Types\Price;
-use Doctrine\ORM\Mapping as ORM;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,15 +32,15 @@ class Portion extends BaseObject
 	 * @ORM\Column(type="price")
 	 */
 	#[Field(name: 'price')]
-	#[Assert\Valid]
+	#[Assert\Valid()]
 	private Price $price;
 
 	/**
-	 * @ORM\Column(type="lang_phrase")
+	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'size')]
-	#[Assert\Valid]
-	private Lang $size;
+	#[Field(name: 'weight')]
+	#[Assert\PositiveOrZero]
+	private int $weight;
 
 	public function __construct($params = [])
 	{
@@ -48,9 +48,9 @@ class Portion extends BaseObject
 		{
 			$this->price = new Price($params['price']);
 		}
-		if (array_key_exists('size', $params) && is_array($params['size']))
+		if (array_key_exists('weight', $params) && is_int($params['weight']))
 		{
-			$this->size = new Lang($params['size']);
+			$this->weight = $params['weight'];
 		}
 	}
 
@@ -78,15 +78,14 @@ class Portion extends BaseObject
 		return $this;
 	}
 
-	public function getSize(): ?Lang
+	public function getSize(): ?int
 	{
-		return $this->size;
+		return $this->weight;
 	}
 
-	public function setSize(array $size): self
+	public function setSize(int $weight): self
 	{
-		$this->size = new Lang($size);
-
+		$this->weight = $weight;
 		return $this;
 	}
 }

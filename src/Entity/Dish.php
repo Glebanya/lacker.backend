@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-
-use App\Repository\DishRepository;
-use App\Types\Lang;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\DishRepository;
+use App\Types\Image;
+use App\Types\Lang;
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\LangProperty;
 use App\Configurators\Attributes\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,6 +29,9 @@ class Dish extends BaseObject
 
 	/**
 	 * @ORM\OneToMany(targetEntity=Portion::class, mappedBy="dish", orphanRemoval=true)
+	 * @Assert\All({
+	 *     @Assert\Valid
+	 * })
 	 */
 	#[Reference(name: 'portions')]
 	#[CollectionAttribute]
@@ -50,9 +52,49 @@ class Dish extends BaseObject
 	#[CollectionAttribute]
 	private ?Restaurant $restaurant;
 
+	/**
+	 * @ORM\Column(type="image", nullable=true)
+	 */
+	#[Field(name: 'name')]
+	#[Assert\Valid]
+	private Image $image;
+
+	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	#[Field(name: 'type')]
+	#[Assert\Choice(['DRINKS', 'DISH', 'ALCOHOL', null])]
+	private ?string $type;
+
 	public function __construct($params = [])
 	{
 		$this->portions = new ArrayCollection();
+		if (array_key_exists('description', $params) && is_array($params['description']))
+		{
+			$this->description = new Lang($params['description']);
+		}
+		if (array_key_exists('name', $params) && is_array($params['name']))
+		{
+			$this->name = new Lang($params['name']);
+		}
+		if (array_key_exists('type', $params) && is_string($params['type']))
+		{
+			$this->type = $params['type'];
+		}
+		if (array_key_exists('image', $params) && is_string($params['image']))
+		{
+			$this->type = $params['image'];
+		}
+		if (array_key_exists('portions', $params) && is_array($params['portions']))
+		{
+			foreach ($params['portions'] as $portion)
+			{
+				if (is_array($portion))
+				{
+					$this->portions->add(new Portion($portion));
+				}
+			}
+		}
 	}
 
 	public function getDescription(): ?Lang
@@ -119,6 +161,30 @@ class Dish extends BaseObject
 	public function setRestaurant(?Restaurant $restaurant): self
 	{
 		$this->restaurant = $restaurant;
+
+		return $this;
+	}
+
+	public function getImage(): Image
+	{
+		return $this->image;
+	}
+
+	public function setImage($image): self
+	{
+		$this->image = $image;
+
+		return $this;
+	}
+
+	public function getType(): ?string
+	{
+		return $this->type;
+	}
+
+	public function setType(?string $type): self
+	{
+		$this->type = $type;
 
 		return $this;
 	}

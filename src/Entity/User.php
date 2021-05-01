@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
 use App\Repository\UserRepository;
 use App\Utils\Environment;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,15 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use \App\Configurators\Attributes\Collection as AttributeCollection;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
+#[ConfiguratorAttribute('app.config.user')]
 class User extends BaseUser
 {
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
+	#[Field(name: 'google_id')]
 	private ?string $googleId;
 
 	/**
@@ -29,10 +35,13 @@ class User extends BaseUser
 	/**
 	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user")
 	 */
+	#[Reference(name: 'orders')]
+	#[AttributeCollection]
 	private Collection $orders;
 
 	public function __construct()
 	{
+		parent::__construct();
 		$this->orders = new ArrayCollection();
 	}
 
@@ -65,7 +74,7 @@ class User extends BaseUser
 		return ['ROLE_CLIENT'];
 	}
 
-	#[Pure] public function getSalt(): ?string
+	public function getSalt(): ?string
 	{
 		return Environment::get('USER_SALT');
 	}
