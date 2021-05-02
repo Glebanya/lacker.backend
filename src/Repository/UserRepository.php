@@ -30,8 +30,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 	 */
 	public function findByMail(string $mail): ?User
 	{
-		return $this->createQueryBuilder('user')->andWhere('user.email = :email')->setParameter('email', $mail)
-			->getQuery()->getOneOrNullResult();
+		return $this->createQueryBuilder('user')->andWhere('user.email = :email')->setParameter('email', $mail)->getQuery()->getOneOrNullResult();
 	}
 
 	/**
@@ -54,7 +53,6 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 	 */
 	public function loadUserByUsername(string $username): ?UserInterface
 	{
-		return $this->createQueryBuilder('user')->where('user.id = :id')->setParameter('id', $username)->getQuery()
-			->getOneOrNullResult();
+		return $this->createQueryBuilder('user')->where('user.id = :id')->setParameter('id', $username)->getQuery()->getOneOrNullResult();
 	}
 }

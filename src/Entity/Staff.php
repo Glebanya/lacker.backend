@@ -10,11 +10,14 @@ use App\Repository\UserRepository;
 use App\Utils\Environment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -25,12 +28,20 @@ class Staff extends BaseUser
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
+	#[Assert\NotCompromisedPassword(groups: ["create","update"])]
+	#[Assert\NotBlank(groups: ["create","update"])]
+	#[Assert\Length(
+		min: 6,
+		max: 15,
+		minMessage: 'Your password must be at least {{ limit }} characters long',
+		maxMessage: 'Your password cannot be longer than {{ limit }} characters',
+	)]
 	private ?string $password;
 	/**
 	 * @ORM\Column(type="simple_array")
 	 * @Assert\All({
 	 *     @Assert\NotBlank,
-	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"}),
+	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"},groups: {"create", "update"}),
 	 * })
 	 */
 	#[Field(name: "roles")]
@@ -44,13 +55,17 @@ class Staff extends BaseUser
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
-	#[Field(name: 'firebase_token')]
 	#[Immutable]
+	#[Field(name: 'firebase_token')]
 	private ?string $firebaseToken;
 
 	public function __construct($params = [])
 	{
 		parent::__construct($params);
+		if (array_key_exists('password', $params) && is_string($params['password']))
+		{
+			$this->password = $params['password'];
+		}
 		if (array_key_exists('roles', $params) && is_array($params['roles']))
 		{
 			$this->roles = $params['roles'];
@@ -112,5 +127,27 @@ class Staff extends BaseUser
 		$this->firebaseToken = $firebaseToken;
 
 		return $this;
+	}
+
+	/**
+	 * @PreUpdate
+	 *
+	 * @param PreUpdateEventArgs|null $eventArgs
+	 */
+	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
+	{
+		parent::onUpdate($eventArgs);
+		$this->getRestaurant()?->onUpdate();
+	}
+
+	/**
+	 * @PrePersist
+	 *
+	 * @param LifecycleEventArgs|null $eventArgs
+	 */
+	public function onAdd(LifecycleEventArgs $eventArgs = null)
+	{
+		parent::onAdd($eventArgs);
+		$this->getRestaurant()?->onUpdate();
 	}
 }

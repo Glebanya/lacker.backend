@@ -28,6 +28,42 @@ use Doctrine\ORM\Mapping\PreUpdate;
 abstract class BaseUser extends BaseObject implements UserInterface, EquatableInterface
 {
 
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	#[Field(name: 'name',)]
+	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.', groups: ["create", "update"])]
+	#[Assert\Length(
+		min: 1,
+		max: 255,
+		minMessage: 'Name must be at least {{ limit }} characters long',
+		maxMessage: 'Name cannot be longer than {{ limit }} characters',
+		groups: [
+			"create",
+			"update"
+		]
+	)]
+	protected ?string $name;
+
+	/**
+	 * @ORM\Column(type="string", length=255, unique=true)
+	 */
+	#[Immutable]
+	#[Field(name: 'email')]
+	#[Assert\Unique(groups: ["create",])]
+	#[Assert\Email(
+		message: 'The email {{ value }} is not a valid email.',
+		groups: ["create"]
+	)]
+	#[Assert\Length(
+		min: 1,
+		max: 255,
+		minMessage: 'Email must be at least {{ limit }} characters long',
+		maxMessage: 'Email cannot be longer than {{ limit }} characters',
+		groups: ["create"]
+	)]
+	protected ?string $email;
+
 	public function __construct($params = [])
 	{
 		if (array_key_exists('name', $params) && is_string($params['name']))
@@ -39,34 +75,6 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 			$this->email = $params['email'];
 		}
 	}
-
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 */
-	#[Field(name: 'name')]
-	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.')]
-	#[Assert\Length(
-		min: 1,
-		max: 255,
-		minMessage: 'Name must be at least {{ limit }} characters long',
-		maxMessage: 'Name cannot be longer than {{ limit }} characters',
-	)]
-	protected ?string $name;
-
-	/**
-	 * @ORM\Column(type="string", length=255, unique=true)
-	 */
-	#[Field(name: 'email')]
-	#[Immutable]
-	#[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
-	#[Assert\Unique]
-	#[Assert\Length(
-		min:1 ,
-		max: 255,
-		minMessage: 'Email must be at least {{ limit }} characters long',
-		maxMessage: 'Email cannot be longer than {{ limit }} characters',
-	)]
-	protected ?string $email;
 
 	public function getUsername(): ?string
 	{

@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Configurators\Attributes\Immutable;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
@@ -37,23 +39,30 @@ abstract class BaseObject
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
 	 */
-	#[Field(name: 'id')]
 	#[Immutable]
+	#[Field(name: 'id')]
 	protected ?Uuid $id;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'create_data')]
 	#[Immutable]
+	#[Field(name: 'create_data')]
 	protected ?DateTimeInterface $crateDate;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'update_date')]
 	#[Immutable]
+	#[Field(name: 'update_date')]
 	protected ?DateTimeInterface $updateDate;
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	#[Immutable]
+	#[Field(name: 'update_date')]
+	private bool $deleted = false;
 
 	public function getId(): ?Uuid
 	{
@@ -79,8 +88,10 @@ abstract class BaseObject
 
 	/**
 	 * @PrePersist
+	 *
+	 * @param LifecycleEventArgs|null $eventArgs
 	 */
-	public function onAdd()
+	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		$this->crateDate = new DateTime('now');
 		$this->updateDate = new DateTime('now');
@@ -88,9 +99,23 @@ abstract class BaseObject
 
 	/**
 	 * @PreUpdate
+	 *
+	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
-	public function onUpdate()
+	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
 	{
 		$this->updateDate = new DateTime('now');
+	}
+
+	public function deleted(): ?bool
+	{
+		return $this->deleted;
+	}
+
+	public function setDeleted(bool $deleted): self
+	{
+		$this->deleted = $deleted;
+
+		return $this;
 	}
 }

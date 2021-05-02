@@ -10,6 +10,8 @@ use App\Repository\UserRepository;
 use App\Utils\Environment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -20,7 +22,7 @@ use \App\Configurators\Attributes\Collection as AttributeCollection;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
 #[ConfiguratorAttribute('app.config.user')]
-class User extends BaseUser
+class User extends BaseUser implements UserInterface, EquatableInterface
 {
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
@@ -41,9 +43,9 @@ class User extends BaseUser
 	#[AttributeCollection]
 	private Collection $orders;
 
-	public function __construct()
+	public function __construct($params = [])
 	{
-		parent::__construct();
+		parent::__construct($params);
 		$this->orders = new ArrayCollection();
 	}
 
@@ -103,5 +105,25 @@ class User extends BaseUser
 		}
 
 		return $this;
+	}
+
+	/**
+	 * @PreUpdate
+	 *
+	 * @param PreUpdateEventArgs|null $eventArgs
+	 */
+	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
+	{
+		parent::onUpdate($eventArgs);
+	}
+
+	/**
+	 * @PrePersist
+	 *
+	 * @param LifecycleEventArgs|null $eventArgs
+	 */
+	public function onAdd(LifecycleEventArgs $eventArgs = null)
+	{
+		parent::onAdd($eventArgs);
 	}
 }

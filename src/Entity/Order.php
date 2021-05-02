@@ -28,7 +28,7 @@ class Order extends BaseObject
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field('status')]
-	#[Assert\Choice(['PAID','NEW','CANCELED'])]
+	#[Assert\Choice(['PAID','NEW','CANCELED'], groups: ["creation"])]
 	private ?string $status;
 
 	/**
@@ -42,6 +42,7 @@ class Order extends BaseObject
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Reference('user')]
+	#[Assert\NotNull(groups: ["create"])]
 	private ?User $user;
 
 	/**
@@ -49,6 +50,7 @@ class Order extends BaseObject
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Reference('restaurant')]
+	#[Assert\NotNull(groups: ["create"])]
 	private ?Restaurant $restaurant;
 
 	/**
@@ -67,7 +69,7 @@ class Order extends BaseObject
 	 * @ORM\Column(type="price")
 	 */
 	#[Field('price')]
-	#[Assert\Valid]
+	#[Assert\Valid(groups: ["create"])]
 	private Price $sum;
 
 	public function __construct(array $params = [])
@@ -127,14 +129,6 @@ class Order extends BaseObject
 		return $this;
 	}
 
-	/**
-	 * @PrePersist
-	 */
-	public function onAdd()
-	{
-		parent::onAdd();
-	}
-
 	public function calculateSum()
 	{
 		foreach ($this->portions as $portion)
@@ -145,21 +139,30 @@ class Order extends BaseObject
 			}
 		}
 	}
+
 	/**
 	 * @PreUpdate
 	 *
-	 * @param PreUpdateEventArgs|null $event
+	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
-	public function onUpdate(PreUpdateEventArgs $event = null)
+	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
 	{
-		parent::onUpdate();
-		if ($event)
+		parent::onUpdate($eventArgs);
+		if ($eventArgs && $eventArgs->hasChangedField('portions'))
 		{
-			if ($event->hasChangedField('portions'))
-			{
-				$this->calculateSum();
-			}
+			$this->calculateSum();
 		}
+	}
+
+	/**
+	 * @PrePersist
+	 *
+	 * @param PreUpdateEventArgs|null $eventArgs
+	 */
+	public function onAdd(PreUpdateEventArgs $eventArgs = null)
+	{
+		parent::onAdd($eventArgs);
+		$this->calculateSum();
 	}
 
 
