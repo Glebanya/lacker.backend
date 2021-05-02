@@ -9,9 +9,9 @@ class ImageDoctrine extends StringType
 {
 	protected const TYPE = 'image';
 
-	public function convertToDatabaseValue($value, AbstractPlatform $platform)
+	public function convertToDatabaseValue($value, AbstractPlatform $platform) : string
 	{
-		return !$value instanceof Image?:$value->getUrl();
+		return !$value instanceof Image?'NULL':$value->getUrl();
 	}
 
 	public function convertToPHPValue($value, AbstractPlatform $platform): Image

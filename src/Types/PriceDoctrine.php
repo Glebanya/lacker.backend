@@ -9,7 +9,7 @@ class PriceDoctrine extends JsonType
 {
 	protected const TYPE = 'price';
 
-	public function convertToPHPValue($value, AbstractPlatform $platform)
+	public function convertToPHPValue($value, AbstractPlatform $platform): Price
 	{
 		return new Price(parent::convertToPHPValue($value, $platform));
 	}

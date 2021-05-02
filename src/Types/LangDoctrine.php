@@ -9,7 +9,7 @@ class LangDoctrine extends JsonType
 {
 	protected const TYPE = 'lang_phrase';
 
-	public function convertToPHPValue($value, AbstractPlatform $platform)
+	public function convertToPHPValue($value, AbstractPlatform $platform): Lang
 	{
 		return new Lang(parent::convertToPHPValue($value, $platform));
 	}
