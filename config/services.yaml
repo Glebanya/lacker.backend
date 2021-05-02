@@ -52,3 +52,6 @@ services:
             - [ setDeveloperKey, [ '%env(GOOGLE_API_KEY)%' ] ]
             - [ setClientId, [ '%env(GOOGLE_CLIENT_ID)%' ] ]
             - [ setClientSecret, [ '%env(GOOGLE_CLIENT_SECRET)%' ] ]
+    App\Events\PasswordEncoderListener:
+        tags:
+          - { name: 'doctrine.event_subscriber', connection: 'default' }
