@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Security\JWTObjectSigner;
-use App\Security\Login\GoogleUserLoginObject;
-use App\Security\Login\PureStaffLoginObject;
+use App\Security\Login\UserLoginService;
+use App\Security\Login\StaffLoginService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,15 +16,16 @@ class AuthController extends AbstractController
 {
 	/**
 	 * @param Request $request
-	 * @param GoogleUserLoginObject $object
+	 * @param UserLoginService $loginService
 	 *
 	 * @return Response
-	 * @throws LoginException|Exception
+	 * @throws Exception
 	 */
 	#[Route('/public/auth/google', name: 'auth_google', methods: ['POST'])]
-	public function authGoogle(Request $request, GoogleUserLoginObject $object): Response
+	public function authGoogle(Request $request, UserLoginService $loginService): Response
 	{
-		if ($user = $object->setData($this->getContent($request->getContent()))->findUser() ?? $object->createUser())
+		$content = $this->getContent($request);
+		if ($user = $loginService->findOrCreateUser($content['google_id']))
 		{
 			return $this->json([
 				'data' => [
@@ -42,9 +43,9 @@ class AuthController extends AbstractController
 		throw new BadRequestHttpException('invalid json body: ');
 	}
 
-	private function getContent(string $content): ?array
+	private function getContent(Request $request): ?array
 	{
-		if ($content <> "" && !$data = json_decode($content, true))
+		if ($request->getContent() <> "" && !$data = json_decode($request->getContent() , true))
 		{
 			if (json_last_error() !== JSON_ERROR_NONE)
 			{
@@ -57,15 +58,16 @@ class AuthController extends AbstractController
 
 	/**
 	 * @param Request $request
-	 * @param PureStaffLoginObject $object
+	 * @param StaffLoginService $loginService
 	 *
 	 * @return Response
-	 * @throws LoginException|Exception
+	 * @throws Exception
 	 */
 	#[Route('/public/auth/staff', name: 'auth_staff', methods: ['POST'])]
-	public function authStaff(Request $request, PureStaffLoginObject $object): Response
+	public function authStaff(Request $request, StaffLoginService $loginService): Response
 	{
-		if ($user = $object->setData($this->getContent($request->getContent()))->findUser())
+		$content = $this->getContent($request);
+		if ($user = $loginService->findUser(email: $content['email'],password: $content['password']))
 		{
 			return $this->json([
 				'data' => [
