@@ -35,7 +35,7 @@ class AuthController extends AbstractController
 					'access_token' => (new JWTObjectSigner([
 						'type' => 'client',
 						'user_id' => $user->getId(),
-						'rand' => md5(random_bytes(32), true)
+						'rand' => rand(0,721)
 					]))->sign(),
 				]
 			]);
