@@ -53,7 +53,7 @@ class UserConfig extends BaseConfigurator
 								}
 								throw new \Exception((string)$errors);
 							}
-							throw new \Exception("table reserved");
+							throw new \Exception("table reserved ");
 						}
 						throw new \Exception("unknown table");
 					}

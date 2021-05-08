@@ -8,6 +8,7 @@ use App\Entity\Menu;
 use App\Entity\Portion;
 use App\Entity\Restaurant;
 use App\Entity\Staff;
+use App\Entity\Table;
 use App\Types\Image;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,16 +43,25 @@ class AppFixtures extends Fixture
 			}
 			$restaurant->addMenu($menu);
 		}
-		$roles = [Staff::ROLE_ADMINISTRATOR,Staff::ROLE_MANAGER,Staff::ROLE_STAFF];
-		foreach($roles as $role)
+		$roles = [Staff::ROLE_ADMINISTRATOR => 'kek',Staff::ROLE_MANAGER => 'lol' ,Staff::ROLE_STAFF => 'azzar'];
+		foreach(array_keys($roles) as $role)
 		{
 			$staff = ($staff = new Staff())
+				->setUsername($role)
 				->setStatus(Staff::STATUS_WORKING)
 				->setRoles($role)
-				->setEmail('kek@mail.com')
-				->setPassword($this->encoder->encodePassword($staff,'11111111'))
+				->setEmail("$roles[$role]@mail.com")
+				->setPassword('11111111')
 				->setAvatar(new Image('https://slovnet.ru/wp-content/uploads/2018/09/1-58.jpg'));
 			$restaurant->addStaff($staff);
+		}
+		for ($i = 0; $i < 5; $i++)
+		{
+			$table = (new Table([
+				'persons' => $i + 1,
+				'title' => ['ru' => "Стол № $i"]
+			]))->setStatus(Table::STATUS_FREE);
+			$restaurant->addTable($table);
 		}
 		$manager->persist($restaurant);
 		$manager->flush();

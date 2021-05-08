@@ -22,11 +22,12 @@ use App\Configurators\Attributes\Field;
  *     "order" = "App\Entity\Order",
  *     "portion" = "App\Entity\Portion",
  *     "restaurant" = "App\Entity\Restaurant",
- *     "menu" = "\App\Entity\Menu",
+ *     "menu" = "App\Entity\Menu",
  *     "staff" = "App\Entity\Staff",
  *     "user" = "App\Entity\User",
  *     "table" = "App\Entity\Table",
- *     "reserve" = "App\Entity\TableReserve"
+ *     "reserve" = "App\Entity\TableReserve",
+ *     "user_base" = "App\Entity\BaseUser"
  * })
  * @ORM\HasLifecycleCallbacks
  */

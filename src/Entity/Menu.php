@@ -106,9 +106,9 @@ class Menu extends BaseObject
 		return $this->description;
 	}
 
-	public function setDescription($description): self
+	public function setDescription(array $description): self
 	{
-		$this->description = $description;
+		$this->description = new Lang($description);
 
 		return $this;
 	}

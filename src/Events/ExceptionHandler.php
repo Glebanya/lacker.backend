@@ -29,7 +29,8 @@ class ExceptionHandler implements EventSubscriberInterface
 		$response = new JsonResponse([
 			'error' => [
 				'message' => $exception->getMessage(),
-				'code' => $exception->getCode()
+				'code' => $exception->getCode(),
+				'trace' => $exception->getTraceAsString()
 			]
 		]);
 		if ($exception instanceof HttpExceptionInterface)

@@ -39,17 +39,17 @@ class Restaurant extends BaseObject
 	protected Collection|Selectable $orders;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant",orphanRemoval=true, fetch="EXTRA_LAZY")
+	 * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant",orphanRemoval=true, fetch="EXTRA_LAZY",cascade = {"persist"})
 	 */
 	protected Collection|Selectable $staff;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Table::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY")
+	 * @ORM\OneToMany(targetEntity=Table::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY",cascade = {"persist"})
 	 */
 	protected Collection|Selectable $tables;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY")
+	 * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY", cascade = {"persist"})
 	 */
 	protected Collection|Selectable $menus;
 

@@ -15,7 +15,11 @@ final class ApiService
 
 	public function buildApiEntityObject(object $object): ApiEntity|null
 	{
-		if (!empty($attributes = (new ReflectionClass($object))->getAttributes(ConfiguratorAttribute::class)))
+		$reflection = new ReflectionClass($object);
+		if (
+			!empty($attributes = $reflection->getAttributes(ConfiguratorAttribute::class)) ||
+			!empty($attributes = $reflection->getParentClass()?->getAttributes(ConfiguratorAttribute::class))
+		)
 		{
 			if ($this->container->get($configurator = current($attributes)->newInstance()->entity))
 			{

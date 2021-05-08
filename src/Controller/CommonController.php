@@ -36,14 +36,14 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-			$this->denyAccessUnlessGranted('view',$object);
+			//$this->denyAccessUnlessGranted('view',$object);
 			return $this->json([
 				'data' => $this->formatObject(
 					entity: $this->service->buildApiEntityObject($object),
 					fields: $this->getRequestedFields($request))
 			]);
 		}
-		throw new BadRequestException();
+		throw new BadRequestException("object $id not found");
 	}
 
 	protected function getObject(string $id): null|object
@@ -52,7 +52,7 @@ class CommonController extends AbstractController
 			Criteria::create()
 				->where(Criteria::expr()->eq('id',$id))
 				->andWhere(Criteria::expr()->eq('deleted',false))
-			);
+			)->first();
 	}
 
 	protected function formatObject(ApiEntity $entity, array $fields): array
@@ -60,7 +60,7 @@ class CommonController extends AbstractController
 		return array_reduce(
 			$fields,
 			function(array $result, string $field) use ($entity): array {
-				$this->denyAccessUnlessGranted($field . '.view', $entity->getObject());
+#				$this->denyAccessUnlessGranted($field . '.view', $entity->getObject());
 				$result[$field] = $entity->getProperty($field);
 				return $result;
 			},

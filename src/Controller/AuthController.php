@@ -45,7 +45,7 @@ class AuthController extends AbstractController
 
 	private function getContent(Request $request): ?array
 	{
-		if ($request->getContent() <> "" && !$data = json_decode($request->getContent() , true))
+		if (!$data = json_decode($request->getContent() , true))
 		{
 			if (json_last_error() !== JSON_ERROR_NONE)
 			{
@@ -77,11 +77,11 @@ class AuthController extends AbstractController
 					'access_token' => (new JWTObjectSigner([
 						'type' => 'staff',
 						'user_id' => $user->getId(),
-						'rand' => md5(random_bytes(32), true)
+						'rand' => rand(0,721)
 					]))->sign(),
 				]
 			]);
 		}
-		throw new BadRequestHttpException('invalid json body: ');
+		throw new BadRequestHttpException('unknown user');
 	}
 }

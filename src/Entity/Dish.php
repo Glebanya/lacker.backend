@@ -36,7 +36,8 @@ class Dish extends BaseObject
 	 *     targetEntity=Portion::class,
 	 *     mappedBy="dish",
 	 *     orphanRemoval=true,
-	 *     fetch="EXTRA_LAZY"
+	 *     fetch="EXTRA_LAZY",
+	 *     cascade={"persist"}
 	 *)
 	 * @Assert\All({
 	 *      @Assert\Type("\App\Entity\Portion")

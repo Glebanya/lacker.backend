@@ -37,11 +37,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	)]
 	private ?string $password;
 	/**
-	 * @ORM\Column(type="simple_array")
-	 * @Assert\All({
-	 *     @Assert\NotBlank,
-	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"},groups= {"create", "update"}),
-	 * })
+	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: "role")]
 	#[Assert\Choice([Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER])]
@@ -50,7 +46,8 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Assert\Choice([Staff::STATUS_NOT_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY])]
+	#[Field(name: "status")]
+	#[Assert\Choice([Staff::STATUS_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY])]
 	private ?string $status;
 
 	/**
@@ -73,9 +70,9 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		{
 			$this->password = $params['password'];
 		}
-		if (array_key_exists('roles', $params) && is_array($params['roles']))
+		if (array_key_exists('roles', $params) && is_string($params['roles']))
 		{
-			$this->roles = $params['roles'];
+			$this->role = $params['roles'];
 		}
 		if (array_key_exists('firebase_token', $params) && is_string($params['firebase_token']))
 		{

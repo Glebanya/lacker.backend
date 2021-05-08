@@ -3,13 +3,14 @@
 
 namespace App\Configurators\Entity;
 
-use App\Configurators\Entity\StaffConfig as StaffEntity;
+
+use App\Entity\Staff;
 
 class StaffConfig extends BaseConfigurator
 {
 	protected function getEntity(): string
 	{
-		return StaffEntity::class;
+		return Staff::class;
 	}
 
 	protected function getMethodsList(): array

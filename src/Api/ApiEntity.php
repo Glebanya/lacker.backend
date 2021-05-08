@@ -31,7 +31,7 @@ final class ApiEntity
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
 		{
-			return $this->resolver->getPropertyBuilderCollection()->get($key)->build($this->object)->value($params);
+			return $this->resolver->getPropertyBuilderCollection()->get($key)->build($this->object)->value();
 		}
 
 		return null;
@@ -47,8 +47,7 @@ final class ApiEntity
 	{
 		if ($this->resolver->getReferenceBuilderCollection()->has($key))
 		{
-			if ($result = ($this->resolver->getReferenceBuilderCollection()->get($key)->build($this->object)
-				->value($params)))
+			if ($result = $this->resolver->getReferenceBuilderCollection()->get($key)->build($this->object)->value($params))
 			{
 				if (is_iterable($result))
 				{

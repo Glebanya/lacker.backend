@@ -6,6 +6,7 @@ use App\Entity\Table;
 
 class TableConfig extends BaseConfigurator
 {
+
 	protected function getEntity(): string
 	{
 		return Table::class;
@@ -15,9 +16,7 @@ class TableConfig extends BaseConfigurator
 	{
 		return array_merge_recursive(
 			parent::getMethodsList(),
-			[
-
-			]
+			[]
 		);
 	}
 }

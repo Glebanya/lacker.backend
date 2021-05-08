@@ -11,7 +11,7 @@ class PriceDoctrine extends JsonType
 
 	public function convertToPHPValue($value, AbstractPlatform $platform): Price
 	{
-		return new Price(parent::convertToPHPValue($value, $platform));
+		return new Price(parent::convertToPHPValue($value, $platform) ?? []);
 	}
 
 	public function getName(): string

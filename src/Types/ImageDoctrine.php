@@ -14,9 +14,9 @@ class ImageDoctrine extends StringType
 		return !$value instanceof Image?'NULL':$value->getUrl();
 	}
 
-	public function convertToPHPValue($value, AbstractPlatform $platform): Image
+	public function convertToPHPValue($value, AbstractPlatform $platform): ?Image
 	{
-		return new Image(parent::convertToPHPValue($value, $platform));
+		return $value = parent::convertToPHPValue($value, $platform)? new Image($value) : null;
 	}
 
 	public function getName(): string
