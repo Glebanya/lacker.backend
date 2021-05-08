@@ -60,16 +60,20 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	{
 		if ($this->has($property))
 		{
-			return new class ($this->array->offsetGet($property)) implements PropertyBuilderInterface {
-				public function __construct(private ReflectionProperty $property)
+			return new class ($property,$this->array->offsetGet($property)) implements PropertyBuilderInterface {
+				public function __construct(private string $name,private ReflectionProperty $property)
 				{
 				}
 
 				public function build(object $object): PropertyInterface
 				{
-					return new class($object, $this->property) implements PropertyInterface {
+					return new class($this->name, $object, $this->property) implements PropertyInterface {
 
-						public function __construct(private object $object, private ReflectionProperty $property)
+						public function __construct(
+							private string $name,
+							private object $object,
+							private ReflectionProperty $property
+						)
 						{
 						}
 
@@ -106,14 +110,11 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 								}
 								elseif ($this->property->class === Image::class)
 								{
-									if ($parameter instanceof UploadedFile)
-									{
-										$parameter = new Image($parameter);
-									}
+									$parameter = new Image($parameter);
 								}
 								$this->property->setValue($this->object, $parameter);
 							}
-							throw new Exception("property in immutable");
+							throw new Exception("property $this->name immutable");
 						}
 					};
 				}

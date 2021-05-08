@@ -22,52 +22,47 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 
 	protected function getMethodsList(): array
 	{
-		return [
-			'remove_portion' => function(DishEntity $object, array $params) {
-
-				if (array_key_exists('portion', $params) && is_string($params['portion']))
-				{
-					if ($portion = $this->manager->getPartialReference(Portion::class, $params['portion']))
+		return array_merge_recursive(
+			parent::getMethodsList(),
+			[
+				'remove_portion' => function(DishEntity $object, array $params) {
+					if (array_key_exists('portion', $params) && is_string($params['portion']))
 					{
-						$object->removePortion($portion);
-						$this->manager->flush();
-					}
-				}
-
-				return true;
-			},
-			'add_portion' => function(DishEntity $object, array $params) {
-
-				if (array_key_exists('portion', $params) && is_array($params['portion']))
-				{
-					if(is_array($rawPortion = $params['portion']))
-					{
-						if (count($errors = $this->validator->validate($portion = new Portion($rawPortion))) === 0)
+						if (
+							($portion = $this->manager->getPartialReference(Portion::class, $params['portion'])) &&
+							$portion instanceof Portion
+						)
 						{
-							$object->addPortion($portion);
+							$object->removePortion($portion);
 							$this->manager->flush();
 						}
 					}
-				}
-			},
-			'add_portion_batch' => function(DishEntity $object, array $params) {
-
-				if (array_key_exists('portion', $params) && is_array($params['portion']))
-				{
-					foreach ($params['portion'] as $rawPortion)
+					return true;
+				},
+				'add_portion' => function(DishEntity $object, array $params) {
+					if (array_key_exists('portion', $params) && is_array($params['portion']))
 					{
-						if (is_array($rawPortion))
+						if(
+							is_array($rawPortion = $params['portion']) &&
+							array_reduce(
+								$rawPortion,
+								function($result,$item) : bool {
+									return $result && is_array($item);
+								},
+								true
+							)
+						)
 						{
-							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion['dish']))) === 0)
+							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion))) === 0)
 							{
 								$object->addPortion($portion);
+								$this->manager->flush();
+								return $object->getId();
 							}
 						}
 					}
-					$this->manager->flush();
+					throw new \Exception("wrong params");
 				}
-			}
-
-		];
+		]);
 	}
 }

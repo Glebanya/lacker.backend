@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Collection as AttributeCollection;
+use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
@@ -10,13 +12,13 @@ use App\Repository\UserRepository;
 use App\Utils\Environment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
-use \App\Configurators\Attributes\Collection as AttributeCollection;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -37,16 +39,21 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	private ?string $password;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user")
+	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", fetch="EXTRA_LAZY")
 	 */
-	#[Reference(name: 'orders')]
-	#[AttributeCollection]
-	private Collection $orders;
+	private Collection|Selectable $orders;
+
+	/**
+	 * @ORM\OneToMany(targetEntity=TableReserve::class, mappedBy="user", orphanRemoval=true, fetch="EXTRA_LAZY")
+	 */
+	private Collection|Selectable $tableReserves;
+
 
 	public function __construct($params = [])
 	{
 		parent::__construct($params);
 		$this->orders = new ArrayCollection();
+		$this->tableReserves = new ArrayCollection();
 	}
 
 	public function getGoogleId(): ?string
@@ -85,13 +92,45 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 
 	public function eraseCredentials()
 	{
-
 	}
 
-	/**
-	 * @return Collection
-	 */
-	public function getOrders(): Collection
+	#[Reference(name: 'current_order')]
+	public function getCurrentOrder() : Order|null
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_NEW])
+				)
+		)->first();
+	}
+
+	#[Reference(name: 'canceled_orders')]
+	public function getCanceledOrders() : Collection
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_CANCELED])
+				)
+		);
+	}
+
+	#[Reference(name: 'paid_orders')]
+	#[AttributeCollection]
+	public function getPaidOrders() : Collection
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_PAID])
+				)
+		);
+	}
+
+	#[Reference(name: 'orders')]
+	#[AttributeCollection]
+	public function getOrders(): Collection|Selectable
 	{
 		return $this->orders;
 	}
@@ -107,8 +146,50 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 		return $this;
 	}
 
+	#[Reference('reserved_tables')]
+	#[CollectionAttribute]
+	public function getTableReserves(): Collection|Selectable
+	{
+		return $this->tableReserves;
+	}
+
+	#[Reference('current_reserve')]
+	public function getCurrentTable() : TableReserve|null
+	{
+		return $this->getTableReserves()->matching(
+			Criteria::create()
+				->where(Criteria::expr()->in('status',[TableReserve::STATUS_NEW]))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+		)->first();
+	}
+
+	public function addTableReserve(TableReserve $tableReserve): self
+	{
+		if (!$this->tableReserves->contains($tableReserve))
+		{
+			$this->tableReserves[] = $tableReserve;
+			$tableReserve->setUser($this);
+		}
+
+		return $this;
+	}
+
+	public function removeTableReserve(TableReserve $tableReserve): self
+	{
+		if ($this->tableReserves->removeElement($tableReserve))
+		{
+			// set the owning side to null (unless already changed)
+			if ($tableReserve->getUser() === $this)
+			{
+				$tableReserve->setUser(null);
+			}
+		}
+
+		return $this;
+	}
+
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -118,7 +199,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */
@@ -126,4 +207,5 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	{
 		parent::onAdd($eventArgs);
 	}
+
 }

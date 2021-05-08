@@ -3,24 +3,18 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
-use App\Configurators\Attributes\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Dish;
 use App\Repository\PortionRepository;
-use App\Types\Lang;
 use App\Types\Price;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 
 /**
  * @ORM\Entity(repositoryClass=PortionRepository::class)
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.portion')]
 class Portion extends BaseObject
@@ -30,8 +24,6 @@ class Portion extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference(name: 'dish')]
-	#[Collection]
 	private ?Dish $dish;
 
 	/**
@@ -60,6 +52,7 @@ class Portion extends BaseObject
 		}
 	}
 
+	#[Reference(name: 'dish')]
 	public function getDish(): ?Dish
 	{
 		return $this->dish;
@@ -96,7 +89,7 @@ class Portion extends BaseObject
 	}
 
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -109,7 +102,7 @@ class Portion extends BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */

@@ -29,7 +29,7 @@ class DishAccessVoter extends AbstractAccessVoter
 			}
 			elseif (
 				$user instanceof Staff &&
-				$user->getRestaurant()->getId()->compare($subject->getRestaurant()->getId()) === 0
+				$user->getRestaurant()->getId()->compare($subject->getMenu()->getRestaurant()->getId()) === 0
 			)
 			{
 				return true;

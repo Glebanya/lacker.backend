@@ -30,7 +30,7 @@ class PortionAccessVoter extends AbstractAccessVoter
 			elseif (
 				($user = $token->getUser()) &&
 				$user instanceof Staff &&
-				$user->getRestaurant()->getId()->compare($subject->getDish()->getRestaurant()->getId()) === 0
+				$user->getRestaurant()->getId()->compare($subject->getDish()->getMenu()->getRestaurant()->getId()) === 0
 			)
 			{
 				return true;

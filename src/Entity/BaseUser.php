@@ -4,17 +4,12 @@ namespace App\Entity;
 
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Immutable;
-use JetBrains\PhpStorm\Pure;
-use App\Repository\BaseUserRepository;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Types\Image;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\BaseObjectRepository;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
+use App\Repository\BaseUserRepository;
 
 /**
  * @ORM\InheritanceType("JOINED")
@@ -27,7 +22,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
  */
 abstract class BaseUser extends BaseObject implements UserInterface, EquatableInterface
 {
-
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
@@ -38,10 +32,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 		max: 255,
 		minMessage: 'Name must be at least {{ limit }} characters long',
 		maxMessage: 'Name cannot be longer than {{ limit }} characters',
-		groups: [
-			"create",
-			"update"
-		]
+		groups: ["create", "update"]
 	)]
 	protected ?string $name;
 
@@ -51,10 +42,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	#[Immutable]
 	#[Field(name: 'email')]
 	#[Assert\Unique(groups: ["create",])]
-	#[Assert\Email(
-		message: 'The email {{ value }} is not a valid email.',
-		groups: ["create"]
-	)]
+	#[Assert\Email(message: 'The email {{ value }} is not a valid email.', groups: ["create"])]
 	#[Assert\Length(
 		min: 1,
 		max: 255,
@@ -63,6 +51,13 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 		groups: ["create"]
 	)]
 	protected ?string $email;
+
+	/**
+	 * @ORM\Column(type="image", nullable=true)
+	 */
+	#[Field(name: 'avatar')]
+	#[Assert\Valid]
+	protected Image $avatar;
 
 	public function __construct($params = [])
 	{
@@ -115,4 +110,15 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 
 	}
 
+	public function getAvatar(): Image
+	{
+		return $this->avatar;
+	}
+
+	public function setAvatar(Image $avatar): self
+	{
+		$this->avatar = $avatar;
+
+		return $this;
+	}
 }

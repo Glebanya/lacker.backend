@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
@@ -13,22 +14,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
+
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.order')]
 class Order extends BaseObject
 {
+	public const STATUS_PAID = 'PAID', STATUS_NEW = 'NEW', STATUS_CANCELED = 'CANCELED';
+
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field('status')]
-	#[Assert\Choice(['PAID','NEW','CANCELED'], groups: ["creation"])]
+	#[Assert\Choice(['PAID', 'NEW', 'CANCELED'], groups: ["creation"])]
 	private ?string $status;
 
 	/**
@@ -41,7 +42,7 @@ class Order extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference('user')]
+
 	#[Assert\NotNull(groups: ["create"])]
 	private ?User $user;
 
@@ -49,15 +50,12 @@ class Order extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference('restaurant')]
 	#[Assert\NotNull(groups: ["create"])]
 	private ?Restaurant $restaurant;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity=Portion::class)
+	 * @ORM\ManyToMany(targetEntity=Portion::class, fetch="EXTRA_LAZY")
 	 */
-	#[Reference('portion')]
-	#[CollectionAttribute]
 	private Collection $portions;
 
 	/**
@@ -105,6 +103,7 @@ class Order extends BaseObject
 		return $this;
 	}
 
+	#[Reference('user')]
 	public function getUser(): ?User
 	{
 		return $this->user;
@@ -117,6 +116,7 @@ class Order extends BaseObject
 		return $this;
 	}
 
+	#[Reference('restaurant')]
 	public function getRestaurant(): ?Restaurant
 	{
 		return $this->restaurant;
@@ -140,8 +140,38 @@ class Order extends BaseObject
 		}
 	}
 
+	#[Reference(name: 'portions')]
+	#[CollectionAttribute]
+	public function getPortions(): Collection
+	{
+		return $this->portions;
+	}
+
+	public function addPortion(Portion $portion): self
+	{
+		if (!$this->portions->contains($portion))
+		{
+			$this->portions[] = $portion;
+		}
+
+		return $this;
+	}
+
+	public function removePortion(Portion $portion): self
+	{
+		if ($this->portions->removeElement($portion))
+		{
+			if ($portion->getDish() === $this)
+			{
+				$portion->setDish(null);
+			}
+		}
+
+		return $this;
+	}
+
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -155,15 +185,30 @@ class Order extends BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
-	 * @param PreUpdateEventArgs|null $eventArgs
+	 * @param LifecycleEventArgs|null $eventArgs
 	 */
-	public function onAdd(PreUpdateEventArgs $eventArgs = null)
+	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		parent::onAdd($eventArgs);
 		$this->calculateSum();
 	}
 
+	#[Assert\Callback(groups: ['update','creation'])]
+	public function validate()
+	{
+		if (count($this->getPortions()) > 0)
+		{
+			$restaurantId = $this->getRestaurant()->getId();
+			foreach ($this->getPortions() as $portion)
+			{
+				if ($portion->getDish()->getMenu()->getRestaurant()->getId()->comapare($restaurantId) !== 0)
+				{
+					#assert\get Message;
+				}
+			}
+		}
+	}
 
 }

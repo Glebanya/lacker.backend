@@ -22,7 +22,7 @@ class Notificator
 	{
 		try
 		{
-			$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send');
+			$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send',);
 		}
 		catch (GuzzleException $e)
 		{

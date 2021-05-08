@@ -27,7 +27,8 @@ class ClosureMethodCollection implements MethodBuilderCollectionInterface
 	{
 		if ($this->has($property))
 		{
-			return new class($this->array->offsetGet($property)) implements MethodBuilderInterface {
+			return new class($this->array->offsetGet($property)) implements MethodBuilderInterface
+			{
 
 				public function __construct(protected $callable)
 				{
@@ -35,7 +36,8 @@ class ClosureMethodCollection implements MethodBuilderCollectionInterface
 
 				public function build(object $object): MethodInterface
 				{
-					return new class($this->callable, $object) implements MethodInterface {
+					return new class($this->callable, $object) implements MethodInterface
+					{
 						public function __construct(protected $callable, protected object $object)
 						{
 						}

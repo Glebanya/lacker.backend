@@ -8,6 +8,7 @@ use App\Entity\Menu;
 use App\Entity\Portion;
 use App\Entity\Restaurant;
 use App\Entity\Staff;
+use App\Types\Image;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -21,36 +22,38 @@ class AppFixtures extends Fixture
 
 	public function load(ObjectManager $manager)
 	{
-		$roles = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_MANAGER', 'ROLE_STAFF'];
-		for ($i = 0; $i < 5; $i++)
+		$restaurant = (new Restaurant())->setName(['ru' => 'ООО Рога и Копыта']);
+		for ($i = 0; $i < 2; $i++)
 		{
-			$rest = (new Restaurant())->setName(['ru' => 'cum'.$i]);
-			$manager->persist($rest);
-			for ($j = 0; $j < 5; $j++)
+			$menu = (new Menu())->setTitle(['ru' => "Меню № $i"])->setDescription(['ru' => "Меню для всех"]);
+			for( $j = 0; $j < 2; $j++ )
 			{
-				$mgn = ($staff = new Staff())->setUsername($i.'lol'.$j)->setRoles([$roles[$j]])
-					->setPassword($this->encoder->encodePassword($staff, 'kek'))->setEmail('kek'.$i.$j.'@mail.com');
-				$rest->addStaff($mgn);
-				$manager->persist($mgn);
-			}
-			for ($j = 0; $j < 5; $j++)
-			{
-				for ($k = 0; $k < 5; $k++)
+				$dish = (new Dish())
+					->setName(['ru' => "Блюдо № $j"])
+					->setDescription(['ru' => 'Очень вкусное'])
+					->setImage(new Image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvnK2svdusyfTDEAhPXRIPxSXEAIjXMj2-fA&usqp=CAU'))
+					->setType(Dish::TYPE_DISH);
+				for ($k = 0; $k < 3 ; $k++)
 				{
-					$dish = (new Dish())->setName(['ru' => 'имя'.$j])->setDescription(['ru' => 'описания'.$j])
-						->setRestaurant($rest);
-					$manager->persist($dish);
-					for ($l = 0; $l < 3; $l++)
-					{
-						$port = (new Portion())->setDish($dish)->setPrice(['ru' => $l.'руб'])->setSize([
-								'ru' => $l.
-									'кг'
-							]);
-						$manager->persist($port);
-					}
+					$portion = (new Portion())->setPrice(['RUB' => $k*100 + 4.87])->setSize($k);
+					$dish->addPortion($portion);
 				}
+				$menu->addDish($dish);
 			}
+			$restaurant->addMenu($menu);
 		}
+		$roles = [Staff::ROLE_ADMINISTRATOR,Staff::ROLE_MANAGER,Staff::ROLE_STAFF];
+		foreach($roles as $role)
+		{
+			$staff = ($staff = new Staff())
+				->setStatus(Staff::STATUS_WORKING)
+				->setRoles($role)
+				->setEmail('kek@mail.com')
+				->setPassword($this->encoder->encodePassword($staff,'11111111'))
+				->setAvatar(new Image('https://slovnet.ru/wp-content/uploads/2018/09/1-58.jpg'));
+			$restaurant->addStaff($staff);
+		}
+		$manager->persist($restaurant);
 		$manager->flush();
 	}
 }

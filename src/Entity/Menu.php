@@ -14,13 +14,10 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.menu')]
 class Menu extends BaseObject
@@ -43,17 +40,20 @@ class Menu extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference('restaurant')]
 	private ?Restaurant $restaurant;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Dish::class, mappedBy="menu", orphanRemoval=true)
+	 * @ORM\OneToMany(
+	 *     targetEntity=Dish::class,
+	 *     mappedBy="menu",
+	 *     orphanRemoval=true,
+	 *     fetch="EXTRA_LAZY",
+	 *     cascade={"persist"}
+	 *	 )
 	 * @Assert\All({
 	 *      @Assert\Type("\App\Entity\Dish")
 	 * })
 	 */
-	#[Reference('dishes')]
-	#[CollectionAttribute]
 	#[Assert\Valid]
 	private Collection $dishes;
 
@@ -77,6 +77,15 @@ class Menu extends BaseObject
 					$this->dishes->add(new Dish($dish));
 				}
 			}
+		}
+	}
+
+	public function delete()
+	{
+		parent::delete();
+		foreach ($this->getDishes() as $dish)
+		{
+			$dish->delete();
 		}
 	}
 
@@ -104,6 +113,7 @@ class Menu extends BaseObject
 		return $this;
 	}
 
+	#[Reference('restaurant')]
 	public function getRestaurant(): ?Restaurant
 	{
 		return $this->restaurant;
@@ -116,9 +126,8 @@ class Menu extends BaseObject
 		return $this;
 	}
 
-	/**
-	 * @return Collection
-	 */
+	#[Reference('dishes')]
+	#[CollectionAttribute]
 	public function getDishes(): Collection
 	{
 		return $this->dishes;
@@ -149,7 +158,7 @@ class Menu extends BaseObject
 	}
 
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -159,7 +168,7 @@ class Menu extends BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */

@@ -39,17 +39,16 @@ final class ApiEntity
 
 	/**
 	 * @param string $key
-	 * @param int $offset
-	 * @param int $limit
+	 * @param array $params
 	 *
 	 * @return ApiEntity|ApiEntity[]|null
 	 */
-	public function reference(string $key, int $offset = 0, int $limit = 1000): ApiEntity|array|null
+	public function reference(string $key, array $params): ApiEntity|array|null
 	{
 		if ($this->resolver->getReferenceBuilderCollection()->has($key))
 		{
 			if ($result = ($this->resolver->getReferenceBuilderCollection()->get($key)->build($this->object)
-				->value($offset, $limit)))
+				->value($params)))
 			{
 				if (is_iterable($result))
 				{

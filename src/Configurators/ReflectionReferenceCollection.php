@@ -2,23 +2,19 @@
 
 namespace App\Configurators;
 
+use \ArrayObject;
 use App\Api\Builders\ReferenceBuilderInterface;
 use App\Api\Collections\ReferenceBuilderCollectionInterface;
 use App\Api\Properties\ReferenceInterface;
-use App\Configurators\Attributes\Collection;
 use App\Configurators\Attributes\Reference;
-use ArrayObject;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionProperty;
 
-/**
- * Class ReflectionReferenceCollection
- * @package App\Configurators
- */
+
 class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterface
 {
-
 	/**
 	 * @var ArrayObject
 	 */
@@ -34,7 +30,7 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 	public function __construct(protected string|object $entity)
 	{
 		$result = [];
-		foreach ((new ReflectionClass($this->entity))->getProperties() as $property)
+		foreach ((new ReflectionClass($this->entity))->getMethods() as $property)
 		{
 			if (!empty($values = $property->getAttributes(Reference::class)))
 			{
@@ -54,35 +50,45 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 	{
 		if ($this->has($property))
 		{
-			return new class ($this->array->offsetGet($property)) implements ReferenceBuilderInterface {
-				public function __construct(private ReflectionProperty $property)
+			return new class ($this->array->offsetGet($property)) implements ReferenceBuilderInterface
+			{
+				public function __construct(private \ReflectionMethod $method)
 				{
 				}
 
 				public function build(object $object): ReferenceInterface
 				{
-					return new class($object, $this->property) implements ReferenceInterface {
+					return new class($object, $this->method) implements ReferenceInterface
+					{
 
-						public function __construct(private object $object, private ReflectionProperty $property)
+						public function __construct(private object $object, private \ReflectionMethod $method)
 						{
 						}
 
-						public function value(int $offset = 0, int $limit = 1000): object|array
+						private function getCriteria(array $params) : Criteria
 						{
-							$this->property->setAccessible(true);
-							$value = $this->property->getValue($this->object);
-							if (!empty($property = $this->property->getAttributes(Collection::class)))
-							{
-								if ($value instanceof \Doctrine\Common\Collections\Collection)
-								{
-									return $value->slice($offset, $limit);
-								}
-								elseif (is_array($value))
-								{
-									return array_slice($value, $offset, $limit);
-								}
-							}
+							return Criteria::create()
+								->where(
+									Criteria::expr()->eq(
+										'deleted',
+										(bool) array_key_exists('deleted', $params)? $params['deleted'] : false
+									)
+								)
+								->setMaxResults(
+									(int) array_key_first($params,'limit')?$params['limit'] : 50
+								)
+								->setFirstResult(
+									(int) array_key_first($params,'offset')? $params['offset'] : 0
+								);
+						}
 
+						public function value(array $params = []): object|iterable
+						{
+							$this->method->setAccessible(true);
+							if (($value = $this->method->invoke($this->object)) && $value instanceof Selectable)
+							{
+								return $value->matching($this->getCriteria($params));
+							}
 							return $value;
 						}
 					};
@@ -103,4 +109,3 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 		return $this->array->offsetExists($property);
 	}
 }
-

@@ -7,7 +7,6 @@ use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Collections\ReferenceBuilderCollectionInterface;
 use App\Api\ConfiguratorInterface;
 use App\Configurators\ClosureMethodCollection;
-use App\Configurators\ReflectionPropertyCollection;
 use App\Configurators\ReflectionReferenceCollection;
 use Exception;
 use ReflectionException;
@@ -53,7 +52,7 @@ abstract class BaseConfigurator implements ConfiguratorInterface
 	{
 		return $this->propertyBuilderCollection = $this->propertyBuilderCollection
 			??
-			new ReflectionPropertyCollection($this->getEntity());
+			new ReflectionReferenceCollection($this->getEntity());
 	}
 
 	/**

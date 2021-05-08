@@ -11,9 +11,6 @@ use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BaseObjectRepository;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 use App\Configurators\Attributes\Field;
 
 /**
@@ -25,11 +22,13 @@ use App\Configurators\Attributes\Field;
  *     "order" = "App\Entity\Order",
  *     "portion" = "App\Entity\Portion",
  *     "restaurant" = "App\Entity\Restaurant",
- *     "table" = "App\Entity\Table",
+ *     "menu" = "\App\Entity\Menu",
  *     "staff" = "App\Entity\Staff",
  *     "user" = "App\Entity\User",
+ *     "table" = "App\Entity\Table",
+ *     "reserve" = "App\Entity\TableReserve"
  * })
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class BaseObject
 {
@@ -87,7 +86,7 @@ abstract class BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */
@@ -95,10 +94,11 @@ abstract class BaseObject
 	{
 		$this->crateDate = new DateTime('now');
 		$this->updateDate = new DateTime('now');
+		$this->deleted = false;
 	}
 
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -112,10 +112,8 @@ abstract class BaseObject
 		return $this->deleted;
 	}
 
-	public function setDeleted(bool $deleted): self
+	public function delete()
 	{
-		$this->deleted = $deleted;
-
-		return $this;
+		$this->deleted = true;
 	}
 }

@@ -14,6 +14,11 @@ class StaffConfig extends BaseConfigurator
 
 	protected function getMethodsList(): array
 	{
-		// TODO: Implement getMethodsList() method.
+		return array_merge_recursive(
+			parent::getMethodsList(),
+			[
+
+			]
+		);
 	}
 }

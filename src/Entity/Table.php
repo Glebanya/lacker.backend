@@ -3,39 +3,41 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use App\Repository\TableRepository;
 use App\Types\Lang;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 
 /**
  * @ORM\Entity(repositoryClass=TableRepository::class)
  * @ORM\Table(name="`table`")
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.table')]
 class Table extends BaseObject
 {
+	public const STATUS_FREE = "FREE", STATUS_BUSY = "BUSY", STATUS_RESERVED = "RESERVED";
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: 'status')]
-	#[Assert\NotNull( groups: ["create", "update"])]
-	#[Assert\Choice(["BUSY","FREE","RESERVED"],groups: ["create", "update"])]
+	#[Assert\NotNull(groups: ["create", "update"])]
+	#[Assert\Choice([Table::STATUS_FREE, Table::STATUS_BUSY, Table::STATUS_RESERVED], groups: ["create", "update"])]
 	private string $status;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="tables")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference('restaurant')]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	private Restaurant $restaurant;
 
@@ -55,6 +57,11 @@ class Table extends BaseObject
 	private Lang $title;
 
 	/**
+	 * @ORM\OneToMany(targetEntity=TableReserve::class, mappedBy="ReservedTable", orphanRemoval=true, fetch="EXTRA_LAZY")
+	 */
+	private Collection|Selectable $tableReserves;
+
+	/**
 	 * Table constructor.
 	 *
 	 * @param array $params
@@ -69,6 +76,7 @@ class Table extends BaseObject
 		{
 			$this->title = new Lang($params['title']);
 		}
+		$this->tableReserves = new ArrayCollection();
 	}
 
 	public function getStatus(): ?string
@@ -83,6 +91,7 @@ class Table extends BaseObject
 		return $this;
 	}
 
+	#[Reference('restaurant')]
 	public function getRestaurant(): Restaurant
 	{
 		return $this->restaurant;
@@ -95,8 +104,49 @@ class Table extends BaseObject
 		return $this;
 	}
 
+	public function getCurrentReserve() : TableReserve
+	{
+		return $this->getTableReserves()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[TableReserve::STATUS_NEW])
+				)
+		)->first();
+	}
+
+	#[Reference('table_reserve')]
+	#[CollectionAttribute]
+	public function getTableReserves(): Collection|Selectable
+	{
+		return $this->tableReserves;
+	}
+
+	public function addTableReserve(TableReserve $tableReserve): self
+	{
+		if (!$this->tableReserves->contains($tableReserve))
+		{
+			$this->tableReserves[] = $tableReserve;
+			$tableReserve->setReservedTable($this);
+		}
+
+		return $this;
+	}
+
+	public function removeTableReserve(TableReserve $tableReserve): self
+	{
+		if ($this->tableReserves->removeElement($tableReserve))
+		{
+			if ($tableReserve->getReservedTable() === $this)
+			{
+				$tableReserve->setReservedTable(null);
+			}
+		}
+
+		return $this;
+	}
+
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -106,12 +156,13 @@ class Table extends BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		parent::onAdd($eventArgs);
+		$this->status = static::STATUS_FREE;
 	}
 }

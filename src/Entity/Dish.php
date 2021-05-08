@@ -15,18 +15,15 @@ use App\Configurators\Attributes\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 
 /**
  * @ORM\Entity(repositoryClass=DishRepository::class)
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.dish')]
 class Dish extends BaseObject
 {
+	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DISH = 'DISH', TYPE_DRINKS = 'DRINKS';
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
@@ -38,14 +35,13 @@ class Dish extends BaseObject
 	 * @ORM\OneToMany(
 	 *     targetEntity=Portion::class,
 	 *     mappedBy="dish",
-	 *     orphanRemoval=true
+	 *     orphanRemoval=true,
+	 *     fetch="EXTRA_LAZY"
 	 *)
 	 * @Assert\All({
 	 *      @Assert\Type("\App\Entity\Portion")
 	 * })
 	 */
-	#[Reference(name: 'portions')]
-	#[CollectionAttribute]
 	#[Assert\Count(
 		min: 1,
 		max: 10,
@@ -73,14 +69,13 @@ class Dish extends BaseObject
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
 	#[Field(name: 'type')]
-	#[Assert\Choice(['DRINKS', 'DISH', 'ALCOHOL', null], groups: ["create", "update"])]
+	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS, null], groups: ["create", "update"])]
 	private ?string $type;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference(name: "menu")]
 	private ?Menu $menu;
 
 	public function __construct($params = [])
@@ -114,6 +109,15 @@ class Dish extends BaseObject
 		}
 	}
 
+	public function delete()
+	{
+		parent::delete();
+		foreach ($this->getPortions() as $portion)
+		{
+			$portion->delete();
+		}
+	}
+
 	public function getDescription(): ?Lang
 	{
 		return $this->description;
@@ -126,9 +130,8 @@ class Dish extends BaseObject
 		return $this;
 	}
 
-	/**
-	 * @return Collection
-	 */
+	#[Reference(name: 'portions')]
+	#[CollectionAttribute]
 	public function getPortions(): Collection
 	{
 		return $this->portions;
@@ -194,15 +197,7 @@ class Dish extends BaseObject
 		return $this;
 	}
 
-	//	#[Assert\Callback]
-	//	public function validate(ExecutionContextInterface $context)
-	//	{
-	//		foreach ($this->portions as $portion)
-	//		{
-	//			$context->addViolation($context->getValidator()->validate($portion));
-	//		}
-	//	}
-
+	#[Reference(name: "menu")]
 	public function getMenu(): ?Menu
 	{
 		return $this->menu;
@@ -216,7 +211,7 @@ class Dish extends BaseObject
 	}
 
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -228,7 +223,7 @@ class Dish extends BaseObject
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */

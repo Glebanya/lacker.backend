@@ -6,25 +6,24 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
-use App\Repository\UserRepository;
+use App\Repository\StaffRepository;
 use App\Utils\Environment;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Entity(repositoryClass=StaffRepository::class)
  */
 #[ConfiguratorAttribute('app.config.staff')]
-class Staff extends BaseUser
+class Staff extends BaseUser implements UserInterface, EquatableInterface
 {
+	public const STATUS_WORKING = 'WORKING', STATUS_NOT_WORKING = 'NOT_WORKING' , STATUS_BUSY = 'BUSY';
+	public const ROLE_ADMINISTRATOR = 'ROLE_ADMIN', ROLE_MANAGER = 'ROLE_MANAGER' , ROLE_STAFF = 'ROLE_STAFF';
+
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
@@ -41,17 +40,25 @@ class Staff extends BaseUser
 	 * @ORM\Column(type="simple_array")
 	 * @Assert\All({
 	 *     @Assert\NotBlank,
-	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"},groups: {"create", "update"}),
+	 *     @Assert\Choice({"ROLE_ADMIN","ROLE_MANAGER","ROLE_STAFF"},groups= {"create", "update"}),
 	 * })
 	 */
-	#[Field(name: "roles")]
-	private array $roles = [];
+	#[Field(name: "role")]
+	#[Assert\Choice([Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER])]
+	private string $role;
+
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	#[Assert\Choice([Staff::STATUS_NOT_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY])]
+	private ?string $status;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="staff")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Reference('restaurant')]
 	private ?Restaurant $restaurant;
+
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
@@ -90,13 +97,12 @@ class Staff extends BaseUser
 
 	public function getRoles(): ?array
 	{
-		return $this->roles;
+		return [$this->role];
 	}
 
-	public function setRoles(array $roles): self
+	public function setRoles(string $role): self
 	{
-		$this->roles = $roles;
-
+		$this->role = $role;
 		return $this;
 	}
 
@@ -105,6 +111,7 @@ class Staff extends BaseUser
 		return Environment::get('STAFF_SALT');
 	}
 
+	#[Reference('restaurant')]
 	public function getRestaurant(): ?Restaurant
 	{
 		return $this->restaurant;
@@ -129,8 +136,13 @@ class Staff extends BaseUser
 		return $this;
 	}
 
+	public function setStatus(string $status) : self
+	{
+		$this->status = $status;
+		return $this;
+	}
 	/**
-	 * @PreUpdate
+	 * @ORM\PreUpdate
 	 *
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
@@ -141,13 +153,14 @@ class Staff extends BaseUser
 	}
 
 	/**
-	 * @PrePersist
+	 * @ORM\PrePersist
 	 *
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		parent::onAdd($eventArgs);
+		$this->status = static::STATUS_NOT_WORKING;
 		$this->getRestaurant()?->onUpdate();
 	}
 }

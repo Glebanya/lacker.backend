@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Api\ApiEntity;
 use App\Api\ApiService;
 use App\Repository\BaseObjectRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -47,7 +48,11 @@ class CommonController extends AbstractController
 
 	protected function getObject(string $id): null|object
 	{
-		return $id === 'me' ? $this->getUser() : $this->repository->find($id);
+		return $id === 'me' ? $this->getUser() : $this->repository->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('id',$id))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+			);
 	}
 
 	protected function formatObject(ApiEntity $entity, array $fields): array
@@ -123,7 +128,7 @@ class CommonController extends AbstractController
 		if ($object = $this->getObject($id))
 		{
 			$fields = $this->getRequestedFields(request: $request);
-			if ($reference = $this->service->buildApiEntityObject($object)->reference($reference))
+			if ($reference = $this->service->buildApiEntityObject($object)->reference($reference,$request->query->all()))
 			{
 				if (is_array($reference))
 				{
