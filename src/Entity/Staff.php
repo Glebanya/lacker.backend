@@ -77,9 +77,9 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		{
 			$this->password = $params['password'];
 		}
-		if (array_key_exists('roles', $params) && is_string($params['roles']))
+		if (array_key_exists('role', $params) && is_string($params['role']))
 		{
-			$this->role = $params['roles'];
+			$this->role = $params['role'];
 		}
 		if (array_key_exists('firebase_token', $params) && is_string($params['firebase_token']))
 		{
