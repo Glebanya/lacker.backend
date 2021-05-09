@@ -29,7 +29,7 @@ class MenuAccessVoter extends Voter
 	{
 		return
 			$subject instanceof Menu and ($user = $token->getUser()) and $user instanceof Staff and
-			$user->getRestaurant()->getId()->compare($subject->getRestaurant()->getId()) === 0 and
+			$user->getRestaurant()->getId()->equals($subject->getRestaurant()->getId()) and
 			in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR, Staff::ROLE_MANAGER])
 			;
 	}

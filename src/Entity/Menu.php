@@ -42,6 +42,7 @@ class Menu extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
+	#[Assert\NotNull(groups: ["create"])]
 	protected ?Restaurant $restaurant;
 
 	/**
@@ -52,11 +53,8 @@ class Menu extends BaseObject
 	 *     fetch="EXTRA_LAZY",
 	 *     cascade={"persist"}
 	 *	 )
-	 * @Assert\All({
-	 *      @Assert\Type("\App\Entity\Dish")
-	 * })
 	 */
-	#[Assert\Valid]
+	#[Assert\Valid(groups: ["create"])]
 	protected Collection|Selectable $dishes;
 
 	public function __construct($params = [])

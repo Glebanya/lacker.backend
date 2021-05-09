@@ -80,6 +80,7 @@ class UserConfig extends BaseConfigurator
 							$errors = $this->validator->validate($order, groups: "create");
 							if (count($errors) === 0)
 							{
+								$this->manager->persist($order);
 								$this->manager->flush();
 								return $order->getId();
 							}

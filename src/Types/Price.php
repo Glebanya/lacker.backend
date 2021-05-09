@@ -12,7 +12,7 @@ class Price extends \ArrayObject implements \JsonSerializable
 		parent::__construct((array) $array);
 	}
 
-	#[Assert\Callback]
+	#[Assert\Callback(groups: ['create','update'])]
 	public function validate(ExecutionContextInterface $context, $payload)
 	{
 		foreach ($this->getIterator() as $key => $value)

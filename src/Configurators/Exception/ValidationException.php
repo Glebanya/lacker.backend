@@ -8,7 +8,7 @@ class ValidationException extends \Exception
 {
 	public function __construct(private ConstraintViolationListInterface $violations)
 	{
-		parent::__construct('Validation failed');
+		parent::__construct((string) $this->violations);
 	}
 
 	public function getMessages(): array

@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
@@ -29,7 +30,7 @@ class Order extends BaseObject
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field('status', getter: 'getStatus', setter: 'setStatus')]
-	#[Assert\Choice(['PAID', 'NEW', 'CANCELED'], groups: ["creation"])]
+	#[Assert\Choice(['PAID', 'NEW', 'CANCELED'], groups: ["create"])]
 	protected ?string $status;
 
 	/**
@@ -201,16 +202,21 @@ class Order extends BaseObject
 	}
 
 	#[Assert\Callback(groups: ['update','create'])]
-	public function validate()
+	public function validate(ExecutionContextInterface $context)
 	{
-		if (count($this->getPortions()) > 0)
+		if ($this->getPortions()->count() === 0)
+		{
+			$context->buildViolation("no portions")->atPath("portions")->addViolation();
+		}
+		else
 		{
 			$restaurantId = $this->getRestaurant()->getId();
 			foreach ($this->getPortions() as $portion)
 			{
-				if ($portion->getDish()->getMenu()->getRestaurant()->getId()->comapare($restaurantId) !== 0)
+				$portionId = $portion->getDish()->getMenu()->getRestaurant()->getId();
+				if (!$portionId->equal($restaurantId))
 				{
-					#assert\get Message;
+					$context->buildViolation("error wrong portion")->atPath("portions")->addViolation();
 				}
 			}
 		}

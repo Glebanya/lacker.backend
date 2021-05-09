@@ -154,7 +154,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	}
 
 	#[Reference('current_reserve')]
-	public function getCurrentTable() : TableReserve|null
+	public function getCurrentTable() : TableReserve|false|null
 	{
 		return $this->getTableReserves()->matching(
 			Criteria::create()

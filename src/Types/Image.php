@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Image implements \JsonSerializable
 {
-	#[Assert\Url]
+	#[Assert\Url(groups: ['create','update'])]
 	protected string|null $url;
 
 	public function __construct(string $file)

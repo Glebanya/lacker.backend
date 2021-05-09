@@ -31,25 +31,14 @@ class Dish extends BaseObject
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $description;
 
-	/**
-	 * @ORM\OneToMany(
-	 *     targetEntity=Portion::class,
-	 *     mappedBy="dish",
-	 *     orphanRemoval=true,
-	 *     fetch="EXTRA_LAZY",
-	 *     cascade={"persist"}
-	 *)
-	 * @Assert\All({
-	 *      @Assert\Type("\App\Entity\Portion")
-	 * })
-	 */
 	#[Assert\Count(
 		min: 1,
 		max: 10,
 		minMessage: "portions count must be more than {{ limit }}",
-		maxMessage: "portions count must be less than {{ limit }}"
+		maxMessage: "portions count must be less than {{ limit }}",
+		groups: ["create", "update"]
 	)]
-	#[Assert\Valid]
+	#[Assert\Valid(groups: ["create", "update"])]
 	protected Collection $portions;
 
 	/**
@@ -70,7 +59,7 @@ class Dish extends BaseObject
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
 	#[Field(name: 'type', getter: 'getType', setter: 'setType')]
-	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS, null], groups: ["create", "update"])]
+	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS], groups: ["create", "update"])]
 	protected ?string $type;
 
 	/**
@@ -86,9 +75,9 @@ class Dish extends BaseObject
 		{
 			$this->description = new Lang($params['description']);
 		}
-		if (array_key_exists('name', $params) && is_array($params['name']))
+		if (array_key_exists('title', $params) && is_array($params['title']))
 		{
-			$this->name = new Lang($params['name']);
+			$this->name = new Lang($params['title']);
 		}
 		if (array_key_exists('type', $params) && is_string($params['type']))
 		{
@@ -96,7 +85,7 @@ class Dish extends BaseObject
 		}
 		if (array_key_exists('image', $params) && is_string($params['image']))
 		{
-			$this->type = $params['image'];
+			$this->image = new Image($params['image']);
 		}
 		if (array_key_exists('portions', $params) && is_array($params['portions']))
 		{
@@ -104,7 +93,7 @@ class Dish extends BaseObject
 			{
 				if (is_array($portion))
 				{
-					$this->portions->add(new Portion($portion));
+					$this->addPortion(new Portion($portion));
 				}
 			}
 		}

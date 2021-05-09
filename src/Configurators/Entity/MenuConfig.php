@@ -28,12 +28,13 @@ class MenuConfig extends BaseConfigurator
 			[
 				'add_dish' => function(Menu $object, array $params)
 				{
-					if (array_key_exists('dish',$params) && is_array($params['dish']))
+					if (array_key_exists('dish',$params) && is_array($rawDish = $params['dish']))
 					{
-						$errors = $this->validator->validate($dish = new Dish($params['dish']), groups: "create");
+						$errors = $this->validator->validate($dish = new Dish($rawDish), groups: "create");
 						if (count($errors) === 0)
 						{
 							$object->addDish($dish);
+							$this->manager->persist($dish);
 							$this->manager->flush();
 							return $dish->getId();
 						}

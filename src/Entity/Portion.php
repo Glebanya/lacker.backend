@@ -23,6 +23,7 @@ class Portion extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
+	#[Assert\NotNull(groups: ["create"])]
 	protected ?Dish $dish;
 
 	/**
