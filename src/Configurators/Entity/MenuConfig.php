@@ -27,29 +27,27 @@ class MenuConfig extends BaseConfigurator
 				'remove_dish' => function(Menu $object, array $params) {
 					if (array_key_exists('dish', $params) && is_string($params['dish']))
 					{
-						if (
-							($dish = $this->manager->getPartialReference(Dish::class, $params['dish'])) &&
-							$dish instanceof Dish
-						)
+						if (($dish = $this->manager->getPartialReference(Dish::class, $params['dish'])) && $dish instanceof Dish)
 						{
 							$object->removeDish($dish);
 							$this->manager->flush();
+							return 'ok';
 						}
 					}
-
-					return true;
+					throw new \Exception("wrong params");
 				},
 				'add_dish' => function(Menu $object, array $params) {
 					if (array_key_exists('dish',$params) && is_array($params['dish']))
 					{
-						if (count($errors = $this->validator->validate($dish = new Dish($params['dish']))) === 0)
+						if (count($errors = $this->validator->validate($dish = new Dish($params['dish']), groups: "create")) === 0)
 						{
 							$object->addDish($dish);
 							$this->manager->flush();
 							return $dish->getId();
 						}
-
+						throw new \Exception((string) $errors);
 					}
+					throw new \Exception("wrong params");
 				},
 			]
 		);

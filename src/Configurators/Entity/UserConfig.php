@@ -44,7 +44,7 @@ class UserConfig extends BaseConfigurator
 									->setUser($user)
 									->setStatus(TableReserve::STATUS_NEW)
 									->setReservedTable($table);
-								if (count($errors = $this->validator->validate($reserve)) === 0
+								if (count($errors = $this->validator->validate($reserve,groups: "create")) === 0
 								)
 								{
 									$this->manager->persist($reserve);
@@ -65,10 +65,7 @@ class UserConfig extends BaseConfigurator
 						array_key_exists('restaurant',$params) && is_string($params['restaurant'])
 					)
 					{
-						if (
-							($restaurant = $this->manager->find(Restaurant::class,$params['restaurant'])) &&
-							$restaurant instanceof Restaurant
-						)
+						if (($restaurant = $this->manager->find(Restaurant::class,$params['restaurant'])) && $restaurant instanceof Restaurant)
 						{
 							$order = (new Order($params))
 								->setUser($user)
@@ -83,7 +80,7 @@ class UserConfig extends BaseConfigurator
 							{
 								$order->addPortion($dish);
 							}
-							if (count($errors = $this->validator->validate($order)) === 0)
+							if (count($errors = $this->validator->validate($order, groups: "create")) === 0)
 							{
 								$this->manager->flush();
 								return $order->getId();

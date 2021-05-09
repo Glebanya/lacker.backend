@@ -28,10 +28,7 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 				'remove_portion' => function(DishEntity $object, array $params) {
 					if (array_key_exists('portion', $params) && is_string($params['portion']))
 					{
-						if (
-							($portion = $this->manager->getPartialReference(Portion::class, $params['portion'])) &&
-							$portion instanceof Portion
-						)
+						if (($portion = $this->manager->getPartialReference(Portion::class, $params['portion'])) && $portion instanceof Portion)
 						{
 							$object->removePortion($portion);
 							$this->manager->flush();
@@ -44,7 +41,7 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 					{
 						if(is_array($rawPortion = $params['portion']))
 						{
-							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion))) === 0)
+							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion),groups: "create")) === 0)
 							{
 								$object->addPortion($portion);
 								$this->manager->flush();

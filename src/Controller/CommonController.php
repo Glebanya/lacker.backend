@@ -105,10 +105,9 @@ class CommonController extends AbstractController
 				$apiObject->setProperty($key, $value);
 				$keys[] = $key;
 			}
-			if (count($errors = $validator->validate($object)) === 0)
+			if (count($errors = $validator->validate($apiObject->getObject(), groups: "update")) === 0)
 			{
 				$this->manager->flush();
-
 				return $this->json([
 					'data' => $this->formatObject($apiObject, $keys)
 				]);

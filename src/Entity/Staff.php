@@ -27,27 +27,34 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Assert\NotCompromisedPassword(groups: ["create","update"])]
-	#[Assert\NotBlank(groups: ["create","update"])]
+	#[Assert\NotCompromisedPassword(groups: ["create"])]
+	#[Assert\NotBlank(groups: ["create"])]
 	#[Assert\Length(
 		min: 6,
 		max: 15,
 		minMessage: 'Your password must be at least {{ limit }} characters long',
 		maxMessage: 'Your password cannot be longer than {{ limit }} characters',
+		groups: ["create"]
 	)]
 	protected ?string $password;
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: "role", getter: 'getRole',setter: 'setRoles')]
-	#[Assert\Choice([Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER])]
+	#[Assert\Choice(
+		[Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER],
+		groups: ["create","update"]
+	)]
 	protected string $role;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: "status", getter: 'getStatus', setter: 'setStatus')]
-	#[Assert\Choice([Staff::STATUS_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY])]
+	#[Assert\Choice(
+		[Staff::STATUS_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY],
+		groups: ["create","update"]
+	)]
 	private ?string $status;
 
 	/**

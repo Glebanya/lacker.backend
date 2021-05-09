@@ -6,7 +6,7 @@ use App\Entity\TableReserve;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class Reserve extends Voter
+class ReserveAccessVoter extends Voter
 {
 
 	protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)

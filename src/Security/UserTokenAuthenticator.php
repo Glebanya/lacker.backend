@@ -17,7 +17,10 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
 {
 	public function start(Request $request, AuthenticationException $authException = null): Response
 	{
-		return new JsonResponse(['message' => 'Authentication Required'], Response::HTTP_UNAUTHORIZED);
+		return new JsonResponse([
+			'message' => 'Authentication Required',
+			'code' => $authException?->getCode() ?? 0
+		], Response::HTTP_UNAUTHORIZED);
 	}
 
 	public function supports(Request $request): bool

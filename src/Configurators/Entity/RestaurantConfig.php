@@ -40,7 +40,7 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 			'add_menu' => function(RestaurantEntity $object, array $params) {
 				if (array_key_exists('menu',$params) && is_array($params['menu']))
 				{
-					if (count($errors = $this->validator->validate($staff = new Menu($params['menu']))) === 0)
+					if (count($errors = $this->validator->validate($staff = new Menu($params['menu']),groups: "create")) === 0)
 					{
 						$object->addMenu($staff);
 						$this->manager->flush();
@@ -53,7 +53,7 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 			'add_staff' => function(RestaurantEntity $object, array $params) {
 				if (array_key_exists('staff',$params) && is_array($params['staff']))
 				{
-					if (count($errors = $this->validator->validate($staff = new Staff($params['staff']))) === 0)
+					if (count($errors = $this->validator->validate($staff = new Staff($params['staff']), groups: "create")) === 0)
 					{
 						$object->addStaff($staff);
 						$this->manager->flush();
@@ -80,7 +80,7 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 							{
 								$order->addPortion($portion);
 							}
-							if (count($errors = $this->validator->validate($order)) === 0)
+							if (count($errors = $this->validator->validate($order,groups: "create")) === 0)
 							{
 								$this->manager->flush();
 								return $order->getId();

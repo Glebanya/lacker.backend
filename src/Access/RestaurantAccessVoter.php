@@ -11,22 +11,35 @@ class RestaurantAccessVoter extends Voter
 {
 	protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
 	{
-		if ($subject instanceof Restaurant)
-		{
-			if ($attribute === 'view')
-			{
-				return true;
-			}
-			elseif (
-				($user = $token->getUser()) and $user instanceof Staff and
-				$user->getRestaurant()->getId()->compare($subject->getId()) === 0
-			)
-			{
-				return in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR]);
-			}
+		return match ($attribute) {
+			'view' => $this->canView($subject,$token),
+			'update' => $this->canUpdate($subject,$token),
+			'delete' => $this->canDelete($subject,$token),
+			default => false
+		};
+	}
 
-		}
-		return false;
+	protected function canView($subject, TokenInterface $token): bool
+	{
+		return true;
+	}
+
+	protected function canUpdate($subject, TokenInterface $token): bool
+	{
+		return
+			$subject instanceof Restaurant and ($user = $token->getUser()) and $user instanceof Staff and
+			$user->getRestaurant()->getId()->compare($subject->getId()) === 0 and
+			in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR])
+			;
+	}
+
+	protected function canDelete($subject, TokenInterface $token): bool
+	{
+		return
+			$subject instanceof Restaurant and ($user = $token->getUser()) and $user instanceof Staff and
+			$user->getRestaurant()->getId()->compare($subject->getId()) === 0 and
+			in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR])
+			;
 	}
 
 	protected function supports(string $attribute, $subject): bool
