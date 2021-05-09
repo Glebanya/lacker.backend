@@ -3,6 +3,8 @@
 namespace App\Configurators\Entity;
 
 use App\Api\ConfiguratorInterface;
+use App\Configurators\Exception\ParameterException;
+use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish as DishEntity;
 use App\Entity\Portion;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,31 +27,20 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 		return array_merge_recursive(
 			parent::getMethodsList(),
 			[
-				'remove_portion' => function(DishEntity $object, array $params) {
-					if (array_key_exists('portion', $params) && is_string($params['portion']))
+				'add_portion' => function(DishEntity $object, array $params)
+				{
+					if (array_key_exists('portion', $params) && is_array($rawPortion = $params['portion']))
 					{
-						if (($portion = $this->manager->getPartialReference(Portion::class, $params['portion'])) && $portion instanceof Portion)
+						$errors = $this->validator->validate($portion = new Portion($rawPortion),groups: "create");
+						if (count($errors) === 0)
 						{
-							$object->removePortion($portion);
+							$object->addPortion($portion);
 							$this->manager->flush();
+							return $object->getId();
 						}
+						throw new ValidationException($errors);
 					}
-					return true;
-				},
-				'add_portion' => function(DishEntity $object, array $params) {
-					if (array_key_exists('portion', $params) && is_array($params['portion']))
-					{
-						if(is_array($rawPortion = $params['portion']))
-						{
-							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion),groups: "create")) === 0)
-							{
-								$object->addPortion($portion);
-								$this->manager->flush();
-								return $object->getId();
-							}
-						}
-					}
-					throw new \Exception("wrong params");
+					throw new ParameterException("wrong params");
 				}
 		]);
 	}

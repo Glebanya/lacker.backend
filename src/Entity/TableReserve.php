@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use App\Repository\TableReserveRepository;
@@ -11,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=TableReserveRepository::class)
  */
+#[ConfiguratorAttribute('app.config.menu')]
 class TableReserve extends BaseObject
 {
 

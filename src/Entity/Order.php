@@ -200,7 +200,7 @@ class Order extends BaseObject
 		$this->calculateSum();
 	}
 
-	#[Assert\Callback(groups: ['update','creation'])]
+	#[Assert\Callback(groups: ['update','create'])]
 	public function validate()
 	{
 		if (count($this->getPortions()) > 0)

@@ -3,26 +3,33 @@
 
 namespace App\Configurators\Entity;
 
+use App\Configurators\Exception\EntityNotFoundException;
+use App\Configurators\Exception\ParameterException;
+use App\Configurators\Exception\ValidationException;
 use App\Entity\Table;
 use App\Entity\TableReserve;
-use App\Entity\User as UserEntity;
+use App\Entity\User;
 use App\Entity\Order;
-use App\Entity\Portion;
 use App\Entity\Restaurant;
+use App\Repository\PortionRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserConfig extends BaseConfigurator
 {
-	public function __construct(protected EntityManagerInterface $manager, protected ValidatorInterface $validator,)
+	public function __construct(
+		protected EntityManagerInterface $manager,
+		protected ValidatorInterface $validator,
+		protected PortionRepository $portionRepository
+	)
 	{
 		parent::__construct();
 	}
 
 	protected function getEntity(): string
 	{
-		return UserEntity::class;
+		return User::class;
 	}
 
 	protected function getMethodsList(): array
@@ -30,66 +37,57 @@ class UserConfig extends BaseConfigurator
 		return array_merge_recursive(
 			parent::getMethodsList(),
 			[
-				'reserve_table' => function(UserEntity $user, array $params) {
-					if (array_key_exists('table',$params) && is_string($params['table']))
+				'reserve_table' => function(User $user, array $params)
+				{
+					if (array_key_exists('table',$params) && is_string($tableId = $params['table']))
 					{
-						if (
-							($table = $this->manager->find(Table::class,$params['table'])) &&
-							$table instanceof Table
-						)
+						if ($table = $this->manager->find(Table::class,$tableId))
 						{
 							if (!$table->getCurrentReserve())
 							{
-								$reserve = (new TableReserve())
-									->setUser($user)
-									->setStatus(TableReserve::STATUS_NEW)
-									->setReservedTable($table);
-								if (count($errors = $this->validator->validate($reserve,groups: "create")) === 0
-								)
+								$reserve = (new TableReserve())->setUser($user)->setReservedTable($table);
+								$errors = $this->validator->validate($reserve, groups: "create");
+								if (count($errors) === 0)
 								{
 									$this->manager->persist($reserve);
 									$this->manager->flush();
 									return $reserve->getId();
 								}
-								throw new \Exception((string)$errors);
+								throw new ValidationException($errors);
 							}
-							throw new \Exception("table reserved ");
+							throw new \Exception("table reserved");
 						}
-						throw new \Exception("unknown table");
+						throw new EntityNotFoundException($tableId);
 					}
-					throw new \Exception("wrong params");
+					throw new ParameterException("wrong params");
 				},
-				'make_order' => function(UserEntity $user, array $params) {
-					if (
-						array_key_exists('portions',$params) && is_array($params['portions']) &&
-						array_key_exists('restaurant',$params) && is_string($params['restaurant'])
-					)
+				'make_order' => function(User $user, array $params)
+				{
+					if (array_key_exists('portions',$params) && is_array($params['portions']) && array_key_exists('restaurant',$params) && is_string($restaurantId =  $params['restaurant']))
 					{
-						if (($restaurant = $this->manager->find(Restaurant::class,$params['restaurant'])) && $restaurant instanceof Restaurant)
+						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
 						{
-							$order = (new Order($params))
-								->setUser($user)
-								->setRestaurant($restaurant);
-							$dishCollection = $this->manager->getRepository(Portion::class)
-								->matching(
+							$order = (new Order($params))->setUser($user)->setRestaurant($restaurant);
+							$this->portionRepository->matching(
 									Criteria::create()->where(
 										Criteria::expr()->in('id',$params['portions'])
 									)
-								);
-							foreach ($dishCollection as $dish)
-							{
-								$order->addPortion($dish);
-							}
-							if (count($errors = $this->validator->validate($order, groups: "create")) === 0)
+							)->forAll(
+								function($dish) use ($order) {
+									$order->addPortion($dish);
+								});
+
+							$errors = $this->validator->validate($order, groups: "create");
+							if (count($errors) === 0)
 							{
 								$this->manager->flush();
 								return $order->getId();
 							}
-							throw new \Exception((string)$errors);
+							throw new ValidationException($errors);
 						}
-						throw new \Exception("unknown restaurant");
+						throw new EntityNotFoundException($restaurantId);
 					}
-					throw new \Exception("wrong params");
+					throw new ParameterException("wrong params");
 				},
 			]);
 	}

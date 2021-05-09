@@ -2,6 +2,8 @@
 
 namespace App\Configurators\Entity;
 
+use App\Configurators\Exception\ParameterException;
+use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish;
 use App\Entity\Menu;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,30 +26,20 @@ class MenuConfig extends BaseConfigurator
 		return array_merge_recursive(
 			parent::getMethodsList(),
 			[
-				'remove_dish' => function(Menu $object, array $params) {
-					if (array_key_exists('dish', $params) && is_string($params['dish']))
-					{
-						if (($dish = $this->manager->getPartialReference(Dish::class, $params['dish'])) && $dish instanceof Dish)
-						{
-							$object->removeDish($dish);
-							$this->manager->flush();
-							return 'ok';
-						}
-					}
-					throw new \Exception("wrong params");
-				},
-				'add_dish' => function(Menu $object, array $params) {
+				'add_dish' => function(Menu $object, array $params)
+				{
 					if (array_key_exists('dish',$params) && is_array($params['dish']))
 					{
-						if (count($errors = $this->validator->validate($dish = new Dish($params['dish']), groups: "create")) === 0)
+						$errors = $this->validator->validate($dish = new Dish($params['dish']), groups: "create");
+						if (count($errors) === 0)
 						{
 							$object->addDish($dish);
 							$this->manager->flush();
 							return $dish->getId();
 						}
-						throw new \Exception((string) $errors);
+						throw new ValidationException($errors);
 					}
-					throw new \Exception("wrong params");
+					throw new ParameterException("wrong params");
 				},
 			]
 		);

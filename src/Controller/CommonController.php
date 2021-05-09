@@ -40,7 +40,8 @@ class CommonController extends AbstractController
 			return $this->json([
 				'data' => $this->formatObject(
 					entity: $this->service->buildApiEntityObject($object),
-					fields: $this->getRequestedFields($request))
+					fields: $this->getRequestedFields($request)
+				)
 			]);
 		}
 		throw new BadRequestException("object $id not found");
@@ -71,7 +72,7 @@ class CommonController extends AbstractController
 	{
 		if ($raw = $request->query->get(static::FIELDS_REQUEST, default: null))
 		{
-			return array_map('trim', explode(static::FIELDS_SEPARATOR_REQUEST, $raw));
+			return array_filter(array_map('trim', explode(static::FIELDS_SEPARATOR_REQUEST, $raw)));
 		}
 
 		return null;
@@ -97,13 +98,10 @@ class CommonController extends AbstractController
 		if ($object = $this->getObject($id))
 		{
 			$this->denyAccessUnlessGranted('update', $object);
-			$apiObject = $this->service->buildApiEntityObject($object);
-			$content = $this->getContent($request);
-			$keys = [];
+			$apiObject = $this->service->buildApiEntityObject($object); $content = $this->getContent($request);	$keys = [];
 			foreach ($content as $key => $value)
 			{
-				$apiObject->setProperty($key, $value);
-				$keys[] = $key;
+				$apiObject->setProperty($keys[] = $key, $value);
 			}
 			if (count($errors = $validator->validate($apiObject->getObject(), groups: "update")) === 0)
 			{
@@ -114,11 +112,11 @@ class CommonController extends AbstractController
 			}
 
 			return $this->json([
-				'error' => (string)$errors
+				'error' => (string) $errors
 			],
 				Response::HTTP_NOT_FOUND);
 		}
-
+		throw new BadRequestException("object $id not found");
 	}
 
 	private function getContent(Request $request): ?array
@@ -147,12 +145,14 @@ class CommonController extends AbstractController
 					return $this->json([
 						'data' => array_map(
 							function($entity) use ($fields) {
+								$this->denyAccessUnlessGranted('view',$entity->getObject());
 								return $this->formatObject($entity, $fields);
 							},
 							$reference
 						)
 					]);
 				}
+				$this->denyAccessUnlessGranted('view', $reference->getObject());
 				return $this->json([
 					'data' => $this->formatObject(entity: $reference, fields: $fields)
 				]);
@@ -167,12 +167,9 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-			$this->denyAccessUnlessGranted('execute',$object);
+			$this->denyAccessUnlessGranted($method,$object);
 			return $this->json([
-				'data' => $this->service->buildApiEntityObject($object)->method(
-					$method,
-					$this->getContent($request)
-				)
+				'data' => $this->service->buildApiEntityObject($object)->method($method, $this->getContent($request))
 			]);
 		}
 		throw new BadRequestException("object $id not found");
