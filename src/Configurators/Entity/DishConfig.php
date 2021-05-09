@@ -42,16 +42,7 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 				'add_portion' => function(DishEntity $object, array $params) {
 					if (array_key_exists('portion', $params) && is_array($params['portion']))
 					{
-						if(
-							is_array($rawPortion = $params['portion']) &&
-							array_reduce(
-								$rawPortion,
-								function($result,$item) : bool {
-									return $result && is_array($item);
-								},
-								true
-							)
-						)
+						if(is_array($rawPortion = $params['portion']))
 						{
 							if (count($errors = $this->validator->validate($portion = new Portion($rawPortion))) === 0)
 							{

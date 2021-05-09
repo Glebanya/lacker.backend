@@ -27,9 +27,9 @@ class Dish extends BaseObject
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'description')]
+	#[Field(name: 'description', getter: 'getDescription', setter: 'setDescription')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $description;
+	protected Lang $description;
 
 	/**
 	 * @ORM\OneToMany(
@@ -50,34 +50,34 @@ class Dish extends BaseObject
 		maxMessage: "portions count must be less than {{ limit }}"
 	)]
 	#[Assert\Valid]
-	private Collection $portions;
+	protected Collection $portions;
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'name')]
+	#[Field(name: 'title',getter: 'getName',setter: 'setName')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $name;
+	protected Lang $name;
 
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
-	#[Field(name: 'name')]
+	#[Field(name: 'image', getter: 'getImage',setter: 'setImage')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Image $image;
+	protected Image $image;
 
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
-	#[Field(name: 'type')]
+	#[Field(name: 'type', getter: 'getType', setter: 'setType')]
 	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS, null], groups: ["create", "update"])]
-	private ?string $type;
+	protected ?string $type;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	private ?Menu $menu;
+	protected ?Menu $menu;
 
 	public function __construct($params = [])
 	{
@@ -124,7 +124,7 @@ class Dish extends BaseObject
 		return $this->description;
 	}
 
-	public function setDescription(array $description): self
+	public function setDescription(array|Lang $description): self
 	{
 		$this->description = new Lang($description);
 
@@ -167,7 +167,7 @@ class Dish extends BaseObject
 		return $this->name;
 	}
 
-	public function setName(array $name): self
+	public function setName(array|Lang $name): self
 	{
 		$this->name = new Lang($name);
 

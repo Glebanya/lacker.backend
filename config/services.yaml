@@ -45,7 +45,14 @@ services:
       public: true
       lazy: true
       class: App\Configurators\Entity\OrderConfig
-
+    app.config.menu:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\MenuConfig
+    app.config.portion:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\PortionConfig
     Google_Client:
         class: Google_Client
         calls:

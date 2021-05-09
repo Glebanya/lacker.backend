@@ -25,7 +25,7 @@ class AuthController extends AbstractController
 	public function authGoogle(Request $request, UserLoginService $loginService): Response
 	{
 		$content = $this->getContent($request);
-		if ($user = $loginService->findOrCreateUser($content['google_id']))
+		if ($user = $loginService->findOrCreateUser($content['google_token']))
 		{
 			return $this->json([
 				'data' => [

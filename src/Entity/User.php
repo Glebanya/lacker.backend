@@ -29,24 +29,24 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
-	#[Field(name: 'google_id')]
+	#[Field(name: 'google_id',getter: 'getGoogleId')]
 	#[Immutable]
-	private ?string $googleId;
+	protected ?string $googleId;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	private ?string $password;
+	protected ?string $password;
 
 	/**
 	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", fetch="EXTRA_LAZY")
 	 */
-	private Collection|Selectable $orders;
+	protected Collection|Selectable $orders;
 
 	/**
 	 * @ORM\OneToMany(targetEntity=TableReserve::class, mappedBy="user", orphanRemoval=true, fetch="EXTRA_LAZY")
 	 */
-	private Collection|Selectable $tableReserves;
+	protected Collection|Selectable $tableReserves;
 
 
 	public function __construct($params = [])

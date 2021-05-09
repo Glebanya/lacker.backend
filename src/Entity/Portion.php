@@ -19,34 +19,33 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ConfiguratorAttribute('app.config.portion')]
 class Portion extends BaseObject
 {
-
 	/**
 	 * @ORM\ManyToOne(targetEntity=Dish::class, inversedBy="portions")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	private ?Dish $dish;
+	protected ?Dish $dish;
 
 	/**
 	 * @ORM\Column(type="price")
 	 */
-	#[Field(name: 'price')]
+	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Price $price;
+	protected Price $price;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'weight')]
+	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize')]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
-	private int $weight;
+	protected int $weight;
 
 	public function __construct($params = [])
 	{
-		if (array_key_exists('price', $params) && is_array($params['price']))
+		if (array_key_exists('price', $params) and is_array($params['price']))
 		{
 			$this->price = new Price($params['price']);
 		}
-		if (array_key_exists('weight', $params) && is_int($params['weight']))
+		if (array_key_exists('weight', $params) and is_int($params['weight']))
 		{
 			$this->weight = $params['weight'];
 		}
@@ -70,7 +69,7 @@ class Portion extends BaseObject
 		return $this->price;
 	}
 
-	public function setPrice(array $price): self
+	public function setPrice(array|Price $price): self
 	{
 		$this->price = new Price($price);
 

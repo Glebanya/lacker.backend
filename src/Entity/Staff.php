@@ -35,18 +35,18 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		minMessage: 'Your password must be at least {{ limit }} characters long',
 		maxMessage: 'Your password cannot be longer than {{ limit }} characters',
 	)]
-	private ?string $password;
+	protected ?string $password;
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: "role")]
+	#[Field(name: "role", getter: 'getRoles',setter: 'setRoles')]
 	#[Assert\Choice([Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER])]
-	private string $role;
+	protected string $role;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: "status")]
+	#[Field(name: "status", getter: 'getStatus', setter: 'setStatus')]
 	#[Assert\Choice([Staff::STATUS_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY])]
 	private ?string $status;
 
@@ -60,7 +60,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
 	#[Immutable]
-	#[Field(name: 'firebase_token')]
+	#[Field(name: 'firebase_token', getter: 'getFirebaseToken', setter: 'setFirebaseToken')]
 	private ?string $firebaseToken;
 
 	public function __construct($params = [])
@@ -131,6 +131,11 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		$this->firebaseToken = $firebaseToken;
 
 		return $this;
+	}
+
+	public function getStatus() : ?string
+	{
+		return $this->status;
 	}
 
 	public function setStatus(string $status) : self

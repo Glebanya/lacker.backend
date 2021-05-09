@@ -25,11 +25,10 @@ use App\Configurators\Attributes\Collection as CollectionAttribute;
 #[ConfiguratorAttribute('app.config.restaurant')]
 class Restaurant extends BaseObject
 {
-
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'name')]
+	#[Field('name','getName','setName')]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $name;
 
@@ -56,6 +55,8 @@ class Restaurant extends BaseObject
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
+	#[Field('logo','getLogo','setLogo')]
+	#[Assert\Valid(groups: ["create", "update"])]
 	protected Image $logo;
 
 	/**
@@ -92,7 +93,7 @@ class Restaurant extends BaseObject
 		return $this->name;
 	}
 
-	public function setName(array $name): self
+	public function setName(array|Lang $name): self
 	{
 		$this->name = new Lang($name);
 
@@ -314,6 +315,8 @@ class Restaurant extends BaseObject
 	{
 		return $this->tables;
 	}
+
+
 
 	public function addTable(Table $table): self
 	{

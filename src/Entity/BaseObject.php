@@ -40,28 +40,28 @@ abstract class BaseObject
 	 * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
 	 */
 	#[Immutable]
-	#[Field(name: 'id')]
+	#[Field(name: 'id', getter: 'getId')]
 	protected ?Uuid $id;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	#[Immutable]
-	#[Field(name: 'create_data')]
+	#[Field(name: 'create_data', getter: 'getCrateDate')]
 	protected ?DateTimeInterface $crateDate;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	#[Immutable]
-	#[Field(name: 'update_date')]
+	#[Field(name: 'update_date', getter: 'getUpdateDate')]
 	protected ?DateTimeInterface $updateDate;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
 	#[Immutable]
-	#[Field(name: 'update_date')]
+	#[Field(name: 'delete', getter: 'isDeleted')]
 	private bool $deleted = false;
 
 	public function getId(): ?Uuid
@@ -73,7 +73,6 @@ abstract class BaseObject
 	{
 		return $this->crateDate;
 	}
-
 	public function getUpdateDate(): ?DateTimeInterface
 	{
 		return $this->updateDate;
@@ -108,7 +107,8 @@ abstract class BaseObject
 		$this->updateDate = new DateTime('now');
 	}
 
-	public function deleted(): ?bool
+
+	public function isDeleted(): ?bool
 	{
 		return $this->deleted;
 	}

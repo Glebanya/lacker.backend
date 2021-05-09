@@ -12,8 +12,6 @@ use App\Entity\User;
 use App\Entity\User as UserEntity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,7 +23,6 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
 		protected Security $security,
-		protected MailerInterface $mailer
 	)
 	{
 		parent::__construct();

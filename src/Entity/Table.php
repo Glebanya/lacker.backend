@@ -29,37 +29,37 @@ class Table extends BaseObject
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'status')]
+	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus')]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	#[Assert\Choice([Table::STATUS_FREE, Table::STATUS_BUSY, Table::STATUS_RESERVED], groups: ["create", "update"])]
-	private string $status;
+	protected string $status;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="tables")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	private Restaurant $restaurant;
+	protected Restaurant $restaurant;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'persons')]
+	#[Field(name: 'persons' , getter: 'getPersons', setter: 'setPersons')]
 	#[Assert\Positive(groups: ["create", "update"])]
 	#[Assert\NotNull(groups: ["create", "update"])]
-	private int $persons;
+	protected int $persons;
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'title')]
+	#[Field(name: 'title',getter: 'getTitle',setter: 'setTitle')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $title;
+	protected Lang $title;
 
 	/**
 	 * @ORM\OneToMany(targetEntity=TableReserve::class, mappedBy="ReservedTable", orphanRemoval=true, fetch="EXTRA_LAZY")
 	 */
-	private Collection|Selectable $tableReserves;
+	protected Collection|Selectable $tableReserves;
 
 	/**
 	 * Table constructor.
@@ -89,6 +89,29 @@ class Table extends BaseObject
 		$this->status = $status;
 
 		return $this;
+	}
+
+	public function getPersons(): ?string
+	{
+		return $this->persons;
+	}
+
+	public function setPersons($persons): self
+	{
+		$this->persons = intval($persons);
+
+		return $this;
+	}
+
+	public function setTitle(Lang|array $lang) : self
+	{
+		$this->title = new Lang($lang);
+		return $this;
+	}
+
+	public function getTitle() : Lang
+	{
+		return $this->title;
 	}
 
 	#[Reference('restaurant')]

@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class Lang extends \ArrayObject implements \JsonSerializable
 {
-	public function __construct($array = [])
+	public function __construct(array|\ArrayObject $array = [])
 	{
-		parent::__construct($array);
+		parent::__construct((array) $array);
 	}
 
 	#[Assert\Callback]

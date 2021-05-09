@@ -46,7 +46,7 @@ class CommonController extends AbstractController
 		throw new BadRequestException("object $id not found");
 	}
 
-	protected function getObject(string $id): null|object
+	protected function getObject(string $id): null|false|object
 	{
 		return $id === 'me' ? $this->getUser() : $this->repository->matching(
 			Criteria::create()
@@ -77,6 +77,20 @@ class CommonController extends AbstractController
 
 		return null;
 	}
+	#[Route('/api/{id}', name: 'common_delete', methods: ['DELETE'])]
+	public function deleteEntity(string $id): JsonResponse
+	{
+		if ($object = $this->getObject($id))
+		{
+			$object->delete();
+			$this->manager->flush();
+			return $this->json([
+				'data' => 'OK'
+			]);
+		}
+		return $this->json([
+		],Response::HTTP_NOT_FOUND);
+	}
 
 	#[Route('/api/{id}', name: 'common_update', methods: ['POST'])]
 	public function updateEntity(string $id, Request $request, ValidatorInterface $validator): Response
@@ -84,11 +98,11 @@ class CommonController extends AbstractController
 		if ($object = $this->getObject($id))
 		{
 			$apiObject = $this->service->buildApiEntityObject($object);
-			$content = $this->getContent($request->getContent()) + $request->files->all();
+			$content = $this->getContent($request);
 			$keys = [];
 			foreach ($content as $key => $value)
 			{
-				$this->denyAccessUnlessGranted($key . '.update', $apiObject->getObject());
+				#$this->denyAccessUnlessGranted($key . '.update', $apiObject->getObject());
 				$apiObject->setProperty($key, $value);
 				$keys[] = $key;
 			}
@@ -109,13 +123,13 @@ class CommonController extends AbstractController
 
 	}
 
-	private function getContent(string $content): ?array
+	private function getContent(Request $request): ?array
 	{
-		if ($content <> "" && !$data = json_decode($content, true))
+		if (!$data = json_decode($request->getContent() , true))
 		{
 			if (json_last_error() !== JSON_ERROR_NONE)
 			{
-				throw new BadRequestHttpException('invalid json body: '. json_last_error_msg());
+				throw new BadRequestHttpException('invalid json body: '.json_last_error_msg());
 			}
 		}
 
@@ -156,7 +170,7 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-			$this->denyAccessUnlessGranted($method . 'execute',$object);
+#			$this->denyAccessUnlessGranted($method . 'execute',$object);
 			return $this->json([
 				'data' => $this->service->buildApiEntityObject($object)->method(
 					$method,

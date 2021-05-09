@@ -79,8 +79,9 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 
 						public function value(array $params = []): mixed
 						{
-							$this->property->setAccessible(true);
-							$value = $this->property->getValue($this->object);
+							$field = current($this->property->getAttributes(Field::class))->newInstance();
+							$reflectionMethod = (new ReflectionClass($this->object))->getMethod($field->getter);
+							$value = $reflectionMethod->invoke($this->object);
 							if ($value instanceof DateTimeInterface)
 							{
 								$value = $value->getTimestamp();
@@ -93,7 +94,6 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 						{
 							if (empty($this->property->getAttributes(Immutable::class)))
 							{
-								$this->property->setAccessible(true);
 								if ($this->property->class === Lang::class)
 								{
 									if (is_array($parameter))
@@ -112,7 +112,12 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 								{
 									$parameter = new Image($parameter);
 								}
-								$this->property->setValue($this->object, $parameter);
+
+								$field = current($this->property->getAttributes(Field::class))->newInstance();
+								(new ReflectionClass($this->object))
+									->getMethod($field->setter)
+									->invoke($this->object,$parameter);
+								return;
 							}
 							throw new Exception("property $this->name immutable");
 						}

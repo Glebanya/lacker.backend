@@ -10,6 +10,8 @@ use App\Repository\MenuRepository;
 use App\Types\Lang;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,22 +27,22 @@ class Menu extends BaseObject
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field('title')]
+	#[Field('title', getter: 'getTitle', setter: 'setTitle')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $title;
+	protected Lang $title;
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field('description')]
+	#[Field('description', getter: 'getDescription', setter: 'setDescription')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $description;
+	protected Lang $description;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	private ?Restaurant $restaurant;
+	protected ?Restaurant $restaurant;
 
 	/**
 	 * @ORM\OneToMany(
@@ -55,7 +57,7 @@ class Menu extends BaseObject
 	 * })
 	 */
 	#[Assert\Valid]
-	private Collection $dishes;
+	protected Collection|Selectable $dishes;
 
 	public function __construct($params = [])
 	{
@@ -94,7 +96,7 @@ class Menu extends BaseObject
 		return $this->title;
 	}
 
-	public function setTitle(array $title): self
+	public function setTitle(array|Lang $title): self
 	{
 		$this->title = new Lang($title);
 
@@ -106,7 +108,7 @@ class Menu extends BaseObject
 		return $this->description;
 	}
 
-	public function setDescription(array $description): self
+	public function setDescription(array|Lang $description): self
 	{
 		$this->description = new Lang($description);
 
@@ -128,9 +130,45 @@ class Menu extends BaseObject
 
 	#[Reference('dishes')]
 	#[CollectionAttribute]
-	public function getDishes(): Collection
+	public function getDishes(): Collection|Selectable
 	{
 		return $this->dishes;
+	}
+
+	#[Reference('drinks')]
+	#[CollectionAttribute]
+	public function getDrinks() : Collection
+	{
+		return $this->getDishes()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('type',[Dish::TYPE_DRINKS])
+				)
+		);
+	}
+
+	#[Reference('alcohol')]
+	#[CollectionAttribute]
+	public function getAlcohol() : Collection
+	{
+		return $this->getDishes()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('type',[Dish::TYPE_ALCOHOL])
+				)
+		);
+	}
+
+	#[Reference('dish')]
+	#[CollectionAttribute]
+	public function getDish() : Collection
+	{
+		return $this->getDishes()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('type',[Dish::TYPE_DISH])
+				)
+		);
 	}
 
 	public function addDish(Dish $dish): self

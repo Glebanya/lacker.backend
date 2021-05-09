@@ -28,15 +28,15 @@ class Order extends BaseObject
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field('status')]
+	#[Field('status', getter: 'getStatus', setter: 'setStatus')]
 	#[Assert\Choice(['PAID', 'NEW', 'CANCELED'], groups: ["creation"])]
-	private ?string $status;
+	protected ?string $status;
 
 	/**
 	 * @ORM\Column(type="text", nullable=true)
 	 */
-	#[Field('comment')]
-	private ?string $comment;
+	#[Field('comment', getter: 'getComment', setter: 'setComment')]
+	protected ?string $comment;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
@@ -44,31 +44,31 @@ class Order extends BaseObject
 	 */
 
 	#[Assert\NotNull(groups: ["create"])]
-	private ?User $user;
+	protected ?User $user;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create"])]
-	private ?Restaurant $restaurant;
+	protected ?Restaurant $restaurant;
 
 	/**
 	 * @ORM\ManyToMany(targetEntity=Portion::class, fetch="EXTRA_LAZY")
 	 */
-	private Collection $portions;
+	protected Collection $portions;
 
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
-	private ?string $currency;
+	protected ?string $currency;
 
 	/**
 	 * @ORM\Column(type="price")
 	 */
-	#[Field('price')]
+	#[Field('sum', getter: 'getSum')]
 	#[Assert\Valid(groups: ["create"])]
-	private Price $sum;
+	protected Price $sum;
 
 	public function __construct(array $params = [])
 	{
@@ -129,6 +129,11 @@ class Order extends BaseObject
 		return $this;
 	}
 
+	public function getSum(): Price
+	{
+		return $this->sum;
+	}
+
 	public function calculateSum()
 	{
 		foreach ($this->portions as $portion)
@@ -153,7 +158,7 @@ class Order extends BaseObject
 		{
 			$this->portions[] = $portion;
 		}
-
+		$this->calculateSum();
 		return $this;
 	}
 
@@ -166,7 +171,7 @@ class Order extends BaseObject
 				$portion->setDish(null);
 			}
 		}
-
+		$this->calculateSum();
 		return $this;
 	}
 

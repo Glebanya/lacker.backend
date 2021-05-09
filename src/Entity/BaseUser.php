@@ -25,7 +25,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'name',)]
+	#[Field(name: 'name', getter: 'getUsername',setter: 'setUsername')]
 	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.', groups: ["create", "update"])]
 	#[Assert\Length(
 		min: 1,
@@ -40,7 +40,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
 	#[Immutable]
-	#[Field(name: 'email')]
+	#[Field(name: 'email', getter: 'getEmail')]
 	#[Assert\Unique(groups: ["create",])]
 	#[Assert\Email(message: 'The email {{ value }} is not a valid email.', groups: ["create"])]
 	#[Assert\Length(
@@ -55,7 +55,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
-	#[Field(name: 'avatar')]
+	#[Field(name: 'avatar', getter: 'getAvatar', setter: 'setAvatar')]
 	#[Assert\Valid]
 	protected Image $avatar;
 

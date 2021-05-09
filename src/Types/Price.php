@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Price extends \ArrayObject implements \JsonSerializable
 {
-	public function __construct($array = [])
+	public function __construct(array|\ArrayObject $array = [])
 	{
-		parent::__construct($array);
+		parent::__construct((array) $array);
 	}
 
 	#[Assert\Callback]

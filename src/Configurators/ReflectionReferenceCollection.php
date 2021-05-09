@@ -75,10 +75,10 @@ class ReflectionReferenceCollection implements ReferenceBuilderCollectionInterfa
 									)
 								)
 								->setMaxResults(
-									(int) array_key_first($params,'limit')?$params['limit'] : 50
+									(int) array_key_exists('limit',$params)?$params['limit'] : 50
 								)
 								->setFirstResult(
-									(int) array_key_first($params,'offset')? $params['offset'] : 0
+									(int) array_key_exists('offset',$params)? $params['offset'] : 0
 								);
 						}
 

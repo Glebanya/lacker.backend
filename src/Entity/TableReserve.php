@@ -18,24 +18,24 @@ class TableReserve extends BaseObject
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'status')]
+	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus')]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	#[Assert\Choice([TableReserve::STATUS_NEW, TableReserve::STATUS_CLOSED], groups: ["create", "update"])]
-	private ?string $status;
+	protected ?string $status;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Table::class, inversedBy="tableReserves")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	private ?Table $__table;
+	protected ?Table $__table;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tableReserves")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	private ?User $user;
+	protected ?User $user;
 
 	public function getStatus(): ?string
 	{
