@@ -39,7 +39,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: "role", getter: 'getRoles',setter: 'setRoles')]
+	#[Field(name: "role", getter: 'getRole',setter: 'setRoles')]
 	#[Assert\Choice([Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER])]
 	protected string $role;
 
@@ -90,6 +90,11 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		$this->password = $password;
 
 		return $this;
+	}
+
+	public function getRole() : ?string
+	{
+		return $this->role;
 	}
 
 	public function getRoles(): ?array

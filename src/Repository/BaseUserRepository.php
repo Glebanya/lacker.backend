@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\BaseUser;
 use App\Entity\Staff;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -24,8 +25,15 @@ class BaseUserRepository extends ServiceEntityRepository implements UserLoaderIn
 
 	public function loadUserByUsername(string $username)
 	{
-		return $this->createQueryBuilder('user')->where('user.id = :id')->setParameter('id', $username)->getQuery()
-			->getOneOrNullResult();
+		return $this->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->eq('id',$username)
+				)
+				->andWhere(
+					Criteria::expr()->eq('deleted',false)
+				)
+		)->first();
 	}
 
 	/**

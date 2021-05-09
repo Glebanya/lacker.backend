@@ -37,11 +37,10 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 	{
 		return array_merge_recursive(
 			parent::getMethodsList(),[
-
 			'add_menu' => function(RestaurantEntity $object, array $params) {
 				if (array_key_exists('menu',$params) && is_array($params['menu']))
 				{
-					if (count($errors = $this->validator->validate($staff = new Menu($params['staff']))) === 0)
+					if (count($errors = $this->validator->validate($staff = new Menu($params['menu']))) === 0)
 					{
 						$object->addMenu($staff);
 						$this->manager->flush();
@@ -51,21 +50,6 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 				}
 				throw new \Exception("wrong params");
 			},
-			'remove_menu' => function(RestaurantEntity $object, array $params) {
-				if (array_key_exists('menu',$params) && is_string($params['menu']))
-				{
-					if (
-						($staff = $this->manager->getReference(Menu::class, $params['staff'])) &&
-						$staff instanceof Menu
-					)
-					{
-						$object->removeMenu($staff);
-						$this->manager->flush();
-					}
-				}
-				throw new \Exception("wrong params");
-			},
-
 			'add_staff' => function(RestaurantEntity $object, array $params) {
 				if (array_key_exists('staff',$params) && is_array($params['staff']))
 				{
@@ -75,20 +59,6 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 						$this->manager->flush();
 					}
 					throw new \Exception((string)$errors);
-				}
-				throw new \Exception("wrong params");
-			},
-			'remove_staff' => function(RestaurantEntity $object, array $params) {
-				if (array_key_exists('staff',$params) && is_string($params['staff']))
-				{
-					if (
-						($staff = $this->manager->getReference(Staff::class, $params['staff'])) &&
-						$staff instanceof Staff
-					)
-					{
-						$object->removeStaff($staff);
-						$this->manager->flush();
-					}
 				}
 				throw new \Exception("wrong params");
 			},

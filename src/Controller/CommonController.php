@@ -36,7 +36,7 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-			//$this->denyAccessUnlessGranted('view',$object);
+			$this->denyAccessUnlessGranted('view',$object);
 			return $this->json([
 				'data' => $this->formatObject(
 					entity: $this->service->buildApiEntityObject($object),
@@ -60,7 +60,6 @@ class CommonController extends AbstractController
 		return array_reduce(
 			$fields,
 			function(array $result, string $field) use ($entity): array {
-#				$this->denyAccessUnlessGranted($field . '.view', $entity->getObject());
 				$result[$field] = $entity->getProperty($field);
 				return $result;
 			},
@@ -97,12 +96,12 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
+			$this->denyAccessUnlessGranted('update', $object);
 			$apiObject = $this->service->buildApiEntityObject($object);
 			$content = $this->getContent($request);
 			$keys = [];
 			foreach ($content as $key => $value)
 			{
-				#$this->denyAccessUnlessGranted($key . '.update', $apiObject->getObject());
 				$apiObject->setProperty($key, $value);
 				$keys[] = $key;
 			}
@@ -155,14 +154,13 @@ class CommonController extends AbstractController
 						)
 					]);
 				}
-
 				return $this->json([
 					'data' => $this->formatObject(entity: $reference, fields: $fields)
 				]);
 			}
-			throw new BadRequestException('tut');
+			throw new BadRequestException("object $id not found");
 		}
-		throw new BadRequestException('kek');
+		throw new BadRequestException("object $id not found");
 	}
 
 	#[Route('/api/{id}/{method}', name: 'method', methods: ['POST'])]
@@ -170,7 +168,7 @@ class CommonController extends AbstractController
 	{
 		if ($object = $this->getObject($id))
 		{
-#			$this->denyAccessUnlessGranted($method . 'execute',$object);
+			$this->denyAccessUnlessGranted('execute',$object);
 			return $this->json([
 				'data' => $this->service->buildApiEntityObject($object)->method(
 					$method,
@@ -178,6 +176,6 @@ class CommonController extends AbstractController
 				)
 			]);
 		}
-		throw new BadRequestException("govno");
+		throw new BadRequestException("object $id not found");
 	}
 }

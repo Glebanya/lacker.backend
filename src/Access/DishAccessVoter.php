@@ -3,39 +3,36 @@
 namespace App\Access;
 
 use App\Entity\Dish;
+use App\Entity\Portion;
 use App\Entity\Staff;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class DishAccessVoter extends AbstractAccessVoter
+class DishAccessVoter extends Voter
 {
-	protected function getAttributes(): array
-	{
-		return [];
-	}
-
-	protected function getEntity(): string
-	{
-		return Dish::class;
-	}
 
 	protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
 	{
-		if (parent::voteOnAttribute($attribute,$subject,$token) && $subject instanceof Dish)
+		if ($subject instanceof Dish)
 		{
-			$user = $token->getUser();
 			if ($attribute === 'view')
 			{
 				return true;
 			}
 			elseif (
-				$user instanceof Staff &&
+				($user = $token->getUser()) and
+				$user instanceof Staff and
 				$user->getRestaurant()->getId()->compare($subject->getMenu()->getRestaurant()->getId()) === 0
 			)
 			{
-				return true;
+				return in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR, Staff::ROLE_MANAGER]);
 			}
-
 		}
 		return false;
+	}
+
+	protected function supports(string $attribute, $subject): bool
+	{
+		return $subject instanceof Dish;
 	}
 }

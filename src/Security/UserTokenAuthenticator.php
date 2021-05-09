@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
-final class UserTokenAuthenticator extends AbstractGuardAuthenticator
+class UserTokenAuthenticator extends AbstractGuardAuthenticator
 {
 	public function start(Request $request, AuthenticationException $authException = null): Response
 	{
@@ -22,7 +22,7 @@ final class UserTokenAuthenticator extends AbstractGuardAuthenticator
 
 	public function supports(Request $request): bool
 	{
-		return true;
+		return !preg_match('/^\/public\/auth\/(google|staff){1}$/',$request->getPathInfo()) && $request->headers->has('Authorization');
 	}
 
 	public function getCredentials(Request $request)

@@ -66,9 +66,9 @@ class Menu extends BaseObject
 		{
 			$this->description = new Lang($params['description']);
 		}
-		if (array_key_exists('title', $params) && is_array($params['name']))
+		if (array_key_exists('title', $params) && is_array($params['title']))
 		{
-			$this->title = new Lang($params['name']);
+			$this->title = new Lang($params['title']);
 		}
 		if (array_key_exists('dishes', $params) && is_array($params['dishes']))
 		{
