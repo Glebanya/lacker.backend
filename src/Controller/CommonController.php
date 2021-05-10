@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Api\ApiEntity;
 use App\Api\ApiService;
 use App\Repository\BaseObjectRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -12,15 +11,13 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CommonController extends AbstractController
 {
-	const FIELDS_REQUEST = 'fields';
-	const FIELDS_SEPARATOR_REQUEST = ',';
+	use ApiTrait;
 
 	public function __construct(
 		private Security $security,
@@ -56,27 +53,6 @@ class CommonController extends AbstractController
 			)->first();
 	}
 
-	protected function formatObject(ApiEntity $entity, array $fields): array
-	{
-		return array_reduce(
-			$fields,
-			function(array $result, string $field) use ($entity): array {
-				$result[$field] = $entity->getProperty($field);
-				return $result;
-			},
-			[]
-		);
-	}
-
-	protected function getRequestedFields(Request $request): array|null
-	{
-		if ($raw = $request->query->get(static::FIELDS_REQUEST, default: null))
-		{
-			return array_filter(array_map('trim', explode(static::FIELDS_SEPARATOR_REQUEST, $raw)));
-		}
-
-		return null;
-	}
 	#[Route('/api/{id}', name: 'common_delete', methods: ['DELETE'])]
 	public function deleteEntity(string $id): JsonResponse
 	{
@@ -117,19 +93,6 @@ class CommonController extends AbstractController
 				Response::HTTP_NOT_FOUND);
 		}
 		throw new BadRequestException("object $id not found");
-	}
-
-	private function getContent(Request $request): ?array
-	{
-		if (!$data = json_decode($request->getContent() , true))
-		{
-			if (json_last_error() !== JSON_ERROR_NONE)
-			{
-				throw new BadRequestHttpException('invalid json body: '.json_last_error_msg());
-			}
-		}
-
-		return $data ?? [];
 	}
 
 	#[Route('/api/{id}/{reference}', name: 'common_ref', methods: ['GET'])]
