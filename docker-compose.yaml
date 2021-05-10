@@ -15,7 +15,7 @@ services:
           - "80:80"
           - "443:443"
         volumes:
-            - .:/server
+#            - .:/server
             - ./.docker/etc/php/php-dev.ini:/etc/php/7.4/fpm/conf.d/60-dev.ini
             - ./.docker/etc/php/php-cli.ini:/etc/php/7.4/cli/conf.d/60-dev.ini
             - ./.rr.yaml:/etc/roadrunner/.rr.yaml
@@ -27,8 +27,8 @@ services:
     mysql:
         image: mysql:5.7
         restart: unless-stopped
-        ports:
-            - "3306:3306"
+#        ports:
+#            - "3306:3306"
         networks:
             - dev-back
         environment:
