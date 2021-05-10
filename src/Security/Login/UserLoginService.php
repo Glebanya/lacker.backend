@@ -5,6 +5,7 @@ namespace App\Security\Login;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Google_Client;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -17,13 +18,13 @@ class UserLoginService
 	 * @param Google_Client $googleApiObject
 	 * @param UserRepository $userRepository
 	 * @param UserPasswordEncoderInterface $encoder
-	 * @param EntityManager $manager
+	 * @param EntityManagerInterface $manager
 	 */
 	public function __construct(
 		private Google_Client $googleApiObject,
 		private UserRepository $userRepository,
 		private UserPasswordEncoderInterface $encoder,
-		protected EntityManager $manager
+		private EntityManagerInterface $manager,
 	)
 	{
 	}
