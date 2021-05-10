@@ -1,54 +1,24 @@
 version: '3.5'
 
 services:
-    proxy:
-        container_name: proxy
-        image: jwilder/nginx-proxy:alpine
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - /var/run/docker.sock:/tmp/docker.sock:ro
-            - nginx_certs:/etc/nginx/certs:ro
-            - nginx_vhosts:/etc/nginx/vhost.d
-            - nginx_html:/usr/share/nginx/html
-        networks:
-            - dev-back
-        depends_on:
-          - service
-
-    letsencrypt:
-      image: jrcs/letsencrypt-nginx-proxy-companion
-      environment:
-        DEFAULT_EMAIL: $COMPANY_EMAIL
-        NGINX_PROXY_CONTAINER: proxy
-        NGINX_DOCKER_GEN_CONTAINER: proxy
-      volumes_from:
-        - proxy
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - nginx_certs:/etc/nginx/certs:rw
-      restart: always
-      networks:
-        - dev-back
-
-
     service:
         build: '.'
         environment:
             APP_ENV: 'dev'
             APP_DEBUG: 'true'
+            VIRTUAL_HOST: $VIRTUAL_HOST
             DATABASE_URL: $DATABASE_URL
             LETSENCRYPT_HOST: $VIRTUAL_HOST
-            VIRTUAL_HOST: $VIRTUAL_HOST
             PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
             APP_TYPE: 'dev'
-
+        ports:
+          - "80:80"
+          - "443:443"
         volumes:
-            - ".:/server"
-            - "./.docker/etc/php/php-dev.ini:/etc/php/7.4/fpm/conf.d/60-dev.ini"
-            - "./.docker/etc/php/php-cli.ini:/etc/php/7.4/cli/conf.d/60-dev.ini"
-            - './.rr.yaml:/etc/roadrunner/.rr.yaml'
+            - .:/server
+            - ./.docker/etc/php/php-dev.ini:/etc/php/7.4/fpm/conf.d/60-dev.ini
+            - ./.docker/etc/php/php-cli.ini:/etc/php/7.4/cli/conf.d/60-dev.ini
+            - ./.rr.yaml:/etc/roadrunner/.rr.yaml
         depends_on:
             - mysql
         networks:
@@ -73,9 +43,10 @@ services:
 volumes:
   mysql-data:
         name: dev_mysql_data
-  nginx_certs:
-  nginx_vhosts:
   nginx_html:
+  nginx_vhost:
+  nginx_conf:
+  certificates:
 
 networks:
     dev-back:

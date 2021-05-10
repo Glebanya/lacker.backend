@@ -1,5 +1,11 @@
 http:
   address: "0.0.0.0:80"
+  ssl:
+    address: 0.0.0.0:443
+    redirect: false
+    cert: /etc/ssl/certs/selfsigned.crt
+    key: /etc/ssl/private/selfsigned.key
+
   uploads:
     forbid: [".php", ".exe", ".bat"]
   workers:
