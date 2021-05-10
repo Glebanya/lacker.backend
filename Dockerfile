@@ -2,7 +2,7 @@ FROM php:8.0-cli
 
 WORKDIR /server
 
-RUN apt-get update -q && apt-get install -qqy libxml2-dev libonig-dev zlib1g-dev libpng-dev libzip-dev openssl libcurl3-dev\
+RUN apt-get update -q && apt-get install -qqy libxml2-dev libonig-dev zlib1g-dev libpng-dev libzip-dev openssl git libcurl3-dev\
     && docker-php-ext-install bcmath gd mysqli zip sockets pdo pdo_mysql
 
 #COPY .docker/etc/php/php.ini /etc/php/7.4/fpm/conf.d/50-dev.ini
