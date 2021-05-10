@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AuthController extends AbstractController
 {
+	use ApiTrait;
 	/**
 	 * @param Request $request
 	 * @param UserLoginService $loginService
@@ -41,19 +42,6 @@ class AuthController extends AbstractController
 			]);
 		}
 		throw new BadRequestHttpException('invalid json body: ');
-	}
-
-	private function getContent(Request $request): ?array
-	{
-		if (!$data = json_decode($request->getContent() , true))
-		{
-			if (json_last_error() !== JSON_ERROR_NONE)
-			{
-				throw new BadRequestHttpException('invalid json body: '.json_last_error_msg());
-			}
-		}
-
-		return $data ?? [];
 	}
 
 	/**
