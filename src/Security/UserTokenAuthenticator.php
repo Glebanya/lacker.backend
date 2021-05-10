@@ -75,14 +75,10 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
 		{
 			throw new AuthenticationException("unknown token");
 		}
-		$user = $token->getType() === 'staff'?
-			$this->staffRepository->loadUserByUsername($id) :
+
+		return $token->getType() === 'staff'?
+			$this->staffRepository->loadUserByUsername($id):
 			$this->userRepository->loadUserByUsername($id)
-		;
-		if (!$user)
-		{
-			throw new AuthenticationException("unknown user");
-		}
-		return $user;
+			;
 	}
 }
