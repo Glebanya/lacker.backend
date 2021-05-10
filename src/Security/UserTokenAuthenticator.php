@@ -4,6 +4,7 @@
 namespace App\Security;
 
 
+use App\Repository\BaseUserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,11 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class UserTokenAuthenticator extends AbstractGuardAuthenticator
 {
+	public function __construct(protected BaseUserRepository $userRepository)
+	{
+
+	}
+
 	public function start(Request $request, AuthenticationException $authException = null): Response
 	{
 		return new JsonResponse([
@@ -63,10 +69,14 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
 
 	public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
 	{
-		if ($id = (new JWTObject($credentials))->getUserId())
+		if (!$id = (new JWTObject($credentials))->getUserId())
 		{
-			return $userProvider->loadUserByUsername($id);
+			throw new AuthenticationException("unknown token");
 		}
-		return null;
+		if ($user = $this->userRepository->loadUserByUsername($id))
+		{
+			throw new AuthenticationException("unknown user");
+		}
+		return $user;
 	}
 }
