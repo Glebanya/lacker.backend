@@ -42,6 +42,7 @@ class UserLoginService
 			{
 				$user = (new User($params))->setGoogleId($params['sub'])->setPassword(sha1(random_bytes(32), true));
 				$this->manager->persist($user);
+				$this->manager->flush();
 			}
 			return $user;
 		}
