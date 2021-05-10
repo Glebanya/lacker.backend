@@ -31,7 +31,7 @@ trait ApiTrait
 		return null;
 	}
 
-	protected function formatObject(ApiEntity $entity, array $fields): array
+	protected function formatObject(ApiEntity $entity, array|null $fields): array
 	{
 		return array_reduce(
 			$fields ?? $entity->getPropertiesNames(),
