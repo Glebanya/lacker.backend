@@ -18,10 +18,6 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class UserTokenAuthenticator extends AbstractGuardAuthenticator
 {
-	public function __construct(protected UserRepository $userRepository, protected StaffRepository $staffRepository)
-	{
-
-	}
 
 	public function start(Request $request, AuthenticationException $authException = null): Response
 	{
