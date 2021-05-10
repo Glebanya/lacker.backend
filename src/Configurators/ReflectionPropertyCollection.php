@@ -16,7 +16,6 @@ use App\Api\Properties\PropertyInterface;
 use App\Configurators\Attributes\Field;
 use ReflectionException;
 use ReflectionProperty;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class ReflectionPropertyCollection
@@ -137,6 +136,14 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	public function has(string $property): bool
 	{
 		return $this->array->offsetExists($property);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getNames(): array
+	{
+		return array_keys((array)$this->array);
 	}
 }
 

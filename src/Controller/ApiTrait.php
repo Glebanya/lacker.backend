@@ -21,16 +21,20 @@ trait ApiTrait
 	{
 		if ($raw = $request->query->get($this->getFieldsRequest(), default: null))
 		{
-			return array_filter(array_map('trim', explode($this->getFieldsSeparator(), $raw)));
+			return array_filter(
+				array_map('trim', explode($this->getFieldsSeparator(), $raw)),
+				function($fields) : bool {
+					return !empty($fields);
+				}
+			);
 		}
-
-		return [];
+		return null;
 	}
 
 	protected function formatObject(ApiEntity $entity, array $fields): array
 	{
 		return array_reduce(
-			$fields,
+			$fields ?? $entity->getPropertiesNames(),
 			function(array $result, string $field) use ($entity): array {
 				$result[$field] = $entity->getProperty($field);
 				return $result;

@@ -2,6 +2,8 @@
 
 namespace App\Api;
 
+use Exception;
+
 final class ApiEntity
 {
 	public function __construct(private object $object, private ConfiguratorInterface $resolver, private ApiService $service)
@@ -12,29 +14,44 @@ final class ApiEntity
 	{
 		return $this->object;
 	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getPropertiesNames() : array
+	{
+		return $this->resolver->getPropertyBuilderCollection()->getNames();
+	}
+
+	/**
+	 * @param string $key
+	 * @param $value
+	 *
+	 * @throws Exception
+	 */
 	public function setProperty(string $key,$value)
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
 		{
 			$this->resolver->getPropertyBuilderCollection()->get($key)?->build($this->object)?->set($value);
 		}
-		return null;
+		throw new Exception("unknown field $key");
 	}
 
 	/**
 	 * @param string $key
-	 * @param array $params
 	 *
 	 * @return mixed
+	 * @throws Exception
 	 */
-	public function getProperty(string $key, array $params = []): mixed
+	public function getProperty(string $key): mixed
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
 		{
 			return $this->resolver->getPropertyBuilderCollection()->get($key)->build($this->object)->value();
 		}
 
-		return null;
+		throw new Exception("unknown field $key");
 	}
 
 	/**
@@ -42,6 +59,7 @@ final class ApiEntity
 	 * @param array $params
 	 *
 	 * @return ApiEntity|ApiEntity[]|null
+	 * @throws Exception
 	 */
 	public function reference(string $key, array $params): ApiEntity|array|null
 	{
@@ -64,7 +82,7 @@ final class ApiEntity
 			}
 		}
 
-		return null;
+		throw new Exception("unknown field $key");
 	}
 
 	/**
@@ -72,6 +90,7 @@ final class ApiEntity
 	 * @param array $params
 	 *
 	 * @return mixed
+	 * @throws Exception
 	 */
 	public function method(string $key, array $params): mixed
 	{
@@ -80,6 +99,6 @@ final class ApiEntity
 			return $this->resolver->getMethodBuilderCollection()->get($key)->build($this->object)->execute($params);
 		}
 
-		return null;
+		throw new Exception("unknown method $key");
 	}
 }
