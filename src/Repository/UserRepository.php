@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -45,14 +46,16 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 			->setParameter('googleId', $googleId)->getQuery()->getOneOrNullResult();
 	}
 
-	/**
-	 * @param string $username
-	 *
-	 * @return UserInterface|null
-	 * @throws NonUniqueResultException
-	 */
-	public function loadUserByUsername(string $username): ?UserInterface
+	public function loadUserByUsername(string $username)
 	{
-		return $this->createQueryBuilder('user')->where('user.id = :id')->setParameter('id', $username)->getQuery()->getOneOrNullResult();
+		return $this->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->eq('id',$username)
+				)
+				->andWhere(
+					Criteria::expr()->eq('deleted',false)
+				)
+		)->first();
 	}
 }

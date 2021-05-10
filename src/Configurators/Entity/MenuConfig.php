@@ -6,14 +6,19 @@ use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish;
 use App\Entity\Menu;
+use App\Lang\LangService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MenuConfig extends BaseConfigurator
 {
-	public function __construct(protected EntityManagerInterface $manager, protected ValidatorInterface $validator,)
+	public function __construct(
+		protected EntityManagerInterface $manager,
+		protected ValidatorInterface $validator,
+		protected LangService $langService
+	)
 	{
-		parent::__construct();
+		parent::__construct($this->langService);
 	}
 
 	protected function getEntity(): string

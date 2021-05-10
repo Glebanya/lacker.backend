@@ -9,6 +9,7 @@ use App\Api\ConfiguratorInterface;
 use App\Configurators\ClosureMethodCollection;
 use App\Configurators\ReflectionPropertyCollection;
 use App\Configurators\ReflectionReferenceCollection;
+use App\Lang\LangService;
 use Exception;
 use ReflectionException;
 
@@ -31,8 +32,12 @@ abstract class BaseConfigurator implements ConfiguratorInterface
 
 	/**
 	 * BaseConfigurator constructor.
+	 *
+	 * @param LangService $langService
+	 *
+	 * @throws Exception
 	 */
-	public function __construct()
+	public function __construct(protected LangService $langService)
 	{
 		if (!class_exists($class = $this->getEntity()))
 		{
@@ -53,7 +58,7 @@ abstract class BaseConfigurator implements ConfiguratorInterface
 	{
 		return $this->propertyBuilderCollection = $this->propertyBuilderCollection
 			??
-			new ReflectionPropertyCollection($this->getEntity());
+			new ReflectionPropertyCollection($this->getEntity(),$this->langService);
 	}
 
 	/**

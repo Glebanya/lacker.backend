@@ -7,14 +7,19 @@ use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish as DishEntity;
 use App\Entity\Portion;
+use App\Lang\LangService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 {
-	public function __construct(protected EntityManagerInterface $manager, protected ValidatorInterface $validator)
+	public function __construct(
+		protected EntityManagerInterface $manager,
+		protected ValidatorInterface $validator,
+		protected LangService $langService
+	)
 	{
-		parent::__construct();
+		parent::__construct($this->langService);
 	}
 
 	protected function getEntity(): string

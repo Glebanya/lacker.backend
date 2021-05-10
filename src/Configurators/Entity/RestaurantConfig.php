@@ -8,7 +8,7 @@ use App\Entity\Menu;
 use App\Entity\Restaurant;
 use App\Entity\Restaurant as RestaurantEntity, App\Api\ConfiguratorInterface;
 use App\Entity\Staff;
-use Doctrine\Common\Collections\Criteria;
+use App\Lang\LangService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,9 +21,10 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
 		protected Security $security,
+		protected LangService $langService
 	)
 	{
-		parent::__construct();
+		parent::__construct($this->langService);
 	}
 
 	protected function getEntity(): string

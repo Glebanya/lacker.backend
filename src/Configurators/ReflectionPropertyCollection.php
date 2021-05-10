@@ -4,6 +4,7 @@ namespace App\Configurators;
 
 use App\Configurators\Attributes\Immutable;
 use App\Entity\Currency;
+use App\Lang\LangService;
 use App\Types\Image;
 use App\Types\Lang;
 use DateTimeInterface;
@@ -33,10 +34,11 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	 *  constructor.
 	 *
 	 * @param string|object $entity
+	 * @param LangService $language
 	 *
 	 * @throws ReflectionException
 	 */
-	public function __construct(protected string|object $entity)
+	public function __construct(protected string|object $entity, protected LangService $language)
 	{
 		$result = [];
 		foreach ((new ReflectionClass($this->entity))->getProperties() as $property)
@@ -59,19 +61,24 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	{
 		if ($this->has($property))
 		{
-			return new class ($property,$this->array->offsetGet($property)) implements PropertyBuilderInterface {
-				public function __construct(private string $name,private ReflectionProperty $property)
+			return new class ($property,$this->array->offsetGet($property), $this->language) implements PropertyBuilderInterface {
+				public function __construct(
+					private string $name,
+					private ReflectionProperty $property,
+					private LangService $langService
+				)
 				{
 				}
 
 				public function build(object $object): PropertyInterface
 				{
-					return new class($this->name, $object, $this->property) implements PropertyInterface {
+					return new class($this->name, $object, $this->property, $this->langService) implements PropertyInterface {
 
 						public function __construct(
 							private string $name,
 							private object $object,
-							private ReflectionProperty $property
+							private ReflectionProperty $property,
+							private LangService $langService
 						)
 						{
 						}
@@ -85,7 +92,10 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 							{
 								$value = $value->getTimestamp();
 							}
-
+							if ($value instanceof Lang)
+							{
+								$value = $this->langService->formatLangObject($value);
+							}
 							return $value;
 						}
 
