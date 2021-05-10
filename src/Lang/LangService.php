@@ -32,7 +32,7 @@ class LangService
 	 */
 	public function formatLangObject(?Lang $lang): string
 	{
-		if ($lang instanceof Lang && array_key_exists($requestLang = $this->getRequestLanguage(),$lang))
+		if ($lang instanceof Lang && array_key_exists($requestLang = $this->getRequestLanguage(),(array)$lang))
 		{
 			return $lang[$requestLang];
 		}
