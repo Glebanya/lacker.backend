@@ -45,7 +45,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		[Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER],
 		groups: ["create","update"]
 	)]
-	protected string $role;
+	protected string $roles;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
@@ -79,7 +79,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		}
 		if (array_key_exists('role', $params) && is_string($params['role']))
 		{
-			$this->role = $params['role'];
+			$this->roles = $params['role'];
 		}
 		if (array_key_exists('firebase_token', $params) && is_string($params['firebase_token']))
 		{
