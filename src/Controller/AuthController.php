@@ -41,7 +41,7 @@ class AuthController extends AbstractController
 				]
 			]);
 		}
-		throw new BadRequestHttpException('invalid json body: ');
+		throw new BadRequestHttpException('invalid google token');
 	}
 
 	/**
