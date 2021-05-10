@@ -21,6 +21,7 @@ RUN openssl req -x509 -nodes -days 1095 -newkey rsa:2048 \
 			-out /etc/ssl/certs/selfsigned.crt \
 		&& chmod 644 /etc/ssl/private/selfsigned.key
 RUN cd /server \
+	&& ./composer update \
     && ./composer dump-autoload --optimize \
     && chmod +x /server/bin/* \
     && php bin/console cache:clear \
