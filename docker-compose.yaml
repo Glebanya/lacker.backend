@@ -3,20 +3,10 @@ version: '3.5'
 volumes:
   mysql-data:
     name: dev_mysql_data
-  certbot-etc:
-  certbot-var:
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /webroot/
-      o: bind
-  dhparam:
-    driver: local
-    driver_opts:
-      type: none
-      device: /dhparam/
-      o: bind
+  nginx_certs:
+  nginx_vhosts:
+  nginx_html:
+
 networks:
   dev-back:
     driver: bridge
@@ -29,9 +19,8 @@ services:
       APP_DEBUG: 'true'
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
-    volumes:
- #     - .:/app
-      - web-root:/var/www/html
+#    volumes:
+#     - .:/app
     depends_on:
         mysql:
           condition: service_healthy
@@ -39,41 +28,48 @@ services:
       - dev-back
 
   proxy:
-    image: nginx:latest
     container_name: proxy
-    restart: unless-stopped
+    image: jwilder/nginx-proxy:alpine
     environment:
-      VIRTUAL_HOST: $VIRTUAL_HOST
+      DHPARAM_GENERATION: "false"
     ports:
       - 80:80
       - 443:443
     volumes:
-      - web-root:/var/www/html
-      - ./conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - dhparam:/etc/ssl/certs
-    depends_on:
-      -  web.app
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx_certs:/etc/nginx/certs:ro
+      - nginx_vhosts:/etc/nginx/vhost.d
+      - nginx_html:/usr/share/nginx/html
     networks:
       - dev-back
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
     depends_on:
+      - web.app
+    restart: always
+
+  certificate:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    environment:
+      DEFAULT_EMAIL: $COMPANY_EMAIL
+      NGINX_PROXY_CONTAINER: proxy
+      NGINX_DOCKER_GEN_CONTAINER: proxy
+    volumes_from:
       - proxy
-    command: certonly --webroot --webroot-path=/var/www/html --email $COMPANY_EMAIL --agree-tos --no-eff-email --staging -d $VIRTUAL_HOST
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nginx_certs:/etc/nginx/certs:rw
+      - nginx_html:/usr/share/nginx/html
+    restart: always
+    networks:
+      - dev-back
 
   web.app:
     <<: *app
     command: /app/bin/rr serve -c /app/.rr.yaml
     environment:
       VIRTUAL_HOST: $VIRTUAL_HOST
+      VIRTUAL_PORT: 8080
+      LETSENCRYPT_HOST: $VIRTUAL_HOST
+      VIRTUAL_PROTO: https
 
   mysql:
     image: mysql:5.7
