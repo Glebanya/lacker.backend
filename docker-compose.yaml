@@ -69,7 +69,6 @@ services:
       VIRTUAL_HOST: $VIRTUAL_HOST
       VIRTUAL_PORT: 8080
       LETSENCRYPT_HOST: $VIRTUAL_HOST
-      VIRTUAL_PROTO: https
 
   mysql:
     image: mysql:5.7
