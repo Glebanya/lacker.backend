@@ -54,7 +54,7 @@ services:
       - certbot-var:/var/lib/letsencrypt
       - dhparam:/etc/ssl/certs
     depends_on:
-      -  web.service
+      -  web.app
     networks:
       - dev-back
 
