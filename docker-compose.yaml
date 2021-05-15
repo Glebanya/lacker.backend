@@ -30,7 +30,7 @@ services:
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
     volumes:
-      - .:/app
+ #     - .:/app
       - web-root:/var/www/html
     depends_on:
         mysql:
@@ -49,7 +49,7 @@ services:
       - 443:443
     volumes:
       - web-root:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
+      - ./conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - dhparam:/etc/ssl/certs
