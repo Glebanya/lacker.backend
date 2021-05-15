@@ -1,53 +1,95 @@
 version: '3.5'
 
-services:
-    service:
-        build: '.'
-        environment:
-            APP_ENV: 'dev'
-            APP_DEBUG: 'true'
-            VIRTUAL_HOST: $VIRTUAL_HOST
-            DATABASE_URL: $DATABASE_URL
-            LETSENCRYPT_HOST: $VIRTUAL_HOST
-            PHP_IDE_CONFIG: 'serverName=dev.lacker.docker'
-            APP_TYPE: 'dev'
-        ports:
-          - "80:80"
-          - "443:443"
-        volumes:
-#            - .:/server
-            - ./.docker/etc/php/php-dev.ini:/etc/php/7.4/fpm/conf.d/60-dev.ini
-            - ./.docker/etc/php/php-cli.ini:/etc/php/7.4/cli/conf.d/60-dev.ini
-            - ./.rr.yaml:/etc/roadrunner/.rr.yaml
-        depends_on:
-            - mysql
-        networks:
-            - dev-back
-
-    mysql:
-        image: mysql:5.7
-        restart: unless-stopped
-#        ports:
-#            - "3306:3306"
-        networks:
-            - dev-back
-        environment:
-            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-            MYSQL_DATABASE: $MYSQL_DATABASE
-            MYSQL_USER: $MYSQL_USER
-            MYSQL_PASSWORD: $MYSQL_PASSWORD
-        volumes:
-            - mysql-data:/var/lib/mysql
-
-
 volumes:
   mysql-data:
-        name: dev_mysql_data
-  nginx_html:
-  nginx_vhost:
-  nginx_conf:
-  certificates:
-
+    name: dev_mysql_data
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /webroot/
+      o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /dhparam/
+      o: bind
 networks:
-    dev-back:
-        driver: bridge
+  dev-back:
+    driver: bridge
+
+services:
+  app: &app
+    build: '.'
+    environment:
+      APP_ENV: 'dev'
+      APP_DEBUG: 'true'
+      DATABASE_URL: $DATABASE_URL
+      APP_TYPE: 'dev'
+    volumes:
+      - .:/app
+      - web-root:/var/www/html
+    depends_on:
+        mysql:
+          condition: service_healthy
+    networks:
+      - dev-back
+
+  proxy:
+    image: nginx:latest
+    container_name: proxy
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: $VIRTUAL_HOST
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
+    depends_on:
+      -  web.service
+    networks:
+      - dev-back
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - proxy
+    command: certonly --webroot --webroot-path=/var/www/html --email $COMPANY_EMAIL --agree-tos --no-eff-email --staging -d $VIRTUAL_HOST
+
+  web.app:
+    <<: *app
+    command: /app/bin/rr serve -c /app/.rr.yaml
+    environment:
+      VIRTUAL_HOST: $VIRTUAL_HOST
+
+  mysql:
+    image: mysql:5.7
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    networks:
+      - dev-back
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10

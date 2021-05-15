@@ -1,18 +1,11 @@
 http:
-  address: "0.0.0.0:80"
-  ssl:
-    address: 0.0.0.0:443
-    redirect: false
-    cert: /etc/ssl/certs/selfsigned.crt
-    key: /etc/ssl/private/selfsigned.key
-
+  address: 0.0.0.0:8080
   uploads:
     forbid: [".php", ".exe", ".bat"]
   workers:
     numWorkers: 4
     command: "php bin/console baldinof:roadrunner:worker"
     relay: "unix://var/roadrunner.sock"
-
 
 limit:
   interval: 1
@@ -24,8 +17,8 @@ limit:
       execTTL: 60
 
 static:
-  enable: true
-  dir:   "public"
+  enable: false
+  dir: "public"
   forbid: [".php", ".htaccess"]
 
 reload:
