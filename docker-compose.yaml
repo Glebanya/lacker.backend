@@ -19,8 +19,8 @@ services:
       APP_DEBUG: 'true'
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
-#    volumes:
-#     - .:/app
+    volumes:
+     - .:/app
     depends_on:
         mysql:
           condition: service_healthy

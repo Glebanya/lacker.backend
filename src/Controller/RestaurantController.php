@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Api\Access;
 use App\Api\ApiEntity;
 use App\Api\ApiService;
+use App\Api\Serializer\Serializer;
+use App\Lang\LangService;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -33,20 +36,20 @@ class RestaurantController extends AbstractController
 	}
 
 	#[Route('/restaurants', name: 'get_restaurants',methods: ['GET'])]
-	public function index(Request $request): Response
+	public function index(Request $request, Serializer $serializer, Access $access): Response
 	{
-		$fields = $this->getRequestedFields($request);
 		return $this->json([
-		'data' => array_map(
-			function($entity) use ($fields) {
-				$this->denyAccessUnlessGranted('view',$entity->getObject());
-				return $this->formatObject($entity, $fields);
-			},
-			$this->getRestaurants(
-				$request->query->getInt('offset'),
-				$request->query->getInt('limit',50)
-			)->toArray()
-		)
+			'data' => array_map(
+				function(ApiEntity $entity) use ($access,$serializer){
+
+					$access->denyAccessUnlessGranted('view',$entity);
+					return $serializer->serialize($entity);
+				},
+				$this->getRestaurants(
+					$request->query->getInt('offset'),
+					$request->query->getInt('limit',50)
+				)->toArray()
+			)
 	]);
 	}
 }

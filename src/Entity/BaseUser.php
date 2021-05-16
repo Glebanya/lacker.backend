@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\Immutable;
 use App\Types\Image;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -25,7 +24,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'name', getter: 'getUsername',setter: 'setUsername')]
+	#[Field(name: 'name', getter: 'getUsername',setter: 'setUsername',default: true)]
 	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.', groups: ["create", "update"])]
 	#[Assert\Length(
 		min: 1,
@@ -39,8 +38,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
-	#[Immutable]
-	#[Field(name: 'email', getter: 'getEmail')]
+	#[Field(name: 'email', getter: 'getEmail',immutable: true, default: true)]
 	#[Assert\Unique(groups: ["create",])]
 	#[Assert\Email(message: 'The email {{ value }} is not a valid email.', groups: ["create"])]
 	#[Assert\Length(
@@ -55,7 +53,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
-	#[Field(name: 'avatar', getter: 'getAvatar', setter: 'setAvatar')]
+	#[Field(name: 'avatar', getter: 'getAvatar', setter: 'setAvatar', default: true)]
 	#[Assert\Valid]
 	protected Image $avatar;
 

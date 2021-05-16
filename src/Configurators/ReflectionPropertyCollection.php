@@ -2,7 +2,6 @@
 
 namespace App\Configurators;
 
-use App\Configurators\Attributes\Immutable;
 use App\Entity\Currency;
 use App\Lang\LangService;
 use App\Types\Image;
@@ -26,30 +25,48 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 {
 
 	/**
-	 * @var ArrayObject
+	 * @var Field[]
 	 */
-	protected ArrayObject $array;
+	protected array $array;
 
 	/**
 	 *  constructor.
 	 *
 	 * @param string|object $entity
-	 * @param LangService $language
 	 *
 	 * @throws ReflectionException
 	 */
-	public function __construct(protected string|object $entity, protected LangService $language)
+	public function __construct(protected string|object $entity)
 	{
-		$result = [];
-		foreach ((new ReflectionClass($this->entity))->getProperties() as $property)
-		{
-			if (!empty($values = $property->getAttributes(Field::class)))
-			{
-				$field = current($values)->newInstance()->name;
-				$result[$field] = $property;
-			}
-		}
-		$this->array = new ArrayObject($result);
+		$reflection = new ReflectionClass($this->entity);
+		$this->array = [] +
+			array_reduce(
+				$reflection->getProperties(),
+				function(array $result, ReflectionProperty $property) : array {
+					if (!empty($values = $property->getAttributes(Field::class)))
+					{
+						foreach ($values as $reflectionAttribute)
+						{
+							$attribute = $reflectionAttribute->newInstance();
+							$result[$attribute->name] = $attribute;
+						}
+					}
+
+					return $result;
+				},
+				[]
+			) +
+			array_reduce(
+				$reflection->getAttributes(Field::class),
+				function(array $result, \ReflectionAttribute $reflectionAttribute) : array {
+					$attribute = $reflectionAttribute->newInstance();
+					$result[$attribute->name] = $attribute;
+
+					return $result;
+
+				},
+				[]
+			);
 	}
 
 	/**
@@ -61,74 +78,42 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	{
 		if ($this->has($property))
 		{
-			return new class ($property,$this->array->offsetGet($property), $this->language) implements PropertyBuilderInterface {
-				public function __construct(
-					private string $name,
-					private ReflectionProperty $property,
-					private LangService $langService
-				)
+			return new class ($this->array[$property]) implements PropertyBuilderInterface {
+				public function __construct(private Field $field)
 				{
 				}
 
 				public function build(object $object): PropertyInterface
 				{
-					return new class($this->name, $object, $this->property, $this->langService) implements PropertyInterface {
-
-						public function __construct(
-							private string $name,
-							private object $object,
-							private ReflectionProperty $property,
-							private LangService $langService
-						)
+					return new class($object, $this->field) implements PropertyInterface {
+						private string $name;
+						private \ReflectionMethod $getter;
+						private \ReflectionMethod|null $setter;
+						private bool $immutable;
+						public function __construct(private object $object,Field $field)
 						{
+							$this->name = $field->name;
+							$this->immutable = $field->immutable;
+							$reflectionClass = new ReflectionClass($this->object);
+							$this->getter = $reflectionClass->getMethod($field->getter);
+							if (!$this->immutable && $field->setter)
+							{
+								$this->setter = $reflectionClass->getMethod($field->setter);
+							}
 						}
 
-						public function value(array $params = []): mixed
+						public function value(): mixed
 						{
-							$field = current($this->property->getAttributes(Field::class))->newInstance();
-							$reflectionMethod = (new ReflectionClass($this->object))->getMethod($field->getter);
-							$value = $reflectionMethod->invoke($this->object);
-							if ($value instanceof DateTimeInterface)
-							{
-								$value = $value->getTimestamp();
-							}
-							if ($value instanceof Lang)
-							{
-								$value = $this->langService->formatLangObject($value);
-							}
-							return $value;
+							return $this->getter->invoke($this->object);
 						}
 
 						public function set($parameter)
 						{
-							if (empty($this->property->getAttributes(Immutable::class)))
+							if (!$this->immutable && $this->setter)
 							{
-								if ($this->property->class === Lang::class)
-								{
-									if (is_array($parameter))
-									{
-										$parameter = new Lang($parameter);
-									}
-								}
-								elseif ($this->property->class === Currency::class)
-								{
-									if (is_array($parameter))
-									{
-										$parameter = new Currency($parameter);
-									}
-								}
-								elseif ($this->property->class === Image::class)
-								{
-									$parameter = new Image($parameter);
-								}
-
-								$field = current($this->property->getAttributes(Field::class))->newInstance();
-								(new ReflectionClass($this->object))
-									->getMethod($field->setter)
-									->invoke($this->object,$parameter);
-								return;
+								return $this->setter->invoke($this->object,$parameter);
 							}
-							throw new Exception("property $this->name immutable");
+							throw new Exception("property $this->name is immutable");
 						}
 					};
 				}
@@ -145,15 +130,24 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 	 */
 	public function has(string $property): bool
 	{
-		return $this->array->offsetExists($property);
+		return array_key_exists(key: $property, array: $this->array);
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getNames(): array
+	public function getFullNames(): array
 	{
-		return array_keys((array)$this->array);
+		return array_keys($this->array);
+	}
+
+	public function getDefaults(): array
+	{
+		return array_keys(
+			array_filter(
+				$this->array,
+				function(Field $item) {
+					return $item->default;
+				}
+			)
+		);
 	}
 }
 

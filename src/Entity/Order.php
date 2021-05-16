@@ -22,6 +22,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.order')]
+#[Field('restaurant', getter: 'getRestaurant', immutable: true,  default: true)]
+#[Field('portions', getter: 'getPortions', immutable: true, default: true)]
+#[Field('user', getter: 'getUser', immutable: true, default: true)]
 class Order extends BaseObject
 {
 	public const STATUS_PAID = 'PAID', STATUS_NEW = 'NEW', STATUS_CANCELED = 'CANCELED';
@@ -29,14 +32,14 @@ class Order extends BaseObject
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field('status', getter: 'getStatus', setter: 'setStatus')]
-	#[Assert\Choice(['PAID', 'NEW', 'CANCELED'], groups: ["create"])]
+	#[Field('status', getter: 'getStatus', setter: 'setStatus', default: true)]
+	#[Assert\Choice([Order::STATUS_PAID, Order::STATUS_NEW, Order::STATUS_CANCELED], groups: ["create"])]
 	protected ?string $status;
 
 	/**
 	 * @ORM\Column(type="text", nullable=true)
 	 */
-	#[Field('comment', getter: 'getComment', setter: 'setComment')]
+	#[Field('comment', getter: 'getComment', setter: 'setComment',default: true)]
 	protected ?string $comment;
 
 	/**

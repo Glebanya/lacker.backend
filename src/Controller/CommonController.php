@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
+use App\Api\Access;
 use App\Api\ApiService;
+use App\Api\Serializer\Serializer;
+use App\Configurators\Exception\ValidationException;
 use App\Repository\BaseObjectRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,14 @@ class CommonController extends AbstractController
 {
 	use ApiTrait;
 
+	/**
+	 * CommonController constructor.
+	 *
+	 * @param Security $security
+	 * @param EntityManagerInterface $manager
+	 * @param BaseObjectRepository $repository
+	 * @param ApiService $service
+	 */
 	public function __construct(
 		private Security $security,
 		private EntityManagerInterface $manager,
@@ -28,113 +37,150 @@ class CommonController extends AbstractController
 	{
 	}
 
-	#[Route('/api/{id}', name: 'common_get', methods: ['GET'])]
-	public function entity(string $id, Request $request): Response
-	{
-		if ($object = $this->getObject($id))
-		{
-			$this->denyAccessUnlessGranted('view',$object);
-			return $this->json([
-				'data' => $this->formatObject(
-					entity: $this->service->buildApiEntityObject($object),
-					fields: $this->getRequestedFields($request)
-				)
-			]);
-		}
-		throw new BadRequestException("object $id not found");
-	}
-
+	/**
+	 * @param string $id
+	 *
+	 * @return false|object|null
+	 */
 	protected function getObject(string $id): null|false|object
 	{
-		return $id === 'me' ? $this->getUser() : $this->repository->matching(
-			Criteria::create()
-				->where(Criteria::expr()->eq('id',$id))
-				->andWhere(Criteria::expr()->eq('deleted',false))
-			)->first();
+		return $id === 'me' ? $this->getUser() : $this->repository->findById($id);
 	}
 
+	/**
+	 * @param string $id
+	 * @param Serializer $serializer
+	 * @param Access $access
+	 *
+	 * @return Response
+	 * @throws \Exception
+	 */
+	#[Route('/api/{id}', name: 'common_get', methods: ['GET'])]
+	public function entity(string $id, Serializer $serializer, Access $access): Response
+	{
+		if (($object = $this->getObject($id)) && $object = $this->service->buildApiEntityObject($object))
+		{
+			$access->denyAccessUnlessGranted('view',$object);
+
+			return $this->json([
+				'data' => $serializer->serialize($object)
+			]);
+		}
+		throw $this->createNotFoundException("object $id not found");
+	}
+
+	/**
+	 * @param string $id
+	 *
+	 * @return JsonResponse
+	 */
 	#[Route('/api/{id}', name: 'common_delete', methods: ['DELETE'])]
 	public function deleteEntity(string $id): JsonResponse
 	{
 		if ($object = $this->getObject($id))
 		{
+			$this->denyAccessUnlessGranted('delete', $object);
 			$object->delete();
 			$this->manager->flush();
 			return $this->json([
 				'data' => 'OK'
 			]);
 		}
-		return $this->json([
-		],Response::HTTP_NOT_FOUND);
+		throw $this->createNotFoundException("object $id not found");
 	}
 
+	/**
+	 * @param string $id
+	 * @param Request $request
+	 * @param ValidatorInterface $validator
+	 * @param Serializer $serializer
+	 * @param Access $access
+	 *
+	 * @return JsonResponse
+	 * @throws ValidationException
+	 */
 	#[Route('/api/{id}', name: 'common_update', methods: ['POST'])]
-	public function updateEntity(string $id, Request $request, ValidatorInterface $validator): Response
+	public function updateEntity(
+		string $id,
+		Request $request,
+		ValidatorInterface $validator,
+		Serializer $serializer,
+		Access $access
+	): JsonResponse
 	{
 		if ($object = $this->getObject($id))
 		{
-			$this->denyAccessUnlessGranted('update', $object);
-			$apiObject = $this->service->buildApiEntityObject($object); $content = $this->getContent($request);	$keys = [];
-			foreach ($content as $key => $value)
+			$fields = []; $content = $this->getContent($request);
+			$access->denyAccessUnlessGranted('update', $apiObject = $this->service->buildApiEntityObject($object));
+			foreach ($content as $field => $value)
 			{
-				$apiObject->setProperty($keys[] = $key, $value);
+				$apiObject->setProperty($fields[] = $field, $value);
 			}
 			if (count($errors = $validator->validate($apiObject->getObject(), groups: "update")) === 0)
 			{
 				$this->manager->flush();
 				return $this->json([
-					'data' => $this->formatObject($apiObject, $keys)
+					'data' => $serializer->serializeObject($apiObject,$fields)
 				]);
 			}
-
-			return $this->json([
-				'error' => (string) $errors
-			],
-				Response::HTTP_NOT_FOUND);
+			throw new ValidationException($errors);
 		}
-		throw new BadRequestException("object $id not found");
+		throw $this->createNotFoundException("object $id not found");
 	}
 
+	/**
+	 * @param string $id
+	 * @param string $reference
+	 * @param Request $request
+	 * @param Serializer $serializer
+	 * @param Access $access
+	 *
+	 * @return JsonResponse
+	 * @throws \Exception
+	 */
 	#[Route('/api/{id}/{reference}', name: 'common_ref', methods: ['GET'])]
-	public function reference(string $id, string $reference, Request $request): Response
+	public function reference(
+		string $id,
+		string $reference,
+		Request $request,
+		Serializer $serializer,
+		Access $access
+	): JsonResponse
 	{
 		if ($object = $this->getObject($id))
 		{
-			$fields = $this->getRequestedFields(request: $request);
-			if ($reference = $this->service->buildApiEntityObject($object)->reference($reference,$request->query->all()))
+			$access->denyAccessUnlessGranted('view',$apiEntity = $this->service->buildApiEntityObject($object));
+			if ($referenceObjects = $apiEntity->reference($reference,$request->query->all()))
 			{
-				if (is_array($reference))
-				{
-					return $this->json([
-						'data' => array_map(
-							function($entity) use ($fields) {
-								$this->denyAccessUnlessGranted('view',$entity->getObject());
-								return $this->formatObject($entity, $fields);
-							},
-							$reference
-						)
-					]);
-				}
-				$this->denyAccessUnlessGranted('view', $reference->getObject());
+				$access->denyAccessUnlessGranted('view',$referenceObjects);
 				return $this->json([
-					'data' => $this->formatObject(entity: $reference, fields: $fields)
+					'data' => $serializer->serialize($referenceObjects)
 				]);
 			}
-			throw new BadRequestException("object $id not found");
+			throw $this->createNotFoundException("object $id/$reference not found");
 		}
-		throw new BadRequestException("object $id not found");
+		throw $this->createNotFoundException("object $id not found");
 	}
 
+	/**
+	 * @param string $id
+	 * @param string $method
+	 * @param Request $request
+	 * @param Access $access
+	 *
+	 * @return JsonResponse
+	 * @throws \Exception
+	 */
 	#[Route('/api/{id}/{method}', name: 'method', methods: ['POST'])]
-	public function method(string $id, string $method, Request $request): JsonResponse
+	public function method(string $id, string $method, Request $request, Access $access): JsonResponse
 	{
-		if ($object = $this->getObject($id))
+		if (($object = $this->getObject($id)) && $object = $this->service->buildApiEntityObject($object))
 		{
-			$this->denyAccessUnlessGranted($method,$object);
+			$access->denyAccessUnlessGranted($method,$object);
 			return $this->json([
-				'data' => $this->service->buildApiEntityObject($object)->method($method, $this->getContent($request))
+				'data' => $object->method($method, $this->getContent($request))
 			]);
 		}
-		throw new BadRequestException("object $id not found");
+		throw $this->createNotFoundException("object $id not found");
 	}
 }

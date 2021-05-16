@@ -21,16 +21,27 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.dish')]
+#[Field('portions', 'getPortions', immutable: true, default: true)]
+#[Field('stop_portions', 'getPortions', immutable: true, default: false)]
+#[Field('menu', 'getMenu', immutable: true, default: false)]
 class Dish extends BaseObject
 {
 	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DISH = 'DISH', TYPE_DRINKS = 'DRINKS';
+
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'description', getter: 'getDescription', setter: 'setDescription')]
+	#[Field(name: 'description', getter: 'getDescription', setter: 'setDescription', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $description;
-
+	/**
+	 * @ORM\OneToMany(
+	 *     targetEntity=Portion::class,
+	 *     mappedBy="dish",
+	 *     orphanRemoval=true,
+	 *     cascade={"persist"}
+	 *)
+	 */
 	#[Assert\Count(
 		min: 1,
 		max: 10,
@@ -44,21 +55,21 @@ class Dish extends BaseObject
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'title',getter: 'getName',setter: 'setName')]
+	#[Field(name: 'title',getter: 'getName',setter: 'setName', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $name;
 
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
-	#[Field(name: 'image', getter: 'getImage',setter: 'setImage')]
+	#[Field(name: 'image', getter: 'getImage', setter:'setImage', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Image $image;
 
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
-	#[Field(name: 'type', getter: 'getType', setter: 'setType')]
+	#[Field(name: 'type', getter: 'getType', setter: 'setType', default: true)]
 	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS], groups: ["create", "update"])]
 	protected ?string $type;
 

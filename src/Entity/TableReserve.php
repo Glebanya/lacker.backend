@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=TableReserveRepository::class)
  */
 #[ConfiguratorAttribute('app.config.menu')]
+#[Field('table', 'getReservedTable', immutable: true)]
+#[Field('user', 'getUser', immutable: true)]
 class TableReserve extends BaseObject
 {
 
@@ -20,7 +22,7 @@ class TableReserve extends BaseObject
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus')]
+	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus', default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	#[Assert\Choice([TableReserve::STATUS_NEW, TableReserve::STATUS_CLOSED], groups: ["create", "update"])]
 	protected ?string $status;

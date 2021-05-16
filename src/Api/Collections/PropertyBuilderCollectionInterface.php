@@ -16,5 +16,10 @@ interface PropertyBuilderCollectionInterface extends CollectionInterface
 	/**
 	 * @return string[]
 	 */
-	public function getNames() : array;
+	public function getFullNames() : array;
+
+	/**
+	 * @return string[]
+	 */
+	public function getDefaults() : array;
 }

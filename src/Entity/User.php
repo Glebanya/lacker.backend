@@ -6,7 +6,6 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection as AttributeCollection;
 use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
 use App\Repository\UserRepository;
 use App\Utils\Environment;
@@ -29,8 +28,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
-	#[Field(name: 'google_id',getter: 'getGoogleId')]
-	#[Immutable]
+	#[Field(name: 'google_id',getter: 'getGoogleId', immutable: true, default: true)]
 	protected ?string $googleId;
 
 	/**

@@ -23,13 +23,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.table')]
+#[Field('restaurant', 'getRestaurant', immutable: true)]
 class Table extends BaseObject
 {
 	public const STATUS_FREE = "FREE", STATUS_BUSY = "BUSY", STATUS_RESERVED = "RESERVED";
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus')]
+	#[Field(name: 'status',getter: 'getStatus',setter: 'setStatus', default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	#[Assert\Choice([Table::STATUS_FREE, Table::STATUS_BUSY, Table::STATUS_RESERVED], groups: ["create", "update"])]
 	protected string $status;
@@ -44,7 +45,7 @@ class Table extends BaseObject
 	/**
 	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'persons' , getter: 'getPersons', setter: 'setPersons')]
+	#[Field(name: 'persons' , getter: 'getPersons', setter: 'setPersons', default: true)]
 	#[Assert\Positive(groups: ["create", "update"])]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	protected int $persons;
@@ -52,7 +53,7 @@ class Table extends BaseObject
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field(name: 'title',getter: 'getTitle',setter: 'setTitle')]
+	#[Field(name: 'title',getter: 'getTitle',setter: 'setTitle', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $title;
 

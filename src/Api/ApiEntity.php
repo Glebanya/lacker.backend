@@ -2,6 +2,10 @@
 
 namespace App\Api;
 
+use Doctrine\Common\Collections\Collection;
+use App\Entity\BaseObject;
+use App\Lang\LangService;
+use App\Types\Lang;
 use Exception;
 
 final class ApiEntity
@@ -15,12 +19,14 @@ final class ApiEntity
 		return $this->object;
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public function getPropertiesNames() : array
+	public function getFullFieldsNames() : array
 	{
-		return $this->resolver->getPropertyBuilderCollection()->getNames();
+		return $this->resolver->getPropertyBuilderCollection()->getFullNames();
+	}
+
+	public function getDefaultFieldsNames() : array
+	{
+		return $this->resolver->getPropertyBuilderCollection()->getDefaults();
 	}
 
 	/**
@@ -48,7 +54,22 @@ final class ApiEntity
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
 		{
-			return $this->resolver->getPropertyBuilderCollection()->get($key)->build($this->object)->value();
+			$value = $this->resolver->getPropertyBuilderCollection()->get($key)->build($this->object)->value();
+			if ($value instanceof Collection)
+			{
+				return array_reduce(
+					iterator_to_array($value),
+					function(ApiEntityCollection $collection, $entity){
+						return $collection->addEntity($this->service->buildApiEntityObject($entity));
+					},
+					new ApiEntityCollection()
+				);
+			}
+			if ($value instanceof BaseObject)
+			{
+				$value = $this->service->buildApiEntityObject($value);
+			}
+			return $value;
 		}
 
 		throw new Exception("unknown field $key");
@@ -58,10 +79,10 @@ final class ApiEntity
 	 * @param string $key
 	 * @param array $params
 	 *
-	 * @return ApiEntity|ApiEntity[]|null
+	 * @return ApiEntity|ApiEntityCollection
 	 * @throws Exception
 	 */
-	public function reference(string $key, array $params): ApiEntity|array|null
+	public function reference(string $key, array $params): ApiEntity|ApiEntityCollection
 	{
 		if ($this->resolver->getReferenceBuilderCollection()->has($key))
 		{
@@ -69,20 +90,19 @@ final class ApiEntity
 			{
 				if (is_iterable($result))
 				{
-					$entities = [];
-					foreach ($result as $object)
-					{
-						$entities[] = $this->service->buildApiEntityObject($object);
-					}
-
-					return $entities;
+					return array_reduce(
+						$result instanceof \Traversable ? iterator_to_array($result) : $result,
+						function(ApiEntityCollection $collection, $entity){
+							return $collection->addEntity($this->service->buildApiEntityObject($entity));
+						},
+						new ApiEntityCollection()
+					);
 				}
-
 				return $this->service->buildApiEntityObject($result);
 			}
 		}
 
-		throw new Exception("unknown field $key");
+		throw new Exception("unknown reference $key");
 	}
 
 	/**

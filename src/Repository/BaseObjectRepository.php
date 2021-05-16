@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\BaseObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -22,6 +23,15 @@ class BaseObjectRepository extends ServiceEntityRepository
 	public function findByIds($ids)
 	{
 		return ($builder = $this->createQueryBuilder('base'))->where($builder->expr()->in('id', $ids))->getQuery()->getResult();
+	}
+
+	public function findById($id)
+	{
+		return $this->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('id',$id))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+			)->first();
 	}
 	// /**
 	//  * @return BaseObject[] Returns an array of BaseObject objects

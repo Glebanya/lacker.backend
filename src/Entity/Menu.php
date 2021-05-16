@@ -22,19 +22,21 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.menu')]
+#[Field('dishes', 'getDishes', immutable: true)]
+#[Field('restaurant', 'getRestaurant', immutable: true)]
 class Menu extends BaseObject
 {
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field('title', getter: 'getTitle', setter: 'setTitle')]
+	#[Field('title', getter: 'getTitle', setter: 'setTitle', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $title;
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field('description', getter: 'getDescription', setter: 'setDescription')]
+	#[Field('description', getter: 'getDescription', setter: 'setDescription', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $description;
 
@@ -50,7 +52,6 @@ class Menu extends BaseObject
 	 *     targetEntity=Dish::class,
 	 *     mappedBy="menu",
 	 *     orphanRemoval=true,
-	 *     fetch="EXTRA_LAZY",
 	 *     cascade={"persist"}
 	 *	 )
 	 */

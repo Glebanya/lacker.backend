@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\Immutable;
 use App\Configurators\Attributes\Reference;
 use App\Repository\StaffRepository;
 use App\Utils\Environment;
@@ -19,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=StaffRepository::class)
  */
 #[ConfiguratorAttribute('app.config.staff')]
+#[Field('restaurant', 'getDish', immutable: true)]
 class Staff extends BaseUser implements UserInterface, EquatableInterface
 {
 	public const STATUS_WORKING = 'WORKING', STATUS_NOT_WORKING = 'NOT_WORKING' , STATUS_BUSY = 'BUSY';
@@ -40,7 +40,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: "role", getter: 'getRole',setter: 'setRoles')]
+	#[Field(name: "role", getter: 'getRole',setter: 'setRoles', default: true)]
 	#[Assert\Choice(
 		[Staff::ROLE_ADMINISTRATOR, Staff::ROLE_STAFF, Staff::ROLE_MANAGER],
 		groups: ["create","update"]
@@ -50,7 +50,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: "status", getter: 'getStatus', setter: 'setStatus')]
+	#[Field(name: "status", getter: 'getStatus', setter: 'setStatus', default: true)]
 	#[Assert\Choice(
 		[Staff::STATUS_WORKING, Staff::STATUS_NOT_WORKING, Staff::STATUS_BUSY],
 		groups: ["create","update"]
@@ -66,8 +66,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
 	 */
-	#[Immutable]
-	#[Field(name: 'firebase_token', getter: 'getFirebaseToken', setter: 'setFirebaseToken')]
+	#[Field(name: 'firebase_token', getter: 'getFirebaseToken', setter: 'setFirebaseToken',default: true)]
 	private ?string $firebaseToken;
 
 	public function __construct($params = [])

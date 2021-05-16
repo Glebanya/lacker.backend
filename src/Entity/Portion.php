@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.portion')]
+#[Field('dish', 'getDish', immutable: true)]
 class Portion extends BaseObject
 {
 	/**
@@ -29,14 +30,14 @@ class Portion extends BaseObject
 	/**
 	 * @ORM\Column(type="price")
 	 */
-	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice')]
+	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice',default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Price $price;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize')]
+	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize',default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
 	protected int $weight;
 

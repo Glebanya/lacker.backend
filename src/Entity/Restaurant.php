@@ -23,12 +23,16 @@ use App\Configurators\Attributes\Collection as CollectionAttribute;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.restaurant')]
+#[Field('staff', 'getStaff', immutable: true)]
+#[Field('tables', 'getTables', immutable: true)]
+#[Field('menus', 'getMenus', immutable: true)]
+//#[Field('orders', 'getOrders', immutable: true)]
 class Restaurant extends BaseObject
 {
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
-	#[Field('name','getName','setName')]
+	#[Field('name','getName','setName',default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Lang $name;
 

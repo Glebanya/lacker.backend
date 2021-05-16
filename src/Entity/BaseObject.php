@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Configurators\Attributes\Immutable;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -39,29 +38,25 @@ abstract class BaseObject
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class=UuidV4Generator::class)
 	 */
-	#[Immutable]
-	#[Field(name: 'id', getter: 'getId')]
+	#[Field(name: 'id', getter: 'getId', immutable: true, default: true)]
 	protected ?Uuid $id;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Immutable]
-	#[Field(name: 'create_data', getter: 'getCrateDate')]
+	#[Field(name: 'create_data', getter: 'getCrateDate', immutable: true)]
 	protected ?DateTimeInterface $crateDate;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Immutable]
-	#[Field(name: 'update_date', getter: 'getUpdateDate')]
+	#[Field(name: 'update_date', getter: 'getUpdateDate', immutable: true)]
 	protected ?DateTimeInterface $updateDate;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	#[Immutable]
-	#[Field(name: 'delete', getter: 'isDeleted')]
+	#[Field(name: 'delete', getter: 'isDeleted', immutable: true)]
 	private bool $deleted = false;
 
 	public function getId(): ?Uuid
