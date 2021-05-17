@@ -218,7 +218,7 @@ class Order extends BaseObject
 			foreach ($this->getPortions() as $portion)
 			{
 				$portionId = $portion->getDish()->getMenu()->getRestaurant()->getId();
-				if (!$portionId->equal($restaurantId))
+				if (!$portionId->equals($restaurantId))
 				{
 					$context->buildViolation("error wrong portion")->atPath("portions")->addViolation();
 				}
