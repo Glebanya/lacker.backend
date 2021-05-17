@@ -77,6 +77,7 @@ class Order extends BaseObject
 	public function __construct(array $params = [])
 	{
 		$this->portions = new ArrayCollection();
+		$this->sum = new Price();
 		if (array_key_exists('comment', $params) && is_string($params['comment']))
 		{
 			$this->comment = $params['comment'];
