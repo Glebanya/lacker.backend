@@ -82,11 +82,6 @@ class UserConfig extends BaseConfigurator
 									throw new EntityNotFoundException($portionId);
 								}
 							}
-							$portions = $this->portionRepository->findByIds($params['portions']);
-							foreach ($portions as $item)
-							{
-								$order->addPortion($item);
-							}
 
 							$errors = $this->validator->validate($order, groups: "create");
 							if (count($errors) === 0)
