@@ -6,6 +6,7 @@ use App\Configurators\Exception\EntityNotFoundException;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Order;
+use App\Entity\Portion;
 use App\Entity\Restaurant;
 use App\Lang\LangService;
 use App\Repository\PortionRepository;
@@ -18,7 +19,6 @@ class OrderConfig extends BaseConfigurator
 	public function __construct(
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
-		protected PortionRepository $portionRepository,
 		protected LangService $langService
 	)
 	{
@@ -39,14 +39,13 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$this->portionRepository->matching(
+						$this->manager->getRepository(Portion::class)->matching(
 							Criteria::create()->where(
-								Criteria::expr()->in('id',$portions)
+								Criteria::expr()->in('id', $portions)
 							)->andWhere(
-								Criteria::expr()->eq('deleted',false)
+								Criteria::expr()->eq('deleted', false)
 							)
-						)->forAll(
-							function($dish) use ($order) {
+						)->forAll(function($dish) use ($order) {
 								$order->addPortion($dish);
 							});
 
@@ -64,7 +63,7 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$this->portionRepository->matching(
+						$this->manager->getRepository(Portion::class)->matching(
 							Criteria::create()->where(
 								Criteria::expr()->in('id',$portions)
 							)->andWhere(
