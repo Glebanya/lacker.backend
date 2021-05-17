@@ -36,10 +36,10 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 				{
 					if (array_key_exists('portion', $params) && is_array($rawPortion = $params['portion']))
 					{
-						$errors = $this->validator->validate($portion = new Portion($rawPortion), groups: "create");
+						$object->addPortion($portion = new Portion($rawPortion));
+						$errors = $this->validator->validate($portion, groups: "create");
 						if (count($errors) === 0)
 						{
-							$object->addPortion($portion);
 							$this->manager->persist($portion);
 							$this->manager->flush();
 							return $object->getId();
