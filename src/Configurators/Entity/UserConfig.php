@@ -70,7 +70,10 @@ class UserConfig extends BaseConfigurator
 					{
 						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
 						{
-							$order = (new Order($params))->setUser($user)->setRestaurant($restaurant);
+							$order = (new Order($params))
+								->setUser($user)
+								->setRestaurant($restaurant)
+								->setStatus(Order::STATUS_NEW);
 							foreach ($params['portions'] as $portionId)
 							{
 								if (is_string($portionId) && $portion = $this->manager->find(Portion::class,$portionId))
