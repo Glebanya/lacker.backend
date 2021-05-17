@@ -19,6 +19,14 @@ class PortionRepository extends ServiceEntityRepository
 		parent::__construct($registry, Portion::class);
 	}
 
+	public function findByIds($ids)
+	{
+		return ($builder = $this->createQueryBuilder('base'))
+			->where($builder->expr()->in('id', $ids))
+			->getQuery()
+			->getArrayResult();
+	}
+
 	// /**
 	//  * @return Portion[] Returns an array of Portion objects
 	//  */

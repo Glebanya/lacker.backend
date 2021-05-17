@@ -70,14 +70,12 @@ class UserConfig extends BaseConfigurator
 						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
 						{
 							$order = (new Order($params))->setUser($user)->setRestaurant($restaurant);
-							$this->portionRepository->matching(
-									Criteria::create()->where(
-										Criteria::expr()->in('id',$params['portions'])
-									)
-							)->forAll(
-								function($dish) use ($order) {
-									$order->addPortion($dish);
-								});
+
+							$portions = $this->portionRepository->findByIds($params['portions']);
+							foreach ($portions as $item)
+							{
+								$order->addPortion($item);
+							}
 
 							$errors = $this->validator->validate($order, groups: "create");
 							if (count($errors) === 0)
