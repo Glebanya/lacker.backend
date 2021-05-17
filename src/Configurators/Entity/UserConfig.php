@@ -6,6 +6,7 @@ namespace App\Configurators\Entity;
 use App\Configurators\Exception\EntityNotFoundException;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
+use App\Entity\Portion;
 use App\Entity\Table;
 use App\Entity\TableReserve;
 use App\Entity\User;
@@ -70,7 +71,17 @@ class UserConfig extends BaseConfigurator
 						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
 						{
 							$order = (new Order($params))->setUser($user)->setRestaurant($restaurant);
-
+							foreach ($params['portions'] as $portionId)
+							{
+								if (is_string($portionId) && $portion = $this->manager->find(Portion::class,$portionId))
+								{
+									$order->addPortion($portion);
+								}
+								else
+								{
+									throw new EntityNotFoundException($portionId);
+								}
+							}
 							$portions = $this->portionRepository->findByIds($params['portions']);
 							foreach ($portions as $item)
 							{
