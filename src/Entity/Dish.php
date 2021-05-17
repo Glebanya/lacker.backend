@@ -21,9 +21,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.dish')]
-#[Field('portions', 'getPortions', immutable: true, default: true)]
-#[Field('stop_portions', 'getPortions', immutable: true, default: false)]
-#[Field('menu', 'getMenu', immutable: true, default: false)]
 class Dish extends BaseObject
 {
 	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DISH = 'DISH', TYPE_DRINKS = 'DRINKS';
@@ -50,6 +47,7 @@ class Dish extends BaseObject
 		groups: ["create", "update"]
 	)]
 	#[Assert\Valid(groups: ["create", "update"])]
+	#[Field('portions', 'getPortions', immutable: true, default: true)]
 	protected Collection $portions;
 
 	/**
@@ -77,11 +75,30 @@ class Dish extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
+	#[Field('menu', 'getMenu', immutable: true, default: false)]
 	protected ?Menu $menu;
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	#[Field(name: 'stopped', getter: 'isStopped', setter:'setStopped', default: true)]
+	private bool $stopped;
+
+	public function isStopped(): ?bool
+	{
+		return $this->stopped;
+	}
+
+	public function setStopped(bool $stopped): self
+	{
+		$this->stopped = $stopped;
+		return $this;
+	}
 
 	public function __construct($params = [])
 	{
 		$this->portions = new ArrayCollection();
+		$this->stopped = false;
 		if (array_key_exists('description', $params) && is_array($params['description']))
 		{
 			$this->description = new Lang($params['description']);

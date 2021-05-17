@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Lang;
+namespace App\Api\Normalizer;
 
 use App\Types\Lang;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class LangService
+class LangNormalizer implements NormalizerInterface
 {
 	public const RUSSIAN = 'ru';
 
@@ -22,21 +22,23 @@ class LangService
 	 */
 	public static function getSupportedLanguages(): array
 	{
-		return [self::RUSSIAN];
+		return [
+			self::RUSSIAN
+		];
 	}
 
 	/**
-	 * @param Lang|null $lang
+	 * @param $value
 	 *
 	 * @return string
 	 */
-	public function formatLangObject(?Lang $lang): string
+	public function normalize($value): mixed
 	{
-		if ($lang instanceof Lang && array_key_exists($requestLang = $this->getRequestLanguage(),(array)$lang))
+		if ($value instanceof Lang)
 		{
-			return $lang[$requestLang];
+			return array_key_exists($requestLang = $this->getRequestLanguage(),(array)$value)? $value[$requestLang] : '';
 		}
-		return '';
+		return $value;
 	}
 
 	/**
@@ -44,15 +46,8 @@ class LangService
 	 */
 	protected function getRequestLanguage(): string
 	{
-		$request = $this->requestStack->getCurrentRequest();
-		if (
-			$request->headers->has('Locale') and
-			in_array($lang = $request->headers->get('Locale'),$this::getSupportedLanguages())
-		)
-		{
-			return $lang;
-		}
-		return $this->getDefaultLanguage();
+		$lang = $this->requestStack->getCurrentRequest()->headers->get('Locale',$this->getDefaultLanguage());
+		return in_array($lang,$this::getSupportedLanguages())? $lang : $this->getDefaultLanguage();
 	}
 
 	/**

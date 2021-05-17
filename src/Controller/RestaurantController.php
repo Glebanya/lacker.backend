@@ -6,7 +6,6 @@ use App\Api\Access;
 use App\Api\ApiEntity;
 use App\Api\ApiService;
 use App\Api\Serializer\Serializer;
-use App\Lang\LangService;
 use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;

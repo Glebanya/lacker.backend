@@ -2,14 +2,8 @@
 
 namespace App\Configurators;
 
-use App\Entity\Currency;
-use App\Lang\LangService;
-use App\Types\Image;
-use App\Types\Lang;
-use DateTimeInterface;
 use Exception;
 use \ReflectionClass;
-use \ArrayObject;
 use App\Api\Builders\PropertyBuilderInterface;
 use App\Api\Collections\PropertyBuilderCollectionInterface;
 use App\Api\Properties\PropertyInterface;
@@ -79,6 +73,7 @@ class ReflectionPropertyCollection implements PropertyBuilderCollectionInterface
 		if ($this->has($property))
 		{
 			return new class ($this->array[$property]) implements PropertyBuilderInterface {
+
 				public function __construct(private Field $field)
 				{
 				}

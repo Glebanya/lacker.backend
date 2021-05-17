@@ -2,13 +2,9 @@
 
 namespace App\Api\Serializer;
 
-use App\Api\Access;
 use App\Api\ApiEntity;
 use App\Api\ApiEntityCollection;
 use App\Api\ApiService;
-use App\Lang\LangService;
-use App\Types\Lang;
-use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,15 +14,13 @@ class Serializer
 	 * Serializer constructor.
 	 *
 	 * @param ApiService $apiService
-	 * @param LangService $langService
 	 * @param RequestStack $requestStack
-	 * @param Access $access
+	 * @param Normalizer $normalizer
 	 */
 	public function __construct(
 		private ApiService $apiService,
-		private LangService $langService,
 		private RequestStack $requestStack,
-		private Access $access
+		private Normalizer $normalizer
 	)
 	{
 
@@ -55,7 +49,7 @@ class Serializer
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function serializeCollection(ApiEntityCollection $collection, array|null $requestedFields): array
+	public function serializeCollection(ApiEntityCollection $collection, array|null $requestedFields = null): array
 	{
 
 		return array_reduce(
@@ -76,48 +70,18 @@ class Serializer
 	 * @return array
 	 * @throws Exception
 	 */
-	public function serializeObject(ApiEntity $entity, array|null $requestedFields): array
+	public function serializeObject(ApiEntity $entity, array|null $requestedFields = null): array
 	{
 
 		return array_reduce(
 			$requestedFields ?? $entity->getDefaultFieldsNames(),
 			function($serialized, $property) use ($entity) {
-				$serialized[$property] = $this->serializeValue($entity->getProperty($property));
+				$serialized[$property] = $this->normalizer->normalize($entity->getProperty($property));
 
 				return $serialized;
 			},
 			[]
 		);
-	}
-
-	/**
-	 * @param $value
-	 *
-	 * @return mixed
-	 * @throws Exception
-	 */
-	private function serializeValue($value): mixed
-	{
-		if ($value instanceof DateTimeInterface)
-		{
-			return $value->getTimestamp();
-		}
-		elseif ($value instanceof Lang)
-		{
-			return $this->langService->formatLangObject($value);
-		}
-		elseif ($value instanceof ApiEntityCollection)
-		{
-			$this->access->denyAccessUnlessGranted('view',$value);
-			return $this->serializeCollection($value,null);
-		}
-		elseif ($value instanceof ApiEntity)
-		{
-			$this->access->denyAccessUnlessGranted('view',$value);
-			return $this->serializeObject($value,null);
-		}
-
-		return $value;
 	}
 
 	/**

@@ -26,6 +26,8 @@ use App\Configurators\Attributes\Collection as CollectionAttribute;
 #[Field('staff', 'getStaff', immutable: true)]
 #[Field('tables', 'getTables', immutable: true)]
 #[Field('menus', 'getMenus', immutable: true)]
+#[Field('main_menu', 'getMainMenu', immutable: true)]
+#[Field('minor_menus', 'getMinorMenu', immutable: true)]
 //#[Field('orders', 'getOrders', immutable: true)]
 class Restaurant extends BaseObject
 {
@@ -133,6 +135,36 @@ class Restaurant extends BaseObject
 		}
 
 		return $this;
+	}
+
+	#[Reference('main_menu')]
+	#[CollectionAttribute]
+	public function getMainMenu() : Menu|false
+	{
+		return $this->getMenus()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('tag',[Menu::MENU_TAG_MAIN])
+				)
+				->andWhere(
+					Criteria::expr()->eq('deleted',false)
+				)
+		)->first();
+	}
+
+	#[Reference('minor_menus')]
+	#[CollectionAttribute]
+	public function getMinorMenu() : Collection
+	{
+		return $this->getMenus()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('tag',[Menu::MENU_TAG_MAIN])
+				)
+				->andWhere(
+					Criteria::expr()->eq('deleted',false)
+				)
+		);
 	}
 
 	#[Reference('admin')]
@@ -347,7 +379,7 @@ class Restaurant extends BaseObject
 	}
 	#[Reference('menus')]
 	#[CollectionAttribute]
-	public function getMenus(): Collection
+	public function getMenus(): Collection|Selectable
 	{
 		return $this->menus;
 	}

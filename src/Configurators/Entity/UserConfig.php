@@ -12,7 +12,6 @@ use App\Entity\TableReserve;
 use App\Entity\User;
 use App\Entity\Order;
 use App\Entity\Restaurant;
-use App\Lang\LangService;
 use App\Repository\PortionRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,10 +23,9 @@ class UserConfig extends BaseConfigurator
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
 		protected PortionRepository $portionRepository,
-		protected LangService $langService
 	)
 	{
-		parent::__construct($this->langService);
+		parent::__construct();
 	}
 
 	protected function getEntity(): string

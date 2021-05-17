@@ -4,7 +4,6 @@ namespace App\Api;
 
 use Doctrine\Common\Collections\Collection;
 use App\Entity\BaseObject;
-use App\Lang\LangService;
 use App\Types\Lang;
 use Exception;
 

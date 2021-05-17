@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
+use App\Types\Lang;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,16 +31,28 @@ class Portion extends BaseObject
 	/**
 	 * @ORM\Column(type="price")
 	 */
-	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice',default: true)]
+	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	protected Price $price;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
-	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize',default: true)]
+	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
 	protected int $weight;
+
+	/**
+	 * @ORM\Column(type="lang_phrase", nullable=true)
+	 */
+	#[Field(name: 'title', getter: 'getTitle', setter: 'setTitle', default: true)]
+	private Lang $title;
+
+	/**
+	 * @ORM\Column(type="integer", options={"default" : 0})
+	 */
+	#[Field(name: 'sort', getter: 'getSort', setter: 'setSort', default: true)]
+	private ?int $sort;
 
 	public function __construct($params = [])
 	{
@@ -86,9 +99,33 @@ class Portion extends BaseObject
 	public function setSize(int $weight): self
 	{
 		$this->weight = $weight;
+
 		return $this;
 	}
 
+	public function getTitle(): Lang
+	{
+		return $this->title;
+	}
+
+	public function setTitle(Lang $title): self
+	{
+		$this->title = $title;
+
+		return $this;
+	}
+
+	public function getSort(): ?int
+	{
+		return $this->sort;
+	}
+
+	public function setSort(int $sort): self
+	{
+		$this->sort = $sort;
+
+		return $this;
+	}
 	/**
 	 * @ORM\PreUpdate
 	 *

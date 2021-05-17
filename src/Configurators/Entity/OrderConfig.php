@@ -8,7 +8,6 @@ use App\Configurators\Exception\ValidationException;
 use App\Entity\Order;
 use App\Entity\Portion;
 use App\Entity\Restaurant;
-use App\Lang\LangService;
 use App\Repository\PortionRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,10 +18,9 @@ class OrderConfig extends BaseConfigurator
 	public function __construct(
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
-		protected LangService $langService
 	)
 	{
-		parent::__construct($this->langService);
+		parent::__construct();
 	}
 
 	protected function getEntity(): string

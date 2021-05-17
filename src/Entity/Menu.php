@@ -22,10 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.menu')]
-#[Field('dishes', 'getDishes', immutable: true)]
-#[Field('restaurant', 'getRestaurant', immutable: true)]
 class Menu extends BaseObject
 {
+	const MENU_TAG_MAIN = "MAIN", MENU_TAG_MINOR = "MINOR";
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
@@ -45,6 +44,7 @@ class Menu extends BaseObject
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create"])]
+	#[Field('stop_portions', 'getPortions', immutable: true, default: false)]
 	protected ?Restaurant $restaurant;
 
 	/**
@@ -56,7 +56,15 @@ class Menu extends BaseObject
 	 *	 )
 	 */
 	#[Assert\Valid(groups: ["create"])]
+	#[Field('dishes', 'getDishes', immutable: true)]
 	protected Collection|Selectable $dishes;
+
+	/**
+	 * @ORM\Column(type="string", length=255, options={"default":"MINOR"})
+	 */
+	#[Assert\Choice([Menu::MENU_TAG_MAIN, Menu::MENU_TAG_MINOR], groups: ["create","update"])]
+	#[Field('tag','getTag', 'setTag', immutable: false, default: true)]
+	private string $tag;
 
 	public function __construct($params = [])
 	{
@@ -68,6 +76,10 @@ class Menu extends BaseObject
 		if (array_key_exists('title', $params) && is_array($params['title']))
 		{
 			$this->title = new Lang($params['title']);
+		}
+		if (array_key_exists('tag', $params) && is_string($params['tag']))
+		{
+			$this->tag = $params['tag'];
 		}
 		if (array_key_exists('dishes', $params) && is_array($params['dishes']))
 		{
@@ -132,6 +144,18 @@ class Menu extends BaseObject
 	public function getDishes(): Collection|Selectable
 	{
 		return $this->dishes;
+	}
+
+	public function getTag(): ?string
+	{
+		return $this->tag;
+	}
+
+	public function setTag(string $tag): self
+	{
+		$this->tag = $tag;
+
+		return $this;
 	}
 
 	#[Reference('drinks')]

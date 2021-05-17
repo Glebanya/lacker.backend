@@ -9,6 +9,7 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        public: true
 
     App\:
         resource: '../src/'
@@ -17,10 +18,36 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
-
+            - '../src/Types/Image.php'
+            - '../src/Types/Lang.php'
+            - '../src/Types/Price.php'
+            - '../src/Security/JWTObject.php'
+            - '../src/Security/JWTObjectSigner.php'
+            - '../src/Configurators/ClosureMethodCollection.php'
+            - '../src/Configurators/ReflectionPropertyCollection.php'
+            - '../src/Configurators/ReflectionReferenceCollection.php'
+            - '../src/Configurators/Exception/'
+            - '../src/Configurators/Attributes/'
+            - '../src/Api/ApiEntity.php'
+            - '../src/Api/ApiEntityCollection.php'
+            - '../src/Api/Attributes/'
+            - '../src/DataFixtures/'
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+
+    App\Api\Normalizer\DatetimeNormalizer:
+      public: true
+      lazy: true
+
+    App\Api\Normalizer\LangNormalizer:
+      public: true
+      lazy: true
+
+    App\Api\Normalizer\UuidNormalizer:
+      public: true
+      lazy: true
+
     app.config.restaurant:
         lazy: true
         public: true
