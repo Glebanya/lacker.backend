@@ -19,8 +19,8 @@ services:
       APP_DEBUG: 'true'
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
-#    volumes:
-#     - .:/app
+    volumes:
+     - .:/app
     depends_on:
         mysql:
           condition: service_healthy
@@ -33,7 +33,7 @@ services:
     environment:
       DHPARAM_GENERATION: "false"
     ports:
-#      - 80:80
+      - 80:80
       - 443:443
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -73,8 +73,8 @@ services:
   mysql:
     image: mysql:5.7
     restart: unless-stopped
-#    ports:
-#      - 3306:3306
+    ports:
+      - 3306:3306
     networks:
       - dev-back
     environment:

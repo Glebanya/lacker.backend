@@ -2,7 +2,6 @@
 
 namespace App\Access;
 
-use App\Entity\Staff;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -27,7 +26,12 @@ class UserAccessVoter extends Voter
 
 	protected function canUpdate($subject, TokenInterface $token): bool
 	{
-		return $subject instanceof User and ($user = $token->getUser()) and $user instanceof User and $user->isEqualTo($user);
+		return
+			$subject instanceof User and
+			($user = $token->getUser()) and
+			$user instanceof User and
+			$user->isEqualTo($user)
+			;
 	}
 
 	protected function canDelete($subject, TokenInterface $token): bool

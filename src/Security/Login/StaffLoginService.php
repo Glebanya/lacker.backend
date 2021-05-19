@@ -12,7 +12,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class StaffLoginService
 {
 
-	public function __construct(private StaffRepository $repository, private UserPasswordEncoderInterface $encoder)
+	public function __construct(
+		private StaffRepository $repository,
+		private UserPasswordEncoderInterface $encoder
+	)
 	{
 	}
 

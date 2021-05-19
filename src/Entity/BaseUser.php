@@ -25,7 +25,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 * @ORM\Column(type="string", length=255)
 	 */
 	#[Field(name: 'name', getter: 'getUsername',setter: 'setUsername',default: true)]
-	#[Assert\NotBlank(message: 'The email {{ value }} is not a valid name.', groups: ["create", "update"])]
+	#[Assert\NotBlank(message: 'The name {{ value }} is not a valid name.', groups: ["create", "update"])]
 	#[Assert\Length(
 		min: 1,
 		max: 255,
@@ -34,6 +34,20 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 		groups: ["create", "update"]
 	)]
 	protected ?string $name;
+
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	#[Field(name: 'name', getter: 'getFamilyName',setter: 'setFamilyName', default: true)]
+	#[Assert\NotBlank(message: 'The family name {{ value }} is not a valid name.', groups: ["create", "update"])]
+	#[Assert\Length(
+		min: 1,
+		max: 255,
+		minMessage: 'Name must be at least {{ limit }} characters long',
+		maxMessage: 'Name cannot be longer than {{ limit }} characters',
+		groups: ["create", "update"]
+	)]
+	protected ?string $familyName;
 
 	/**
 	 * @ORM\Column(type="string", length=255, unique=true)
@@ -63,9 +77,17 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 		{
 			$this->name = $params['name'];
 		}
+		if (array_key_exists('family_name', $params) && is_string($params['family_name']))
+		{
+			$this->familyName = $params['family_name'];
+		}
 		if (array_key_exists('email', $params) && is_string($params['email']))
 		{
 			$this->email = $params['email'];
+		}
+		if (array_key_exists('avatar', $params) && is_string($params['avatar']))
+		{
+			$this->avatar = new Image($params['avatar']);
 		}
 	}
 
@@ -77,7 +99,17 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	public function setUsername(string $name): self
 	{
 		$this->name = $name;
+		return $this;
+	}
 
+	public function getFamilyName(): ?string
+	{
+		return $this->familyName;
+	}
+
+	public function setFamilyName(string $familyName): self
+	{
+		$this->familyName = $familyName;
 		return $this;
 	}
 
@@ -97,7 +129,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	{
 		if (is_a($user, static::class, false))
 		{
-			return $this->getId()->compare($user->getId()) === 0;
+			return $this->getId()->equals($user->getId());
 		}
 
 		return false;

@@ -124,19 +124,6 @@ class Restaurant extends BaseObject
 		return $this;
 	}
 
-	public function removeOrder(Order $order): self
-	{
-		if ($this->orders->removeElement($order))
-		{
-			if ($order->getRestaurant() === $this)
-			{
-				$order->setRestaurant(null);
-			}
-		}
-
-		return $this;
-	}
-
 	#[Reference('main_menu')]
 	#[CollectionAttribute]
 	public function getMainMenu() : Menu|false
@@ -287,18 +274,19 @@ class Restaurant extends BaseObject
 		return $this->staff;
 	}
 
-	#[Reference(name: 'current_order')]
-	public function getCurrentOrder() : Order|null
+	#[Reference(name: 'current_orders')]
+	public function getCurrentOrder() : Collection
 	{
 		return $this->getOrders()->matching(
 			Criteria::create()
 				->where(
 					Criteria::expr()->in('status',[Order::STATUS_NEW])
 				)
-		)->first();
+		);
 	}
 
 	#[Reference(name: 'canceled_orders')]
+	#[CollectionAttribute]
 	public function getCanceledOrders() : Collection
 	{
 		return $this->getOrders()->matching(

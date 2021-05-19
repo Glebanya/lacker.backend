@@ -6,6 +6,7 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use App\Repository\StaffRepository;
+use App\Types\Image;
 use App\Utils\Environment;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;

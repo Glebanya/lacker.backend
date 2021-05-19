@@ -80,6 +80,10 @@ services:
       public: true
       lazy: true
       class: App\Configurators\Entity\PortionConfig
+    app.config.suborder:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\SubOrderConfigurator
     Google_Client:
         class: Google_Client
         calls:

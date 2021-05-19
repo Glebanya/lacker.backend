@@ -93,7 +93,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	}
 
 	#[Reference(name: 'current_order')]
-	public function getCurrentOrder() : Order|null
+	public function getCurrentOrder() : Order|false
 	{
 		return $this->getOrders()->matching(
 			Criteria::create()

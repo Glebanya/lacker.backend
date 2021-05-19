@@ -26,7 +26,8 @@ use App\Configurators\Attributes\Field;
  *     "user" = "App\Entity\User",
  *     "table" = "App\Entity\Table",
  *     "reserve" = "App\Entity\TableReserve",
- *     "user_base" = "App\Entity\BaseUser"
+ *     "user_base" = "App\Entity\BaseUser",
+ *     "suborder" = "App\Entity\SubOrder"
  * })
  * @ORM\HasLifecycleCallbacks
  */
@@ -101,7 +102,6 @@ abstract class BaseObject
 	{
 		$this->updateDate = new DateTime('now');
 	}
-
 
 	public function isDeleted(): ?bool
 	{

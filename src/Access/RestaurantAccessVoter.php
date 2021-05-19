@@ -35,11 +35,7 @@ class RestaurantAccessVoter extends Voter
 
 	protected function canDelete($subject, TokenInterface $token): bool
 	{
-		return
-			$subject instanceof Restaurant and ($user = $token->getUser()) and $user instanceof Staff and
-			$user->getRestaurant()->getId()->compare($subject->getId()) === 0 and
-			in_array($user->getRole(),[Staff::ROLE_ADMINISTRATOR])
-			;
+		return false;
 	}
 
 	protected function supports(string $attribute, $subject): bool

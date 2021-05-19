@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
@@ -48,21 +49,21 @@ class Dish extends BaseObject
 	)]
 	#[Assert\Valid(groups: ["create", "update"])]
 	#[Field('portions', 'getPortions', immutable: true, default: true)]
-	protected Collection $portions;
+	protected Collection|Selectable $portions;
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
 	#[Field(name: 'title',getter: 'getName',setter: 'setName', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
-	protected Lang $name;
+	protected ?Lang $name;
 
 	/**
 	 * @ORM\Column(type="image", nullable=true)
 	 */
 	#[Field(name: 'image', getter: 'getImage', setter:'setImage', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
-	protected Image $image;
+	protected ?Image $image;
 
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)

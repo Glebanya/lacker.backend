@@ -8,7 +8,6 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PortionRepository;
-use App\Types\Price;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,37 +31,49 @@ class Portion extends BaseObject
 	 * @ORM\Column(type="price")
 	 */
 	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice', default: true)]
-	#[Assert\Valid(groups: ["create", "update"])]
-	protected Price $price;
+	#[Assert\PositiveOrZero(groups: ["create", "update"])]
+	#[Assert\NotNull(groups: ["create", "update"])]
+	protected ?int $price;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
 	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
-	protected int $weight;
+	#[Assert\NotNull(groups: ["create", "update"])]
+	protected ?int $weight;
 
 	/**
 	 * @ORM\Column(type="lang_phrase", nullable=true)
 	 */
 	#[Field(name: 'title', getter: 'getTitle', setter: 'setTitle', default: true)]
+	#[Assert\Valid(groups: ["create", "update"])]
 	private Lang $title;
 
 	/**
-	 * @ORM\Column(type="integer", options={"default" : 0})
+	 * @ORM\Column(type="integer", options={ "default": 0 })
 	 */
 	#[Field(name: 'sort', getter: 'getSort', setter: 'setSort', default: true)]
+	#[Assert\PositiveOrZero(groups: ["create", "update"])]
 	private ?int $sort;
 
 	public function __construct($params = [])
 	{
-		if (array_key_exists('price', $params) and is_array($params['price']))
+		if (array_key_exists('price', $params) and is_int($params['price']))
 		{
-			$this->price = new Price($params['price']);
+			$this->price = ($params['price']);
 		}
 		if (array_key_exists('weight', $params) and is_int($params['weight']))
 		{
 			$this->weight = $params['weight'];
+		}
+		if (array_key_exists('title', $params) and is_array($params['title']))
+		{
+			$this->title = new Lang($params['title']);
+		}
+		if (array_key_exists('sort', $params) and is_int($params['sort']))
+		{
+			$this->weight = $params['sort'];
 		}
 	}
 
@@ -75,19 +86,17 @@ class Portion extends BaseObject
 	public function setDish(?Dish $dish): self
 	{
 		$this->dish = $dish;
-
 		return $this;
 	}
 
-	public function getPrice(): ?Price
+	public function getPrice(): ?int
 	{
 		return $this->price;
 	}
 
-	public function setPrice(array|Price $price): self
+	public function setPrice(int $price): self
 	{
-		$this->price = new Price($price);
-
+		$this->price = $price;
 		return $this;
 	}
 

@@ -4,6 +4,7 @@ namespace App\Security\Login;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Types\Image;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Google_Client;
@@ -40,7 +41,15 @@ class UserLoginService
 		{
 			if (!$user = $this->userRepository->findByGoogleClient($params['sub']))
 			{
-				$user = (new User($params))->setGoogleId($params['sub'])->setPassword(sha1(random_bytes(32), true));
+				$user = (
+					new User([
+						'name' => $params['given_name'],
+						'familyName' => $params['family_name'],
+						'email' => $params['email'],
+						'picture' => $params['picture']
+					])
+					)->setGoogleId($params['sub'])
+					->setPassword(sha1(random_bytes(32), true));
 				$this->manager->persist($user);
 				$this->manager->flush();
 			}

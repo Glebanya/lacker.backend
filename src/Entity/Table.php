@@ -69,6 +69,10 @@ class Table extends BaseObject
 	 */
 	public function __construct($params = [])
 	{
+		if (array_key_exists('status', $params) && is_string($params['status']))
+		{
+			$this->status = $params['status'];
+		}
 		if (array_key_exists('persons', $params) && is_int($params['persons']))
 		{
 			$this->persons = $params['persons'];
