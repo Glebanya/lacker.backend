@@ -28,7 +28,7 @@ class Portion extends BaseObject
 	protected ?Dish $dish;
 
 	/**
-	 * @ORM\Column(type="price")
+	 * @ORM\Column(type="integer")
 	 */
 	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]

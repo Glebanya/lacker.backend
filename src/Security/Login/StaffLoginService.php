@@ -3,11 +3,8 @@
 namespace App\Security\Login;
 
 use App\Entity\Staff;
-use App\Entity\User;
 use App\Repository\StaffRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class StaffLoginService
 {

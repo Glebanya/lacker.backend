@@ -6,7 +6,6 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use App\Repository\StaffRepository;
-use App\Types\Image;
 use App\Utils\Environment;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -69,6 +68,7 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	 */
 	#[Field(name: 'firebase_token', getter: 'getFirebaseToken', setter: 'setFirebaseToken',default: true)]
 	private ?string $firebaseToken;
+
 
 	public function __construct($params = [])
 	{

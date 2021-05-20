@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
-use App\Api\Builder\Attributes\Build;
-use App\Api\Builder\Attributes\Find;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -56,6 +54,11 @@ class Order extends BaseObject
 	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true)
 	*/
 	private Collection|Selectable $subOrders;
+
+	/**
+	* @ORM\Column(type="integer")
+	*/
+	private ?int $finalCount;
 
 	public function __construct(Restaurant $restaurant)
 	{
@@ -110,6 +113,7 @@ class Order extends BaseObject
 	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
 	{
 		parent::onUpdate($eventArgs);
+		$this->count();
 	}
 
 	/**
@@ -120,6 +124,7 @@ class Order extends BaseObject
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		parent::onAdd($eventArgs);
+		$this->count();
 	}
 
 	/**
@@ -152,6 +157,20 @@ class Order extends BaseObject
 		}
 
 		return $this;
+	}
+
+	public function getFinalCount(): ?int
+	{
+		return $this->finalCount;
+	}
+
+	public function count()
+	{
+		$this->finalCount = 0;
+		foreach ($this->getSubOrders() as $subOrder)
+		{
+			$this->finalCount += $subOrder->getCount();
+		}
 	}
 
 }

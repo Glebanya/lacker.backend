@@ -4,7 +4,6 @@ namespace App\Security\Login;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Types\Image;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Google_Client;
