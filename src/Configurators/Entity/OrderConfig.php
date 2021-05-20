@@ -39,30 +39,25 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$portions = $this->manager->getRepository(Portion::class)->matching(
-							Criteria::create()->andWhere(
-								Criteria::expr()->in(
-									'id',
-									array_map(
-										function($item) : Uuid
-										{
-											return is_string($item)?
-												new Uuid($item) :
-												throw new \Exception("wrong portion id")
-												;
-										},
-										$portions
-									)
-								)
-							)->andWhere(
-								Criteria::expr()->eq('deleted',false)
-							)
-						);
-						if (count($errors = $this->validator->validate($subOrder = new SubOrder($order,$portions), groups: "update")) === 0)
+						$subOrder = new SubOrder(order: $order);
+						foreach ($portions as $portion)
+						{
+							if (($portionObject = $this->manager->find(Portion::class, $portion)) and $portionObject->isDeleted())
+							{
+								$subOrder->addPortion($portionObject);
+							}
+							else
+							{
+								throw new EntityNotFoundException((string) $portion);
+							}
+						}
+
+						if (count($errors = $this->validator->validate($subOrder, groups: "update")) === 0)
 						{
 							$this->manager->flush();
 							return $subOrder;
 						}
+
 						throw new ValidationException($errors);
 					}
 					throw new ParameterException("wrong params");

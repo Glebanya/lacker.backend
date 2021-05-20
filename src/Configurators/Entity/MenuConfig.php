@@ -33,8 +33,7 @@ class MenuConfig extends BaseConfigurator
 				{
 					if (array_key_exists('dish',$params) && is_array($rawDish = $params['dish']))
 					{
-						$errors = $this->validator->validate($dish = new Dish($rawDish), groups: "create");
-						if (count($errors) === 0)
+						if (count($errors = $this->validator->validate($dish = new Dish($rawDish), groups: "create")) === 0)
 						{
 							$object->addDish($dish);
 							$this->manager->persist($dish);

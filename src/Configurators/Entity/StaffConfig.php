@@ -12,14 +12,4 @@ class StaffConfig extends BaseConfigurator
 	{
 		return Staff::class;
 	}
-
-	protected function getMethodsList(): array
-	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
-
-			]
-		);
-	}
 }

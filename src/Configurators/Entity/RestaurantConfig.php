@@ -2,6 +2,8 @@
 
 namespace App\Configurators\Entity;
 
+use App\Api\Access;
+use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Menu;
@@ -20,6 +22,8 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
 		protected Security $security,
+		Serializer $serializer,
+		Access $access
 	)
 	{
 		parent::__construct();
@@ -33,18 +37,19 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 	protected function getMethodsList(): array
 	{
 		return array_merge_recursive(
-			parent::getMethodsList(),[
+			parent::getMethodsList(),
+			[
 			'add_menu' => function(RestaurantEntity $object, array $params)
 			{
 				if (array_key_exists('menu',$params) && is_array($params['menu']))
 				{
-					$errors = $this->validator->validate($menu = new Menu($params['menu']), groups: "create");
-					if (0 === count($errors))
+					$menu = new Menu($params['menu']);
+					if (0 === count($errors = $this->validator->validate($menu, groups: "create")))
 					{
 						$object->addMenu($menu);
 						$this->manager->persist($menu);
 						$this->manager->flush();
-						return $object->getId();
+						return $menu;
 					}
 					throw new ValidationException($errors);
 				}
@@ -54,12 +59,13 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 			{
 				if (array_key_exists('staff',$params) && is_array($rawStaff = $params['staff']))
 				{
-					$errors = $this->validator->validate($staff = new Staff($rawStaff['staff']), groups: "create");
-					if (count($errors) === 0)
+					$staff = new Staff($rawStaff['staff']);
+					if (count($errors = $this->validator->validate($staff, groups: "create")) === 0)
 					{
 						$object->addStaff($staff);
 						$this->manager->persist($staff);
 						$this->manager->flush();
+						return $staff;
 					}
 					throw new ValidationException($errors);
 				}
