@@ -8,9 +8,11 @@ use App\Configurators\Exception\ValidationException;
 use App\Entity\Order;
 use App\Entity\Portion;
 use App\Entity\Restaurant;
+use App\Entity\SubOrder;
 use App\Repository\PortionRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class OrderConfig extends BaseConfigurator
@@ -33,52 +35,49 @@ class OrderConfig extends BaseConfigurator
 		return array_merge_recursive(
 			parent::getMethodsList(),
 			[
-				'add_portion' => function (Order $order, array $parameters)
+				'add_suborder' => function (Order $order, array $parameters)
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$this->manager->getRepository(Portion::class)->matching(
-							Criteria::create()->where(
-								Criteria::expr()->in('id', $portions)
+						$portions = $this->manager->getRepository(Portion::class)->matching(
+							Criteria::create()->andWhere(
+								Criteria::expr()->in(
+									'id',
+									array_map(
+										function($item) : Uuid
+										{
+											return is_string($item)?
+												new Uuid($item) :
+												throw new \Exception("wrong portion id")
+												;
+										},
+										$portions
+									)
+								)
 							)->andWhere(
-								Criteria::expr()->eq('deleted', false)
+								Criteria::expr()->eq('deleted',false)
 							)
-						)->forAll(function($dish) use ($order) {
-								$order->addPortion($dish);
-							});
-
-						$errors = $this->validator->validate($order, groups: "update");
-						if (count($errors) === 0)
+						);
+						if (count($errors = $this->validator->validate($subOrder = new SubOrder($order,$portions), groups: "update")) === 0)
 						{
 							$this->manager->flush();
-							return $order->getId();
+							return $subOrder;
 						}
 						throw new ValidationException($errors);
 					}
 					throw new ParameterException("wrong params");
 				},
-				'remove_portion' => function(Order $order, array $parameters)
+				'remove_suborder' => function (Order $order, array $parameters)
 				{
-					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
+					if (array_key_exists('suborder',$parameters) && is_string($subOrder = $parameters['suborder']))
 					{
-						$this->manager->getRepository(Portion::class)->matching(
-							Criteria::create()->where(
-								Criteria::expr()->in('id',$portions)
-							)->andWhere(
-								Criteria::expr()->eq('deleted',false)
-							)
-						)->forAll(
-							function($dish) use ($order) {
-								$order->removePortion($dish);
-							});
-
-						$errors = $this->validator->validate($order, groups: "update");
-						if (count($errors) === 0)
+						if ($subOrder = $this->manager->find(SubOrder::class,$subOrder))
 						{
+							$order->removeSubOrder($subOrder);
 							$this->manager->flush();
-							return $order->getId();
+							return $order;
 						}
-						throw new ValidationException($errors);
+						throw new EntityNotFoundException($parameters['suborder']);
 					}
 					throw new ParameterException("wrong params");
 				}

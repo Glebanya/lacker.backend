@@ -58,7 +58,7 @@ class SubOrder extends BaseObject
 	)
 	{
 		$this->portions = new ArrayCollection();
-		$this->setBaseOrder($order);
+		$order->addSubOrder($this);
 		$this->checked = $checked;
 		foreach ($portions as $portion)
 		{

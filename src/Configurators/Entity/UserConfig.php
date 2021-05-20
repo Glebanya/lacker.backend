@@ -64,32 +64,16 @@ class UserConfig extends BaseConfigurator
 				},
 				'make_order' => function(User $user, array $params)
 				{
-					if (array_key_exists('portions',$params) && is_array($params['portions']) && array_key_exists('restaurant',$params) && is_string($restaurantId =  $params['restaurant']))
+					if (array_key_exists('restaurant',$params) && is_string($restaurantId =  $params['restaurant']))
 					{
 						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
 						{
-							$order = (new Order($params))
-								->setUser($user)
-								->setRestaurant($restaurant)
-								->setStatus(Order::STATUS_NEW);
-							foreach ($params['portions'] as $portionId)
-							{
-								if (is_string($portionId) && $portion = $this->manager->find(Portion::class,$portionId))
-								{
-									$order->addPortion($portion);
-								}
-								else
-								{
-									throw new EntityNotFoundException($portionId);
-								}
-							}
-
-							$errors = $this->validator->validate($order, groups: "create");
-							if (count($errors) === 0)
+							$order = (new Order($restaurant))->setUser($user)->setStatus(Order::STATUS_NEW);
+							if (count($errors = $this->validator->validate($order, groups: "create")) === 0)
 							{
 								$this->manager->persist($order);
 								$this->manager->flush();
-								return $order->getId();
+								return $order;
 							}
 							throw new ValidationException($errors);
 						}
