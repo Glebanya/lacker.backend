@@ -21,8 +21,8 @@ services:
       APP_DEBUG: 'true'
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
-    volumes:
-     - .:/app
+#    volumes:
+#     - .:/app
     depends_on:
         mysql:
           condition: service_healthy
@@ -78,8 +78,8 @@ services:
     container_name: lacker.db
     image: mysql:5.7
     restart: unless-stopped
-    ports:
-      - 3306:3306
+#    ports:
+#      - 3306:3306
     networks:
       - dev-back
     environment:
