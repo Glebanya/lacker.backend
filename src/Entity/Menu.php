@@ -44,7 +44,7 @@ class Menu extends BaseObject
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Assert\NotNull(groups: ["create"])]
-	#[Field('stop_portions', 'getPortions', immutable: true, default: false)]
+	#[Field('restaurant', 'getRestaurant', immutable: true, default: false)]
 	protected ?Restaurant $restaurant;
 
 	/**
