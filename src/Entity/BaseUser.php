@@ -69,7 +69,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 */
 	#[Field(name: 'avatar', getter: 'getAvatar', setter: 'setAvatar', default: true)]
 	#[Assert\Valid]
-	protected Image $avatar;
+	protected ?Image $avatar = null;
 
 	public function __construct($params = [])
 	{
@@ -140,12 +140,12 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 
 	}
 
-	public function getAvatar(): Image
+	public function getAvatar(): ?Image
 	{
 		return $this->avatar;
 	}
 
-	public function setAvatar(Image $avatar): self
+	public function setAvatar(?Image $avatar): self
 	{
 		$this->avatar = $avatar;
 

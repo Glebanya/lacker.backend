@@ -36,9 +36,7 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 
 	protected function getMethodsList(): array
 	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
+		return array_merge_recursive(parent::getMethodsList(), [
 			'add_menu' => function(RestaurantEntity $object, array $params)
 			{
 				if (array_key_exists('menu',$params) && is_array($params['menu']))

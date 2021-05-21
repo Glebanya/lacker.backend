@@ -3,26 +3,31 @@
 
 namespace App\Configurators\Entity;
 
+use App\Api\ApiService;
+use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\EntityNotFoundException;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
-use App\Entity\Portion;
+use App\Entity\Restaurant;
 use App\Entity\Table;
 use App\Entity\TableReserve;
 use App\Entity\User;
 use App\Entity\Order;
-use App\Entity\Restaurant;
 use App\Repository\PortionRepository;
-use Doctrine\Common\Collections\Criteria;
+use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserConfig extends BaseConfigurator
 {
 	public function __construct(
+		protected RestaurantRepository $restaurantRepository,
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
 		protected PortionRepository $portionRepository,
+		protected ApiService $apiService,
+		protected Serializer $serializer
 	)
 	{
 		parent::__construct();
@@ -35,9 +40,7 @@ class UserConfig extends BaseConfigurator
 
 	protected function getMethodsList(): array
 	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
+		return array_merge_recursive(parent::getMethodsList(), [
 				'reserve_table' => function(User $user, array $params)
 				{
 					if (array_key_exists('table',$params) && is_string($tableId = $params['table']))
@@ -73,7 +76,9 @@ class UserConfig extends BaseConfigurator
 							{
 								$this->manager->persist($order);
 								$this->manager->flush();
-								return $order;
+								return $this->serializer->serialize(
+									$this->apiService->buildApiEntityObject($order)
+								);
 							}
 							throw new ValidationException($errors);
 						}

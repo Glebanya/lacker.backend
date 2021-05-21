@@ -15,7 +15,7 @@ class SubOrderAccessVoter extends Voter
 	{
 		return match ($attribute) {
 			'view' => $this->canView($subject,$token),
-			'update','add_portion','remove_portion' => $this->canUpdate($subject,$token),
+			'update','add_portions','remove_portions' => $this->canUpdate($subject,$token),
 			'delete' => $this->canDelete($subject,$token),
 			default => false
 		};

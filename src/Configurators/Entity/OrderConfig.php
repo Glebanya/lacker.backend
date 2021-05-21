@@ -2,6 +2,8 @@
 
 namespace App\Configurators\Entity;
 
+use App\Api\ApiService;
+use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\EntityNotFoundException;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
@@ -20,6 +22,8 @@ class OrderConfig extends BaseConfigurator
 	public function __construct(
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
+		protected ApiService $apiService,
+		protected Serializer $serializer
 	)
 	{
 		parent::__construct();
@@ -32,9 +36,7 @@ class OrderConfig extends BaseConfigurator
 
 	protected function getMethodsList(): array
 	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
+		return array_merge_recursive(parent::getMethodsList(), [
 				'add_suborder' => function (Order $order, array $parameters)
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
@@ -42,22 +44,22 @@ class OrderConfig extends BaseConfigurator
 						$subOrder = new SubOrder(order: $order);
 						foreach ($portions as $portion)
 						{
-							if (($portionObject = $this->manager->find(Portion::class, $portion)) and $portionObject->isDeleted())
+							if (($object = $this->manager->find(Portion::class, $portion)) and !$object->isDeleted())
 							{
-								$subOrder->addPortion($portionObject);
+								$subOrder->addPortion($object);
 							}
 							else
 							{
 								throw new EntityNotFoundException((string) $portion);
 							}
 						}
-
 						if (count($errors = $this->validator->validate($subOrder, groups: "update")) === 0)
 						{
 							$this->manager->flush();
-							return $subOrder;
+							return $this->serializer->serialize(
+								$this->apiService->buildApiEntityObject($subOrder)
+							);
 						}
-
 						throw new ValidationException($errors);
 					}
 					throw new ParameterException("wrong params");

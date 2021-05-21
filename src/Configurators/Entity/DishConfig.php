@@ -27,9 +27,7 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 
 	protected function getMethodsList(): array
 	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
+		return array_merge_recursive(parent::getMethodsList(), [
 				'add_portion' => function(DishEntity $object, array $params)
 				{
 					if (array_key_exists('portion', $params) && is_array($rawPortion = $params['portion']))

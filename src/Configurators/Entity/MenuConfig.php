@@ -26,9 +26,7 @@ class MenuConfig extends BaseConfigurator
 
 	public function getMethodsList(): array
 	{
-		return array_merge_recursive(
-			parent::getMethodsList(),
-			[
+		return array_merge_recursive(parent::getMethodsList(), [
 				'add_dish' => function(Menu $object, array $params)
 				{
 					if (array_key_exists('dish',$params) && is_array($rawDish = $params['dish']))

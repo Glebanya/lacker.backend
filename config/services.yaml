@@ -31,7 +31,6 @@ services:
             - '../src/Api/ApiEntity.php'
             - '../src/Api/ApiEntityCollection.php'
             - '../src/Api/Attributes/'
-            - '../src/DataFixtures/'
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']

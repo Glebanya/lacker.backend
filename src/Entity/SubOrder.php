@@ -33,7 +33,7 @@ class SubOrder extends BaseObject
 	 * @ORM\Column(type="boolean")
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	#[Field('checked','setChecked','setChecked')]
+	#[Field('checked','getChecked','setChecked')]
 	private ?bool $checked = false;
 
 	/**

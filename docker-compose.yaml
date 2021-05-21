@@ -14,6 +14,8 @@ networks:
 services:
   app: &app
     build: '.'
+    container_name: lacker.app
+    command: echo "service app disabled"
     environment:
       APP_ENV: 'dev'
       APP_DEBUG: 'true'
@@ -47,6 +49,7 @@ services:
     restart: always
 
   certificate:
+    container_name: cert
     image: jrcs/letsencrypt-nginx-proxy-companion
     environment:
       DEFAULT_EMAIL: $COMPANY_EMAIL
@@ -65,12 +68,14 @@ services:
   web.app:
     <<: *app
     command: /app/bin/rr serve -c /app/.rr.yaml
+    container_name: lacker.web
     environment:
       VIRTUAL_HOST: $VIRTUAL_HOST
       VIRTUAL_PORT: 8080
       LETSENCRYPT_HOST: $VIRTUAL_HOST
 
   mysql:
+    container_name: lacker.db
     image: mysql:5.7
     restart: unless-stopped
     ports:

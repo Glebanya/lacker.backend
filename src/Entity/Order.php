@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ConfiguratorAttribute('app.config.order')]
 #[Field('restaurant', getter: 'getRestaurant', immutable: true,  default: true)]
-#[Field('sub_orders', getter: 'getSubOrders', immutable: true, default: true)]
+#[Field('sub_orders', getter: 'getSubOrders', immutable: true, default: false)]
 #[Field('user', getter: 'getUser', immutable: true, default: true)]
 class Order extends BaseObject
 {
@@ -51,7 +51,7 @@ class Order extends BaseObject
 	protected ?Restaurant $restaurant;
 
 	/**
-	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true)
+	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true, cascade={"persist"})
 	*/
 	private Collection|Selectable $subOrders;
 

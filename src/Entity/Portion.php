@@ -55,7 +55,7 @@ class Portion extends BaseObject
 	 */
 	#[Field(name: 'sort', getter: 'getSort', setter: 'setSort', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
-	private ?int $sort;
+	private ?int $sort = 0;
 
 	public function __construct($params = [])
 	{
@@ -73,7 +73,7 @@ class Portion extends BaseObject
 		}
 		if (array_key_exists('sort', $params) and is_int($params['sort']))
 		{
-			$this->weight = $params['sort'];
+			$this->sort = $params['sort'];
 		}
 	}
 

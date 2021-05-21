@@ -66,6 +66,13 @@ class Restaurant extends BaseObject
 	protected Image $logo;
 
 	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	#[Field('currency','getCurrency','setCurrency')]
+	#[Assert\Choice(['RUB'],groups: ["create", "update"])]
+	protected string $currency;
+
+	/**
 	 * Restaurant constructor.
 	 */
 	public function __construct()
@@ -76,6 +83,16 @@ class Restaurant extends BaseObject
 		$this->menus = new ArrayCollection();
 	}
 
+	public function getCurrency(): string
+	{
+		return $this->currency;
+	}
+
+	public function setCurrency(string $currency) : self
+	{
+		$this->currency = $currency;
+		return $this;
+	}
 
 	public function delete()
 	{
@@ -101,8 +118,7 @@ class Restaurant extends BaseObject
 
 	public function setName(array|Lang $name): self
 	{
-		$this->name = new Lang($name);
-
+		$this->name = $name instanceof Lang ? $name :new Lang($name);
 		return $this;
 	}
 

@@ -43,7 +43,7 @@ class UserLoginService
 				$user = (
 					new User([
 						'name' => $params['given_name'],
-						'familyName' => $params['family_name'],
+						'family_name' => $params['family_name'],
 						'email' => $params['email'],
 						'picture' => $params['picture']
 					])

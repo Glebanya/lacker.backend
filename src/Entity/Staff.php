@@ -6,6 +6,7 @@ use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
 use App\Repository\StaffRepository;
+use App\Types\Image;
 use App\Utils\Environment;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -84,6 +85,10 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 		if (array_key_exists('firebase_token', $params) && is_string($params['firebase_token']))
 		{
 			$this->firebaseToken = $params['firebase_token'];
+		}
+		if (array_key_exists('picture',$params) && is_string($params['picture']))
+		{
+			$this->avatar = new Image($params['picture']);
 		}
 	}
 

@@ -87,7 +87,7 @@ class Menu extends BaseObject
 			{
 				if (is_array($dish))
 				{
-					$this->dishes->add(new Dish($dish));
+					$this->addDish(new Dish($dish));
 				}
 			}
 		}
