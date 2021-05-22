@@ -33,7 +33,7 @@ class Portion extends BaseObject
 	#[Field(name: 'price', getter: 'getPrice', setter: 'setPrice', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
 	#[Assert\NotNull(groups: ["create", "update"])]
-	protected ?int $price;
+	protected ?int $price = 0;
 
 	/**
 	 * @ORM\Column(type="integer")
@@ -41,14 +41,14 @@ class Portion extends BaseObject
 	#[Field(name: 'weight', getter: 'getSize', setter: 'setSize', default: true)]
 	#[Assert\PositiveOrZero(groups: ["create", "update"])]
 	#[Assert\NotNull(groups: ["create", "update"])]
-	protected ?int $weight;
+	protected ?int $weight = 0;
 
 	/**
 	 * @ORM\Column(type="lang_phrase", nullable=true)
 	 */
 	#[Field(name: 'title', getter: 'getTitle', setter: 'setTitle', default: true)]
 	#[Assert\Valid(groups: ["create", "update"])]
-	private Lang $title;
+	private ?Lang $title = null;
 
 	/**
 	 * @ORM\Column(type="integer", options={ "default": 0 })

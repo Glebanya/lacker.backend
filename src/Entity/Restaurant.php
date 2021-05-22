@@ -63,7 +63,7 @@ class Restaurant extends BaseObject
 	 */
 	#[Field('logo','getLogo','setLogo')]
 	#[Assert\Valid(groups: ["create", "update"])]
-	protected Image $logo;
+	protected ?Image $logo = null;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
@@ -432,15 +432,14 @@ class Restaurant extends BaseObject
 		parent::onAdd($eventArgs);
 	}
 
-	public function getLogo(): Image
+	public function getLogo(): ?Image
 	{
 		return $this->logo;
 	}
 
-	public function setLogo(Image $logo): self
+	public function setLogo(?Image $logo): self
 	{
 		$this->logo = $logo;
-
 		return $this;
 	}
 }
