@@ -41,23 +41,27 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$subOrder = new SubOrder(order: $order);
-						foreach ($portions as $portion)
-						{
-							if (($object = $this->manager->find(Portion::class, $portion)) and !$object->isDeleted())
-							{
-								$subOrder->addPortion($object);
-							}
-							else
-							{
-								throw new EntityNotFoundException((string) $portion);
-							}
-						}
+						$subOrder = new SubOrder(
+							order: $order,
+							comment: array_key_exists('comment',$parameters) && is_string($parameters['comment']) ?
+								$parameters['comment'] :
+								null,
+							portions: array_map(
+									function($portion) {
+										$object = $this->manager->find(Portion::class, $portion);
+										return $object && !$object->isDeleted() ?
+												$object :
+												throw new EntityNotFoundException((string) $portion)
+											;
+									},
+									$portions
+							)
+						);
 						if (count($errors = $this->validator->validate($subOrder, groups: "update")) === 0)
 						{
 							$this->manager->flush();
 							return $this->serializer->serialize(
-								$this->apiService->buildApiEntityObject($subOrder)
+								$this->apiService->buildApiEntityObject($order)
 							);
 						}
 						throw new ValidationException($errors);

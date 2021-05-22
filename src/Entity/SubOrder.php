@@ -26,45 +26,56 @@ class SubOrder extends BaseObject
 	/**
 	 * @ORM\ManyToMany(targetEntity=Portion::class)
 	 */
-	#[Field('portions','getPortions', immutable: true)]
+	#[Field('portions','getPortions', immutable: true, default: true)]
 	private Collection|Selectable $portions;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	#[Field('checked','getChecked','setChecked')]
+	#[Field('checked','getChecked','setChecked', default: true)]
 	private ?bool $checked = false;
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	#[Assert\NotNull(groups: ["create", "update"])]
+	#[Field('drinks_immediately','isDrinksImmediately', immutable: true, default: true)]
+	private ?bool $drinksImmediately = false;
 
 	/**
 	* @ORM\ManyToOne(targetEntity=Order::class, inversedBy="subOrders")
 	* @ORM\JoinColumn(nullable=false)
 	*/
-	#[Field('order','getComment', immutable: true)]
+	#[Field('order','getBaseOrder', immutable: true)]
 	private ?Order $baseOrder;
 
 	/**
 	 * @ORM\Column(type="text", nullable=true)
 	 */
-	#[Field('comment','getComment', immutable: true)]
+	#[Field('comment','getComment', immutable: true, default: true)]
 	private ?string $comment = null;
 
 	/**
 	 * @ORM\Column(type="integer")
 	 */
 	#[Assert\NotNull(groups: ["create", "update"])]
-	#[Field('count','getCount', immutable: true)]
+	#[Field('count','getCount', immutable: true, default: true)]
 	private ?int $count;
 
 	public function __construct(
 		Order $order,
+		string $comment = null,
 		iterable $portions = [],
 		bool $checked = false,
+		bool $drinksImmediately = false,
 	)
 	{
-		$this->portions = new ArrayCollection();
-		$order->addSubOrder($this);
-		$this->checked = $checked;
+		$this->setBaseOrder($order)
+			->setChecked($checked)
+			->setComment($comment)
+			->setDrinksImmediately($drinksImmediately)
+			->portions = new ArrayCollection();
 		foreach ($portions as $portion)
 		{
 			$this->addPortion($portion);
@@ -105,6 +116,18 @@ class SubOrder extends BaseObject
 	public function setChecked(bool $checked): self
 	{
 		$this->checked = $checked;
+
+		return $this;
+	}
+
+	public function isDrinksImmediately(): ?bool
+	{
+		return $this->drinksImmediately;
+	}
+
+	public function setDrinksImmediately(bool $checked): self
+	{
+		$this->drinksImmediately = $checked;
 
 		return $this;
 	}

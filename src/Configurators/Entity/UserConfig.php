@@ -67,22 +67,23 @@ class UserConfig extends BaseConfigurator
 				},
 				'make_order' => function(User $user, array $params)
 				{
-					if (array_key_exists('restaurant',$params) && is_string($restaurantId =  $params['restaurant']))
+					if (
+						array_key_exists('table',$params) && is_string($tableId =  $params['table']) and
+						array_key_exists('sub_order',$params) && is_array($suborder = $params['portions'])
+					)
 					{
-						if ($restaurant = $this->manager->find(Restaurant::class,$restaurantId))
+						if ($table = $this->manager->find(Table::class,$tableId))
 						{
-							$order = (new Order($restaurant))->setUser($user)->setStatus(Order::STATUS_NEW);
-							if (count($errors = $this->validator->validate($order, groups: "create")) === 0)
+							if (count($errors = $this->validator->validate($order = new Order($table,$user), groups: "create")) === 0)
 							{
 								$this->manager->persist($order);
-								$this->manager->flush();
-								return $this->serializer->serialize(
-									$this->apiService->buildApiEntityObject($order)
-								);
+								return $this->apiService
+									->buildApiEntityObject($order)
+									->method('add_suborder', $suborder);
 							}
 							throw new ValidationException($errors);
 						}
-						throw new EntityNotFoundException($restaurantId);
+						throw new EntityNotFoundException($tableId);
 					}
 					throw new ParameterException("wrong params");
 				},

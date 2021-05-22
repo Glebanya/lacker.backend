@@ -83,7 +83,7 @@ class Dish extends BaseObject
 	 * @ORM\Column(type="boolean")
 	 */
 	#[Field(name: 'stopped', getter: 'isStopped', setter:'setStopped', default: true)]
-	private bool $stopped;
+	private bool $stopped = false;
 
 	public function isStopped(): ?bool
 	{

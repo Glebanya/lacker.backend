@@ -21,9 +21,6 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  */
 #[ConfiguratorAttribute('app.config.order')]
-#[Field('restaurant', getter: 'getRestaurant', immutable: true,  default: true)]
-#[Field('sub_orders', getter: 'getSubOrders', immutable: true, default: false)]
-#[Field('user', getter: 'getUser', immutable: true, default: true)]
 class Order extends BaseObject
 {
 	public const STATUS_PAID = 'PAID', STATUS_NEW = 'NEW', STATUS_CANCELED = 'CANCELED';
@@ -34,62 +31,86 @@ class Order extends BaseObject
 	#[Field('status', getter: 'getStatus', setter: 'setStatus', default: true)]
 	#[Assert\Choice([Order::STATUS_PAID, Order::STATUS_NEW, Order::STATUS_CANCELED], groups: ["create"])]
 	protected ?string $status;
+	public function getStatus(): ?string
+	{
+		return $this->status;
+	}
+	public function setStatus(string $status): self
+	{
+		$this->status = $status;
+		return $this;
+	}
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-
 	#[Assert\NotNull(groups: ["create"])]
+	#[Field('user', getter: 'getUser', immutable: true, default: true)]
 	protected ?User $user;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	#[Assert\NotNull(groups: ["create"])]
-	protected ?Restaurant $restaurant;
-
-	/**
-	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true, cascade={"persist"})
-	*/
-	private Collection|Selectable $subOrders;
-
-	/**
-	* @ORM\Column(type="integer")
-	*/
-	private ?int $finalCount;
-
-	public function __construct(Restaurant $restaurant)
+	public function setUser(?User $user): self
 	{
-		$this->restaurant = $restaurant;
-		$this->subOrders = new ArrayCollection();
-		$this->status = Order::STATUS_NEW;
-	}
-
-	public function getStatus(): ?string
-	{
-		return $this->status;
-	}
-
-	public function setStatus(string $status): self
-	{
-		$this->status = $status;
-
+		$this->user = $user;
 		return $this;
 	}
-
 	#[Reference('user')]
 	public function getUser(): ?User
 	{
 		return $this->user;
 	}
+	/**
+	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="orders")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	#[Assert\NotNull(groups: ["create"])]
+	#[Field('restaurant', getter: 'getRestaurant', immutable: true,  default: true)]
+	protected ?Restaurant $restaurant;
 
-	public function setUser(?User $user): self
+	/**
+	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true, cascade={"persist"})
+	*/
+	#[Field('sub_orders', getter: 'getSubOrders', immutable: true, default: false)]
+	private Collection|Selectable $subOrders;
+
+	/**
+	* @ORM\Column(type="integer")
+	*/
+	#[Field('count', getter: 'getFinalCount', immutable: true, default: true)]
+	private ?int $finalCount;
+	public function getFinalCount(): ?int
 	{
-		$this->user = $user;
+		return $this->finalCount;
+	}
+	/**
+	 * @ORM\ManyToOne(targetEntity=Table::class)
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	#[Assert\NotNull(groups: ["create"])]
+	#[Field('table', getter: 'getTable', immutable: true, default: true)]
+	private ?Table $orderTable;
 
+	 /**
+	  * @ORM\Column(type="boolean")
+	  */
+	#[Field('checked', getter: 'getChecked', immutable: true, default: true)]
+ 	private bool $checked;
+	public function getChecked(): ?bool
+	{
+		return $this->checked;
+	}
+	public function setChecked(bool $checked): self
+	{
+		$this->checked = $checked;
 		return $this;
+	}
+
+	public function __construct(Table $table, User $user)
+	{
+		$this->setTable($table)
+			->setRestaurant($table->getRestaurant())
+			->setStatus(Order::STATUS_NEW)
+			->setUser($user)
+			->subOrders = new ArrayCollection();
 	}
 
 	#[Reference('restaurant')]
@@ -101,6 +122,19 @@ class Order extends BaseObject
 	public function setRestaurant(?Restaurant $restaurant): self
 	{
 		$this->restaurant = $restaurant;
+
+		return $this;
+	}
+
+	#[Reference('table')]
+	public function getTable(): ?Table
+	{
+		return $this->orderTable;
+	}
+
+	public function setTable(?Table $table): self
+	{
+		$this->orderTable = $table;
 
 		return $this;
 	}
@@ -159,11 +193,6 @@ class Order extends BaseObject
 		return $this;
 	}
 
-	public function getFinalCount(): ?int
-	{
-		return $this->finalCount;
-	}
-
 	public function count()
 	{
 		$this->finalCount = 0;
@@ -172,5 +201,6 @@ class Order extends BaseObject
 			$this->finalCount += $subOrder->getCount();
 		}
 	}
+
 
 }

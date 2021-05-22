@@ -38,7 +38,7 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field(name: 'name', getter: 'getFamilyName',setter: 'setFamilyName', default: true)]
+	#[Field(name: 'family_name', getter: 'getFamilyName',setter: 'setFamilyName', default: true)]
 	#[Assert\NotBlank(message: 'The family name {{ value }} is not a valid name.', groups: ["create", "update"])]
 	#[Assert\Length(
 		min: 1,
