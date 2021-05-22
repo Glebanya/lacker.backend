@@ -40,9 +40,14 @@ class SubOrder extends BaseObject
 	* @ORM\ManyToOne(targetEntity=Order::class, inversedBy="subOrders")
 	* @ORM\JoinColumn(nullable=false)
 	*/
-	#[Assert\NotNull(groups: ["create", "update"])]
-	#[Field('order','getBaseOrder', immutable: true)]
+	#[Field('order','getComment', immutable: true)]
 	private ?Order $baseOrder;
+
+	/**
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	#[Field('comment','getComment', immutable: true)]
+	private ?string $comment = null;
 
 	/**
 	 * @ORM\Column(type="integer")
@@ -140,6 +145,17 @@ class SubOrder extends BaseObject
 	public function getCount(): ?int
 	{
 		return $this->count;
+	}
+
+	public function getComment(): ?string
+	{
+		return $this->comment;
+	}
+
+	public function setComment(?string $comment) : self
+	{
+		$this->comment = $comment;
+		return $this;
 	}
 
 	public function count()
