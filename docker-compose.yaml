@@ -23,6 +23,7 @@ services:
       APP_TYPE: 'dev'
     volumes:
      - ./src:/app/src:ro
+     -
     depends_on:
         mysql:
           condition: service_healthy

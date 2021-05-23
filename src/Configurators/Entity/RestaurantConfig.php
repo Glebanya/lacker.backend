@@ -91,8 +91,12 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 								fn (Order $order) =>
 									$order->getSubOrders()->matching(
 										Criteria::create()
-											->andWhere(Criteria::expr()->eq('checked', false))
-											->orderBy(['updateDate' => Criteria::DESC])
+											->andWhere(
+												Criteria::expr()->eq('checked', false)
+											)
+											->orderBy([
+												'updateDate' => Criteria::DESC
+											])
 									)->toArray()
 							)->toArray()),
 							fn (ApiEntityCollection $collection ,SubOrder $subOrder) => $collection->addEntity(

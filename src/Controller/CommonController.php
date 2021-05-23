@@ -172,7 +172,12 @@ class CommonController extends AbstractController
 	 * @throws \Exception
 	 */
 	#[Route('/api/{id}/{method}', name: 'method', methods: ['POST'])]
-	public function method(string $id, string $method, Request $request, Access $access): JsonResponse
+	public function method(
+		string $id,
+		string $method,
+		Request $request,
+		Access $access
+	): JsonResponse
 	{
 		if (($object = $this->getObject($id)) && $object = $this->service->buildApiEntityObject($object))
 		{
