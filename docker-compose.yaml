@@ -22,11 +22,8 @@ services:
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
     volumes:
-     - ./src:/app/src:ro
-     - ./public:/app/public:ro
-     - ./config:/app/config:ro
-     - ./migrations:/app/migrations:ro
-     - .rr.yaml:app/.rr.yaml:ro
+     - ./src:/app/
+     - /app/bin
     depends_on:
         mysql:
           condition: service_healthy
