@@ -26,7 +26,6 @@ services:
      - ./public:/app/src:ro
      - ./config:/app/config:ro
      - ./migrations:/app/migrations:ro
-     - ./migrations:/app/migrations:ro
      - .rr.yaml:app/rr.yaml:ro
     depends_on:
         mysql:
