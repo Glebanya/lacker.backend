@@ -39,7 +39,7 @@ class AuthController extends AbstractController
 		if ($user = $loginService->findOrCreateUser($content['google_token']))
 		{
 			return $this->json([
-					'data' => [
+					'data' =>
 						$serializer->serialize($apiService->buildApiEntityObject($user)) +
 						[
 							'access_token' => (new JWTObjectSigner([
@@ -48,7 +48,6 @@ class AuthController extends AbstractController
 								'rand' => rand(0,721)])
 							)->sign(),
 						]
-					]
 			]);
 		}
 		throw new BadRequestHttpException('invalid google token');
@@ -75,7 +74,7 @@ class AuthController extends AbstractController
 		if ($user = $loginService->findUser(email: $content['email'],password: $content['password']))
 		{
 			return $this->json([
-					'data' => [
+					'data' =>
 						$serializer->serialize($apiService->buildApiEntityObject($user)) +
 						[
 							'access_token' => (new JWTObjectSigner([
@@ -84,7 +83,7 @@ class AuthController extends AbstractController
 								'rand' => rand(0,721)
 							]))->sign(),
 						]
-				]
+
 			]);
 		}
 		throw new BadRequestHttpException('unknown user');
