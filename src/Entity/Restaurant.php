@@ -39,22 +39,44 @@ class Restaurant extends BaseObject
 	protected Lang $name;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Order::class, mappedBy="restaurant", fetch="EXTRA_LAZY")
+	 * @ORM\OneToMany(
+	 *     targetEntity=Order::class,
+	 *     mappedBy="restaurant",
+	 *     fetch="EXTRA_LAZY"
+	 * )
 	 */
 	protected Collection|Selectable $orders;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Staff::class, mappedBy="restaurant",orphanRemoval=true, fetch="EXTRA_LAZY",cascade = {"persist"})
+	 * @ORM\OneToMany(
+	 *     targetEntity=Staff::class,
+	 *     mappedBy="restaurant",
+	 *     orphanRemoval=true,
+	 *     fetch="EXTRA_LAZY",
+	 *     cascade = {"persist"}
+	 *	 )
 	 */
 	protected Collection|Selectable $staff;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Table::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY",cascade = {"persist"})
+	 * @ORM\OneToMany(
+	 *     targetEntity=Table::class,
+	 *     mappedBy="restaurant",
+	 *     orphanRemoval=true,
+	 *     fetch="EXTRA_LAZY",
+	 *     cascade = {"persist"}
+	 *	 )
 	 */
 	protected Collection|Selectable $tables;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="restaurant", orphanRemoval=true, fetch="EXTRA_LAZY", cascade = {"persist"})
+	 * @ORM\OneToMany(
+	 *     targetEntity=Menu::class,
+	 *     mappedBy="restaurant",
+	 *     orphanRemoval=true,
+	 *     fetch="EXTRA_LAZY",
+	 *     cascade = {"persist"}
+	 *	 )
 	 */
 	protected Collection|Selectable $menus;
 
@@ -124,7 +146,7 @@ class Restaurant extends BaseObject
 
 	#[Reference('orders')]
 	#[CollectionAttribute]
-	public function getOrders(): Collection
+	public function getOrders(): Collection|Selectable
 	{
 		return $this->orders;
 	}

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Restaurant;
 use App\Entity\SubOrder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,11 +15,25 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SubOrderRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, SubOrder::class);
-    }
+	public function __construct(ManagerRegistry $registry)
+	{
+		parent::__construct($registry, SubOrder::class);
+	}
 
+	public function getSuborders(Restaurant $restaurant, bool $checked, int $offset, int $limit)
+	{
+		return $this->createQueryBuilder('sub_order')
+			->leftJoin('sub_order.baseOrder','base_order')
+			->andWhere('sub_order.checked = :checked')
+			->andWhere('base_order.restaurant = :rest')
+			->orderBy('sub_order.update_date','DESC')
+			->setParameter('checked',$checked)
+			->setParameter('rest', $restaurant)
+			->setFirstResult($offset)
+			->setMaxResults($limit)
+			->getQuery()
+			->getResult();
+	}
     // /**
     //  * @return SubOrder[] Returns an array of SubOrder objects
     //  */

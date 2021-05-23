@@ -11,14 +11,13 @@ class SuborderListener
 	public function preUpdate(SubOrder $subOrder, LifecycleEventArgs $event) : void
 	{
 		$subOrder->getBaseOrder()->setChecked(
-			0 === count($subOrder->getBaseOrder()
+			$subOrder->getBaseOrder()
 				->getSubOrders()
 				->matching(
 					Criteria::create()->andWhere(
 						Criteria::expr()->eq('checked',false)
 					)
-				)
-			)
+				)->isEmpty()
 		);
 		$event->getEntityManager()->flush();
 	}

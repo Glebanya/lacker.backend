@@ -25,6 +25,30 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Dish extends BaseObject
 {
 	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DISH = 'DISH', TYPE_DRINKS = 'DRINKS';
+	public const TYPE_BIRD_DISH = 'BIRD', TYPE_SEA_DISH = 'SEA', TYPE_MEAT_DISH = 'MEAT';
+	public const TYPE_GARNISH = 'GARNISH', TYPE_ASIAN_DISH = 'ASIAN_DISH', TYPE_DESSERT = 'DESSERT';
+	public const TYPE_SALAD = 'SALAD', TYPE_SANDWICH = 'SANDWICH', TYPE_SOUP = 'SOUP';
+	public const TYPE_OTHER = 'OTHER';
+
+	public static function getTypes() : array
+	{
+		return [
+			Dish::TYPE_ALCOHOL,
+			Dish::TYPE_DISH,
+			Dish::TYPE_DRINKS,
+			Dish::TYPE_BIRD_DISH,
+			Dish::TYPE_SEA_DISH,
+			Dish::TYPE_MEAT_DISH,
+			Dish::TYPE_GARNISH,
+			Dish::TYPE_ASIAN_DISH,
+			Dish::TYPE_DESSERT,
+			Dish::TYPE_SALAD,
+			Dish::TYPE_SANDWICH,
+			Dish::TYPE_SOUP,
+			Dish::TYPE_SOUP,
+			Dish::TYPE_OTHER
+		];
+	}
 
 	/**
 	 * @ORM\Column(type="lang_phrase")
@@ -66,11 +90,15 @@ class Dish extends BaseObject
 	protected ?Image $image;
 
 	/**
-	 * @ORM\Column(type="string", length=255, nullable=true)
+	 * @Assert\All({
+	 * 			@Assert\Choice(callback=[Dish::class,"getTypes"], groups={"create","update"})
+	 * 		}
+	 *	 groups={"create","update"}
+	 *)
+	 * @ORM\Column(type="simple_array", length=255, nullable=true)
 	 */
-	#[Field(name: 'type', getter: 'getType', setter: 'setType', default: true)]
-	#[Assert\Choice([Dish::TYPE_ALCOHOL, Dish::TYPE_DISH, Dish::TYPE_DRINKS], groups: ["create", "update"])]
-	protected ?string $type;
+	#[Field(name: 'tags', getter: 'getType', setter: 'setType', default: true)]
+	protected ?array $type;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="dishes")
@@ -108,7 +136,7 @@ class Dish extends BaseObject
 		{
 			$this->name = new Lang($params['title']);
 		}
-		if (array_key_exists('type', $params) && is_string($params['type']))
+		if (array_key_exists('type', $params) && is_array($params['type']))
 		{
 			$this->type = $params['type'];
 		}
@@ -204,15 +232,14 @@ class Dish extends BaseObject
 		return $this;
 	}
 
-	public function getType(): ?string
+	public function getType(): ?array
 	{
 		return $this->type;
 	}
 
-	public function setType(?string $type): self
+	public function setType(?array $type): self
 	{
 		$this->type = $type;
-
 		return $this;
 	}
 

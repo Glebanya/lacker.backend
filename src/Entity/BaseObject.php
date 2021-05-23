@@ -45,13 +45,13 @@ abstract class BaseObject
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'create_data', getter: 'getCrateDate', immutable: true)]
+	#[Field(name: 'create_time', getter: 'getCrateDate', immutable: true)]
 	protected ?DateTimeInterface $crateDate;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'update_date', getter: 'getUpdateDate', immutable: true)]
+	#[Field(name: 'update_time', getter: 'getUpdateDate', immutable: true)]
 	protected ?DateTimeInterface $updateDate;
 
 	/**

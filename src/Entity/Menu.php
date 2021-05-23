@@ -158,42 +158,6 @@ class Menu extends BaseObject
 		return $this;
 	}
 
-	#[Reference('drinks')]
-	#[CollectionAttribute]
-	public function getDrinks() : Collection
-	{
-		return $this->getDishes()->matching(
-			Criteria::create()
-				->where(
-					Criteria::expr()->in('type',[Dish::TYPE_DRINKS])
-				)
-		);
-	}
-
-	#[Reference('alcohol')]
-	#[CollectionAttribute]
-	public function getAlcohol() : Collection
-	{
-		return $this->getDishes()->matching(
-			Criteria::create()
-				->where(
-					Criteria::expr()->in('type',[Dish::TYPE_ALCOHOL])
-				)
-		);
-	}
-
-	#[Reference('dish')]
-	#[CollectionAttribute]
-	public function getDish() : Collection
-	{
-		return $this->getDishes()->matching(
-			Criteria::create()
-				->where(
-					Criteria::expr()->in('type',[Dish::TYPE_DISH])
-				)
-		);
-	}
-
 	public function addDish(Dish $dish): self
 	{
 		if (!$this->dishes->contains($dish))
