@@ -8,6 +8,12 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class SuborderListener
 {
+	public function prePersist(SubOrder $subOrder, LifecycleEventArgs $eventArgs) : void
+	{
+		$subOrder?->getBaseOrder()?->count();
+		$eventArgs->getEntityManager()->flush();
+	}
+
 	public function preUpdate(SubOrder $subOrder, LifecycleEventArgs $event) : void
 	{
 		$subOrder->getBaseOrder()->setChecked(
@@ -19,6 +25,7 @@ class SuborderListener
 					)
 				)->isEmpty()
 		);
+		$subOrder->getBaseOrder()->count();
 		$event->getEntityManager()->flush();
 	}
 }

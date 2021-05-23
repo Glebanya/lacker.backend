@@ -69,7 +69,7 @@ class UserConfig extends BaseConfigurator
 				{
 					if (
 						array_key_exists('table',$params) && is_string($tableId =  $params['table']) and
-						array_key_exists('sub_order',$params) && is_array($suborder = $params['portions'])
+						array_key_exists('sub_order',$params) && is_array($suborder = $params['sub_order'])
 					)
 					{
 						if ($table = $this->manager->find(Table::class,$tableId))

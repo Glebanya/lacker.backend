@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=StaffRepository::class)
  */
 #[ConfiguratorAttribute('app.config.staff')]
-#[Field('restaurant', 'getDish', immutable: true)]
+#[Field('restaurant', 'getRestaurant', immutable: true)]
 class Staff extends BaseUser implements UserInterface, EquatableInterface
 {
 	public const STATUS_WORKING = 'WORKING', STATUS_NOT_WORKING = 'NOT_WORKING' , STATUS_BUSY = 'BUSY';

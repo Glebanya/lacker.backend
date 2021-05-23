@@ -151,6 +151,28 @@ class Restaurant extends BaseObject
 		return $this->orders;
 	}
 
+	#[Reference('checked_orders')]
+	#[CollectionAttribute]
+	public function getCheckedOrders(): Collection|Selectable
+	{
+		return $this->$this->orders->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('checked',true))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+		);
+	}
+
+	#[Reference('unchecked_orders')]
+	#[CollectionAttribute]
+	public function getUncheckedOrders(): Collection|Selectable
+	{
+		return $this->orders->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('checked',false))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+		);
+	}
+
 	public function addOrder(Order $order): self
 	{
 		if (!$this->orders->contains($order))

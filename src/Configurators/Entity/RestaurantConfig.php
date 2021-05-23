@@ -9,11 +9,13 @@ use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Menu;
+use App\Entity\Order;
 use App\Entity\Restaurant;
 use App\Entity\Restaurant as RestaurantEntity, App\Api\ConfiguratorInterface;
 use App\Entity\Staff;
 use App\Entity\SubOrder;
 use App\Repository\SubOrderRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -75,19 +77,24 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 				}
 				throw new ParameterException("wrong params");
 			},
-			'get_suborders' => function(RestaurantEntity $object, array $params)
+			'suborders' => function(RestaurantEntity $restaurant, array $params)
 			{
-				if (array_key_exists('checked',$params) && is_string($params['checked']) || is_bool($params['checked']))
+				if (array_key_exists('checked',$params) && is_bool($params['checked']))
 				{
-					$suborders = $this->subOrderRepository->getSuborders(
-						restaurant: $object,
-						checked:  (bool) $params['checked'],
-						offset: array_key_exists('offset',$params)? intval($params['offset']) : 0,
-						limit: array_key_exists('limit',$params)? intval($params['limit']) : 50,
-					);
 					return $this->serializer->serialize(
 						array_reduce(
-							iterator_to_array($suborders),
+							array_merge_recursive(...$restaurant->getOrders()->matching(
+								Criteria::create()
+									->where(Criteria::expr()->eq('checked',$params['checked']))
+									->andWhere(Criteria::expr()->eq('deleted', false))
+							)->map(
+								fn (Order $order) =>
+									$order->getSubOrders()->matching(
+										Criteria::create()
+											->andWhere(Criteria::expr()->eq('checked', false))
+											->orderBy(['updateDate' => Criteria::DESC])
+									)->toArray()
+							)->toArray()),
 							fn (ApiEntityCollection $collection ,SubOrder $subOrder) => $collection->addEntity(
 								$this->apiService->buildApiEntityObject($subOrder)
 							),

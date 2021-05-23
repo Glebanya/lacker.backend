@@ -41,7 +41,7 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$subOrder = new SubOrder(
+						$order->addSubOrder($subOrder = new SubOrder(
 							order: $order,
 							comment: array_key_exists('comment',$parameters) && is_string($parameters['comment']) ?
 								$parameters['comment'] :
@@ -55,8 +55,11 @@ class OrderConfig extends BaseConfigurator
 											;
 									},
 									$portions
-							)
-						);
+							),
+							drinksImmediately: array_key_exists('drinks_immediately',$parameters)?
+								(bool) $parameters['drinks_immediately'] :
+								false,
+						));
 						if (count($errors = $this->validator->validate($subOrder, groups: "update")) === 0)
 						{
 							$this->manager->flush();

@@ -45,7 +45,6 @@ class Dish extends BaseObject
 			Dish::TYPE_SALAD,
 			Dish::TYPE_SANDWICH,
 			Dish::TYPE_SOUP,
-			Dish::TYPE_SOUP,
 			Dish::TYPE_OTHER
 		];
 	}
@@ -90,12 +89,12 @@ class Dish extends BaseObject
 	protected ?Image $image;
 
 	/**
+	 * @ORM\Column(type="simple_array", length=255, nullable=true)
 	 * @Assert\All({
-	 * 			@Assert\Choice(callback=[Dish::class,"getTypes"], groups={"create","update"})
-	 * 		}
+	 * 			@Assert\Choice(callback={Dish::class,"getTypes"}, groups={"create","update"})
+	 * 		},
 	 *	 groups={"create","update"}
 	 *)
-	 * @ORM\Column(type="simple_array", length=255, nullable=true)
 	 */
 	#[Field(name: 'tags', getter: 'getType', setter: 'setType', default: true)]
 	protected ?array $type;
@@ -138,7 +137,7 @@ class Dish extends BaseObject
 		}
 		if (array_key_exists('tags', $params) && is_array($params['tags']))
 		{
-			$this->type = $params['type'];
+			$this->type = $params['tags'];
 		}
 		if (array_key_exists('image', $params) && is_string($params['image']))
 		{

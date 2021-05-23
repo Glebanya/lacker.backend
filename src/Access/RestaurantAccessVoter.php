@@ -13,7 +13,7 @@ class RestaurantAccessVoter extends Voter
 	{
 		return match ($attribute) {
 			'view' => $this->canView($subject,$token),
-			'update','add_menu','add_staff' => $this->canUpdate($subject,$token),
+			'update','add_menu','add_staff','suborders' => $this->canUpdate($subject,$token),
 			'delete' => $this->canDelete($subject,$token),
 			default => false
 		};

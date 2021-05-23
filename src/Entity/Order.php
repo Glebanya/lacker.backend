@@ -115,6 +115,7 @@ class Order extends BaseObject
 			->setRestaurant($table->getRestaurant())
 			->setStatus(Order::STATUS_NEW)
 			->setUser($user)
+			->setChecked(false)
 			->subOrders = new ArrayCollection();
 	}
 
