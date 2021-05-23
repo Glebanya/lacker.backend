@@ -67,7 +67,12 @@ class Order extends BaseObject
 	protected ?Restaurant $restaurant;
 
 	/**
-	* @ORM\OneToMany(targetEntity=SubOrder::class, mappedBy="baseOrder", orphanRemoval=true, cascade={"persist"})
+	* @ORM\OneToMany(
+	 *     targetEntity=SubOrder::class,
+	 *     mappedBy="baseOrder",
+	 *     orphanRemoval=true,
+	 *     cascade={"persist"}
+	 *	 )
 	*/
 	#[Field('sub_orders', getter: 'getSubOrders', immutable: true, default: false)]
 	private Collection|Selectable $subOrders;

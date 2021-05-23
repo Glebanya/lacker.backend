@@ -4,11 +4,9 @@ namespace App\DataFixtures;
 
 use App\Entity\Dish;
 use App\Entity\Menu;
-use App\Entity\Portion;
 use App\Entity\Restaurant;
 use App\Entity\Staff;
 use App\Entity\Table;
-use App\Types\Image;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -42,8 +40,7 @@ class AppFixtures extends Fixture
 						'description' => [
 							'ru' => "Внатуре четко"
 						],
-						'type' => $j % 3 === 0 ? Dish::TYPE_DISH :
-							($j % 2 === 0 ? Dish::TYPE_ALCOHOL : Dish::TYPE_DRINKS),
+						'tags' => Dish::getTypes(),
 						'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvnK2svdusyfTDEAhPXRIPxSXEAIjXMj2-fA&usqp=CAU',
 						'portions' => array_map(fn(int $k) => [
 							'sort' => $k * 100,

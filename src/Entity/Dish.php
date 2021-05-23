@@ -136,7 +136,7 @@ class Dish extends BaseObject
 		{
 			$this->name = new Lang($params['title']);
 		}
-		if (array_key_exists('type', $params) && is_array($params['type']))
+		if (array_key_exists('tags', $params) && is_array($params['tags']))
 		{
 			$this->type = $params['type'];
 		}
