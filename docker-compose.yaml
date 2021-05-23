@@ -22,7 +22,7 @@ services:
       DATABASE_URL: $DATABASE_URL
       APP_TYPE: 'dev'
     volumes:
-     - ./src:/app/
+     - .:/app/
      - /app/bin
     depends_on:
         mysql:
