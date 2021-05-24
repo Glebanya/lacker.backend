@@ -38,7 +38,7 @@ final class ApiEntity
 	{
 		if ($this->resolver->getPropertyBuilderCollection()->has($key))
 		{
-			$this->resolver->getPropertyBuilderCollection()->get($key)?->build($this->object)?->set($value);
+			return $this->resolver->getPropertyBuilderCollection()->get($key)?->build($this->object)?->set($value);
 		}
 		throw new Exception("unknown field $key");
 	}
