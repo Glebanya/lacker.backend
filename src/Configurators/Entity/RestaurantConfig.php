@@ -49,10 +49,9 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 			{
 				if (array_key_exists('menu',$params) && is_array($params['menu']))
 				{
-					$menu = new Menu($params['menu']);
+					$object->addMenu($menu = new Menu($params['menu']));
 					if (0 === count($errors = $this->validator->validate($menu, groups: "create")))
 					{
-						$object->addMenu($menu);
 						$this->manager->persist($menu);
 						$this->manager->flush();
 						return $menu;
