@@ -40,7 +40,7 @@ class AppFixtures extends Fixture
 						'description' => [
 							'ru' => "Внатуре четко"
 						],
-						'tags' => Dish::getTypes(),
+						'tags' => [Dish::getTypes()[$i], Dish::getTypes()[$i+1]],
 						'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvnK2svdusyfTDEAhPXRIPxSXEAIjXMj2-fA&usqp=CAU',
 						'portions' => array_map(fn(int $k) => [
 							'sort' => $k * 100,

@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ConfiguratorAttribute('app.config.dish')]
 class Dish extends BaseObject
 {
-	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DISH = 'DISH', TYPE_DRINKS = 'DRINKS';
+	public const TYPE_ALCOHOL = 'ALCOHOL', TYPE_DRINKS = 'DRINKS';
 	public const TYPE_BIRD_DISH = 'BIRD', TYPE_SEA_DISH = 'SEA', TYPE_MEAT_DISH = 'MEAT';
 	public const TYPE_GARNISH = 'GARNISH', TYPE_ASIAN_DISH = 'ASIAN_DISH', TYPE_DESSERT = 'DESSERT';
 	public const TYPE_SALAD = 'SALAD', TYPE_SANDWICH = 'SANDWICH', TYPE_SOUP = 'SOUP';
@@ -34,7 +34,6 @@ class Dish extends BaseObject
 	{
 		return [
 			Dish::TYPE_ALCOHOL,
-			Dish::TYPE_DISH,
 			Dish::TYPE_DRINKS,
 			Dish::TYPE_BIRD_DISH,
 			Dish::TYPE_SEA_DISH,
