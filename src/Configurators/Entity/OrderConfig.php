@@ -41,21 +41,21 @@ class OrderConfig extends BaseConfigurator
 				{
 					if (array_key_exists('portions',$parameters) && is_array($portions = $parameters['portions']))
 					{
-						$portionsObjects = [];
-						foreach ($portions as $portion)
-						{
-							if (!$portionObject = $this->manager->find(Portion::class, $portion))
-							{
-								throw new EntityNotFoundException((string) $portion);
-							}
-							$portionsObjects[] = $portionObject;
-						}
 						$order->addSubOrder($subOrder = new SubOrder(
 							order: $order,
 							comment: array_key_exists('comment',$parameters) && is_string($parameters['comment']) ?
 								$parameters['comment'] :
 								null,
-							portions: $portionsObjects,
+							portions: array_map(
+									function($portion) {
+										$object = $this->manager->find(Portion::class, $portion);
+										return $object && !$object->isDeleted() ?
+												$object :
+												throw new EntityNotFoundException((string) $portion)
+											;
+									},
+									$portions
+							),
 							drinksImmediately: array_key_exists('drinks_immediately',$parameters)?
 								(bool) $parameters['drinks_immediately'] :
 								false,

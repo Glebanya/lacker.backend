@@ -71,14 +71,17 @@ class SubOrder extends BaseObject
 		bool $drinksImmediately = false,
 	)
 	{
-		$this->setBaseOrder($order)
-			->setChecked($checked)
-			->setComment($comment)
-			->setDrinksImmediately($drinksImmediately)
-			->portions = new ArrayCollection();
+		$this->portions = new ArrayCollection();
+		$order->addSubOrder($this);
+
+		$this->setChecked($checked)
+			->setComment($comment)->setDrinksImmediately($drinksImmediately);
 		foreach ($portions as $portion)
 		{
-			$this->addPortion($portion);
+			if ($portion instanceof Portion)
+			{
+				$this->addPortion($portion);
+			}
 		}
 		$this->count();
 	}
