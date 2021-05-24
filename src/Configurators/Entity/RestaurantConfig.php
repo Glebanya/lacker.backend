@@ -54,7 +54,9 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 					{
 						$this->manager->persist($menu);
 						$this->manager->flush();
-						return $menu;
+						return $this->serializer->serialize(
+							$this->apiService->buildApiEntityObject($menu)
+						);
 					}
 					throw new ValidationException($errors);
 				}
@@ -70,7 +72,9 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 						$object->addStaff($staff);
 						$this->manager->persist($staff);
 						$this->manager->flush();
-						return $staff;
+						return $this->serializer->serialize(
+							$this->apiService->buildApiEntityObject($staff)
+						);
 					}
 					throw new ValidationException($errors);
 				}
