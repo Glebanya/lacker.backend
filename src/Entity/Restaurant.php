@@ -173,6 +173,45 @@ class Restaurant extends BaseObject
 		);
 	}
 
+	#[Reference('checked_suborders')]
+	#[CollectionAttribute]
+	public function getCheckedSuborders() : Collection|Selectable
+	{
+		return new ArrayCollection(
+			array_merge_recursive(...$this->getCheckedOrders()->map(
+				fn (Order $order) =>
+				$order->getSubOrders()->matching(
+					Criteria::create()
+						->orderBy([
+							'updateDate' => Criteria::DESC
+						])
+				)->toArray()
+			)->toArray()
+			)
+		);
+	}
+
+	#[Reference('unchecked_suborders')]
+	#[CollectionAttribute]
+	public function getUncheckedSuborders() : Collection|Selectable
+	{
+		return new ArrayCollection(
+			array_merge_recursive(...$this->getUncheckedOrders()->map(
+				fn (Order $order) =>
+					$order->getSubOrders()->matching(
+						Criteria::create()
+							->andWhere(
+								Criteria::expr()->eq('checked', false)
+							)
+							->orderBy([
+								'updateDate' => Criteria::DESC
+							])
+					)->toArray()
+				)->toArray()
+			)
+		);
+	}
+
 	public function addOrder(Order $order): self
 	{
 		if (!$this->orders->contains($order))
