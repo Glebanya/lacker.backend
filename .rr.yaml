@@ -7,14 +7,17 @@ http:
     command: "php bin/console baldinof:roadrunner:worker"
     relay: "unix://var/roadrunner.sock"
 
+logs:
+  mode: development
+
 limit:
   interval: 1
   services:
     http:
-      maxMemory: 64
+      maxMemory: 256
       TTL: 0
       idleTTL: 0
-      execTTL: 60
+      execTTL: 120
 
 static:
   enable: false
