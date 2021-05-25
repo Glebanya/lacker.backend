@@ -212,6 +212,7 @@ class Menu extends BaseObject
 	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
 	{
 		parent::onUpdate($eventArgs);
+		$this->getRestaurant()?->onUpdate();
 	}
 
 	/**
@@ -222,5 +223,6 @@ class Menu extends BaseObject
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
 		parent::onAdd($eventArgs);
+		$this->getRestaurant()?->onUpdate();
 	}
 }

@@ -2,19 +2,19 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\DishRepository;
-use App\Types\Image;
-use App\Types\Lang;
 use App\Api\Attributes\ConfiguratorAttribute;
 use App\Configurators\Attributes\Collection as CollectionAttribute;
 use App\Configurators\Attributes\Field;
 use App\Configurators\Attributes\Reference;
+use App\Repository\DishRepository;
+use App\Types\Image;
+use App\Types\Lang;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -267,7 +267,6 @@ class Dish extends BaseObject
 	{
 		parent::onUpdate($eventArgs);
 		$this->getMenu()?->onUpdate($eventArgs);
-		$this->getMenu()?->getRestaurant()?->onUpdate($eventArgs);
 	}
 
 	/**
@@ -279,6 +278,5 @@ class Dish extends BaseObject
 	{
 		parent::onAdd($eventArgs);
 		$this->getMenu()?->onUpdate();
-		$this->getMenu()?->getRestaurant()?->onUpdate();
 	}
 }

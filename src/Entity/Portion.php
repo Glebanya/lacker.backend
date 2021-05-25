@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
+use App\Repository\PortionRepository;
 use App\Types\Lang;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\PortionRepository;
-use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\Reference;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -144,8 +144,6 @@ class Portion extends BaseObject
 	{
 		parent::onUpdate($eventArgs);
 		$this->getDish()?->onUpdate();
-		$this->getDish()?->getMenu()?->onUpdate();
-		$this->getDish()?->getMenu()?->getRestaurant()?->onUpdate();
 	}
 
 	/**
@@ -155,9 +153,7 @@ class Portion extends BaseObject
 	 */
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
 	{
-		parent::onAdd($eventArgs);
+		parent::onAdd();
 		$this->getDish()?->onUpdate();
-		$this->getDish()?->getMenu()?->onUpdate();
-		$this->getDish()?->getMenu()?->getRestaurant()?->onUpdate();
 	}
 }
