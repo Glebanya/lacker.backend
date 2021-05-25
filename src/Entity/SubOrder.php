@@ -13,8 +13,8 @@ use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
 * @ORM\Entity(repositoryClass=SubOrderRepository::class)
@@ -99,10 +99,7 @@ class SubOrder extends BaseObject
 
 	public function addPortion(Portion $portion): self
 	{
-		if (!$this->portions->contains($portion))
-		{
-			$this->portions[] = $portion;
-		}
+		$this->portions[] = $portion;
 		return $this;
 	}
 
