@@ -148,7 +148,20 @@ class Menu extends BaseObject
 	#[CollectionAttribute]
 	public function getDishes(): Collection|Selectable
 	{
-		return $this->dishes;
+		return $this->dishes->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('stopped',false))
+		);
+	}
+
+	#[Reference('dishes_stoped')]
+	#[CollectionAttribute]
+	public function getStoppedDishes(): Collection|Selectable
+	{
+		return $this->dishes->matching(
+			Criteria::create()
+				->where(Criteria::expr()->eq('stopped',true))
+		);
 	}
 
 	public function getTag(): ?string
