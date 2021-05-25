@@ -2,21 +2,21 @@
 
 namespace App\Entity;
 
+use App\Api\Attributes\ConfiguratorAttribute;
+use App\Configurators\Attributes\Collection as CollectionAttribute;
+use App\Configurators\Attributes\Field;
+use App\Configurators\Attributes\Reference;
+use App\Repository\RestaurantRepository;
 use App\Types\Image;
 use App\Types\Lang;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\RestaurantRepository;
-use App\Api\Attributes\ConfiguratorAttribute;
-use App\Configurators\Attributes\Field;
-use App\Configurators\Attributes\Reference;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Configurators\Attributes\Collection as CollectionAttribute;
 
 /**
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
@@ -208,6 +208,47 @@ class Restaurant extends BaseObject
 							])
 					)->toArray()
 				)->toArray()
+			)
+		);
+	}
+
+	#[Reference('unchecked_appeals')]
+	#[CollectionAttribute]
+	public function getUncheckedAppeals() : Collection|Selectable
+	{
+		return new ArrayCollection(
+			array_merge_recursive(...$this->getTables()->map(
+				fn (Table $table) =>
+				$table->getAppeals()->matching(
+					Criteria::create()
+						->andWhere(
+							Criteria::expr()->eq('checked', false)
+						)
+						->orderBy([
+							'updateDate' => Criteria::DESC
+						])
+				)->toArray()
+			)->toArray()
+			)
+		);
+	}
+	#[Reference('checked_appeals')]
+	#[CollectionAttribute]
+	public function getCheckedAppeals() : Collection|Selectable
+	{
+		return new ArrayCollection(
+			array_merge_recursive(...$this->getTables()->map(
+				fn (Table $table) =>
+				$table->getAppeals()->matching(
+					Criteria::create()
+						->andWhere(
+							Criteria::expr()->eq('checked', true)
+						)
+						->orderBy([
+							'updateDate' => Criteria::DESC
+						])
+				)->toArray()
+			)->toArray()
 			)
 		);
 	}

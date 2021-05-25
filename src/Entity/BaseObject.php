@@ -27,7 +27,8 @@ use Symfony\Component\Uid\Uuid;
  *     "table" = "App\Entity\Table",
  *     "reserve" = "App\Entity\TableReserve",
  *     "user_base" = "App\Entity\BaseUser",
- *     "suborder" = "App\Entity\SubOrder"
+ *     "suborder" = "App\Entity\SubOrder",
+ *     "appeal" = "App\Entity\Appeal",
  * })
  * @ORM\HasLifecycleCallbacks
  */

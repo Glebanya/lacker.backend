@@ -83,6 +83,10 @@ services:
       public: true
       lazy: true
       class: App\Configurators\Entity\SubOrderConfigurator
+    app.config.appeal:
+      public: true
+      lazy: true
+      class: App\Configurators\Entity\AppealConfiguration
     Google_Client:
         class: Google_Client
         calls:

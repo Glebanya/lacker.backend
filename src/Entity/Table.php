@@ -62,6 +62,11 @@ class Table extends BaseObject
 	 */
 	protected Collection|Selectable $tableReserves;
 
+    /**
+* @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="AppealTable", orphanRemoval=true)
+*/
+    private $appeals;
+
 	/**
 	 * Table constructor.
 	 *
@@ -82,6 +87,7 @@ class Table extends BaseObject
 			$this->title = new Lang($params['title']);
 		}
 		$this->tableReserves = new ArrayCollection();
+		$this->appeals = new ArrayCollection();
 	}
 
 	public function getStatus(): ?string
@@ -192,5 +198,35 @@ class Table extends BaseObject
 	{
 		parent::onAdd($eventArgs);
 		$this->status = static::STATUS_FREE;
+	}
+
+	/**
+	* @return Collection|Appeal[]
+	*/
+	public function getAppeals(): Collection
+	{
+		return $this->appeals;
+	}
+
+	public function addAppeal(Appeal $appeal): self
+	{
+		if (!$this->appeals->contains($appeal))
+		{
+			$this->appeals[] = $appeal;
+			$appeal->setAppealTable($this);
+		}
+		return $this;
+    }
+
+	public function removeAppeal(Appeal $appeal): self
+	{
+		if ($this->appeals->removeElement($appeal))
+		{
+			if ($appeal->getAppealTable() === $this)
+			{
+				$appeal->setAppealTable(null);
+			}
+		}
+		return $this;
 	}
 }

@@ -8,15 +8,14 @@ use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\EntityNotFoundException;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
-use App\Entity\Restaurant;
+use App\Entity\Appeal;
+use App\Entity\Order;
 use App\Entity\Table;
 use App\Entity\TableReserve;
 use App\Entity\User;
-use App\Entity\Order;
 use App\Repository\PortionRepository;
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserConfig extends BaseConfigurator
@@ -87,6 +86,37 @@ class UserConfig extends BaseConfigurator
 					}
 					throw new ParameterException("wrong params");
 				},
+				'make_appeal' => function(User $user, array $params)
+				{
+					if (
+						array_key_exists('table',$params) && is_string($tableId =  $params['table']) and
+						array_key_exists('target',$params) && is_string($target =  $params['target'])
+					)
+					{
+						if ($table = $this->manager->find(Table::class,$tableId))
+						{
+							$appeal = new Appeal(
+								user: $user,
+								table: $table,
+								target: $target,
+								comment: array_key_exists('comment',$params) && is_string($params['comment'])?
+										$params['comment']:
+										null
+							);
+							if (count($errors = $this->validator->validate($appeal, groups: "create")) === 0)
+							{
+								$this->manager->persist($appeal);
+								$this->manager->flush();
+								return $this->serializer->serialize(
+									$this->apiService->buildApiEntityObject($appeal)
+								);
+							}
+							throw new ValidationException($errors);
+						}
+						throw new EntityNotFoundException($tableId);
+					}
+					throw new ParameterException("wrong params");
+				}
 			]);
 	}
 }
