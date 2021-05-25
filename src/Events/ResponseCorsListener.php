@@ -27,8 +27,8 @@ class ResponseCorsListener implements EventSubscriberInterface
 				'Access-Control-Request-Method',
 				'Authorization'
 			],
-			'Access-Control-Allow-Methods' => [ 'GET', 'POST', 'PUT', 'DELETE'],
-			'Allow' => [ 'GET', 'POST', 'PUT', 'DELETE'],
+			'Access-Control-Allow-Methods' => [ 'GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
+			'Allow' => [ 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		]);
 	}
 
