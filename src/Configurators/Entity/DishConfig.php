@@ -2,7 +2,10 @@
 
 namespace App\Configurators\Entity;
 
+use App\Api\Access;
+use App\Api\ApiService;
 use App\Api\ConfiguratorInterface;
+use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish as DishEntity;
@@ -15,6 +18,9 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 	public function __construct(
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
+		protected Serializer $serializer,
+		protected ApiService $apiService,
+		protected Access $access,
 	)
 	{
 		parent::__construct();
@@ -37,7 +43,9 @@ class DishConfig extends BaseConfigurator implements ConfiguratorInterface
 						{
 							$this->manager->persist($portion);
 							$this->manager->flush();
-							return $object->getId();
+							return $this->serializer->serialize(
+								$this->apiService->buildApiEntityObject($portion)
+							);
 						}
 						throw new ValidationException($errors);
 					}

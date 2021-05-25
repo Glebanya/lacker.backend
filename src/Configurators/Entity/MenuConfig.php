@@ -2,6 +2,9 @@
 
 namespace App\Configurators\Entity;
 
+use App\Api\Access;
+use App\Api\ApiService;
+use App\Api\Serializer\Serializer;
 use App\Configurators\Exception\ParameterException;
 use App\Configurators\Exception\ValidationException;
 use App\Entity\Dish;
@@ -14,6 +17,9 @@ class MenuConfig extends BaseConfigurator
 	public function __construct(
 		protected EntityManagerInterface $manager,
 		protected ValidatorInterface $validator,
+		protected Serializer $serializer,
+		protected ApiService $apiService,
+		protected Access $access,
 	)
 	{
 		parent::__construct();
@@ -31,12 +37,14 @@ class MenuConfig extends BaseConfigurator
 				{
 					if (array_key_exists('dish',$params) && is_array($rawDish = $params['dish']))
 					{
-						if (count($errors = $this->validator->validate($dish = new Dish($rawDish), groups: "create")) === 0)
+						$object->addDish($dish = new Dish($rawDish));
+						if (count($errors = $this->validator->validate($dish, groups: "create")) === 0)
 						{
-							$object->addDish($dish);
 							$this->manager->persist($dish);
 							$this->manager->flush();
-							return $dish->getId();
+							return $this->serializer->serialize(
+								$this->apiService->buildApiEntityObject($dish)
+							);
 						}
 						throw new ValidationException($errors);
 					}

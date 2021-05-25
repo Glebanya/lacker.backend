@@ -49,13 +49,13 @@ class UserConfig extends BaseConfigurator
 						{
 							if (!$table->getCurrentReserve())
 							{
-								$reserve = (new TableReserve())->setUser($user)->setReservedTable($table);
-								$errors = $this->validator->validate($reserve, groups: "create");
-								if (count($errors) === 0)
+								if (count($errors = $this->validator->validate($reserve = new TableReserve($user,$table), groups: "create")) === 0)
 								{
 									$this->manager->persist($reserve);
 									$this->manager->flush();
-									return $reserve->getId();
+									return $this->serializer->serialize(
+										$this->apiService->buildApiEntityObject($reserve)
+									);
 								}
 								throw new ValidationException($errors);
 							}

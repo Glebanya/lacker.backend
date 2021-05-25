@@ -16,6 +16,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
@@ -24,7 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ConfiguratorAttribute('app.config.menu')]
 class Menu extends BaseObject
 {
-	const MENU_TAG_MAIN = "MAIN", MENU_TAG_MINOR = "MINOR";
+	const MENU_TAG_MAIN = "MAIN";
+	const MENU_TAG_MINOR = "MINOR";
+
 	/**
 	 * @ORM\Column(type="lang_phrase")
 	 */
@@ -43,8 +46,8 @@ class Menu extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Restaurant::class, inversedBy="menus")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Assert\NotNull(groups: ["create"])]
 	#[Field('restaurant', 'getRestaurant', immutable: true, default: false)]
+	#[Assert\NotNull(groups: ["create"])]
 	protected ?Restaurant $restaurant;
 
 	/**
@@ -56,6 +59,7 @@ class Menu extends BaseObject
 	 *	 )
 	 */
 	#[Assert\Valid(groups: ["create"])]
+	#[Assert\Count(min:1, groups: ["create", "update"])]
 	#[Field('dishes', 'getDishes', immutable: true)]
 	protected Collection|Selectable $dishes;
 
@@ -63,6 +67,7 @@ class Menu extends BaseObject
 	 * @ORM\Column(type="string", length=255, options={"default":"MINOR"})
 	 */
 	#[Assert\Choice([Menu::MENU_TAG_MAIN, Menu::MENU_TAG_MINOR], groups: ["create","update"])]
+	#[Assert\NotNull(groups: ["create","update"])]
 	#[Field('tag','getTag', 'setTag', immutable: false, default: true)]
 	private string $tag;
 
@@ -180,6 +185,23 @@ class Menu extends BaseObject
 		}
 
 		return $this;
+	}
+
+	#[Assert\Callback(groups: ["create","update"])]
+	public function validate(ExecutionContextInterface $context)
+	{
+		$count = $this->getRestaurant()->getMenus()->matching(
+				Criteria::create()
+					->where(Criteria::expr()->in('tag',[Menu::MENU_TAG_MAIN]))
+					->andWhere(Criteria::expr()->eq('deleted',false))
+			)->count();
+		if ($count > 1)
+		{
+			$context->buildViolation("main menu must be single")
+				->atPath("restaurant.menu")
+				->addViolation()
+			;
+		}
 	}
 
 	/**

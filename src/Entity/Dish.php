@@ -70,6 +70,7 @@ class Dish extends BaseObject
 		groups: ["create", "update"]
 	)]
 	#[Assert\Valid(groups: ["create", "update"])]
+	#[Assert\Count(min:1,groups: ["create", "update"])]
 	#[Field('portions', 'getPortions', immutable: true, default: true)]
 	protected Collection|Selectable $portions;
 
@@ -96,6 +97,7 @@ class Dish extends BaseObject
 	 *)
 	 */
 	#[Field(name: 'tags', getter: 'getType', setter: 'setType', default: true)]
+	#[Assert\Count( min:1, groups: ["create", "update"])]
 	protected ?array $type;
 
 	/**
@@ -103,12 +105,14 @@ class Dish extends BaseObject
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	#[Field('menu', 'getMenu', immutable: true, default: false)]
+	#[Assert\NotNull(groups:["create"])]
 	protected ?Menu $menu;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
 	#[Field(name: 'stopped', getter: 'isStopped', setter:'setStopped', default: true)]
+	#[Assert\NotNull(groups:["create"])]
 	private bool $stopped = false;
 
 	public function isStopped(): ?bool

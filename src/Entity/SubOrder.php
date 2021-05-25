@@ -27,6 +27,7 @@ class SubOrder extends BaseObject
 	 * @ORM\ManyToMany(targetEntity=Portion::class)
 	 */
 	#[Field('portions','getPortions', immutable: true, default: true)]
+	#[Assert\Count(min:1,groups: ["create", "update"])]
 	private Collection|Selectable $portions;
 
 	/**
@@ -144,20 +145,13 @@ class SubOrder extends BaseObject
 	#[Assert\Callback(groups: ['update','create'])]
 	public function validate(ExecutionContextInterface $context)
 	{
-		if ($this->getPortions()->count() === 0)
+		$restaurantId = $this->getBaseOrder()->getRestaurant()->getId();
+		foreach ($this->getPortions() as $portion)
 		{
-			$context->buildViolation("no portions")->atPath("portions")->addViolation();
-		}
-		else
-		{
-			$restaurantId = $this->getBaseOrder()->getRestaurant()->getId();
-			foreach ($this->getPortions() as $portion)
+			$portionId = $portion->getDish()->getMenu()->getRestaurant()->getId();
+			if (!$portionId->equals($restaurantId))
 			{
-				$portionId = $portion->getDish()->getMenu()->getRestaurant()->getId();
-				if (!$portionId->equals($restaurantId))
-				{
-					$context->buildViolation("error wrong portion")->atPath("portions")->addViolation();
-				}
+				$context->buildViolation("error wrong portion")->atPath("portions")->addViolation();
 			}
 		}
 	}

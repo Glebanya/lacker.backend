@@ -41,6 +41,11 @@ class TableReserve extends BaseObject
 	#[Assert\NotNull(groups: ["create", "update"])]
 	protected ?User $user;
 
+	public function __construct(User $user, Table $table)
+	{
+		$this->setUser($user)->setReservedTable($table);
+	}
+
 	public function getStatus(): ?string
 	{
 		return $this->status;
