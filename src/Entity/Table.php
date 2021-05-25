@@ -62,10 +62,10 @@ class Table extends BaseObject
 	 */
 	protected Collection|Selectable $tableReserves;
 
-    /**
-* @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="AppealTable", orphanRemoval=true)
-*/
-    private $appeals;
+	/**
+	* @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="appealTable", orphanRemoval=true)
+	*/
+	private Collection|Selectable $appeals;
 
 	/**
 	 * Table constructor.

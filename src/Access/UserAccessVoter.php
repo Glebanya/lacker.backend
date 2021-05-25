@@ -13,7 +13,7 @@ class UserAccessVoter extends Voter
 	{
 		return match ($attribute) {
 			'view' => $this->canView($subject,$token),
-			'update', 'make_order', 'reserve_table' => $this->canUpdate($subject,$token),
+			'update', 'make_order','reserve_table','make_appeal' => $this->canUpdate($subject,$token),
 			'delete' => $this->canDelete($subject,$token),
 			default => false
 		};

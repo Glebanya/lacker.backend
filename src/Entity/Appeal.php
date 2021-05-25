@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=AppealRepository::class)
  */
-#[ConfiguratorAttribute('app.config.table')]
+#[ConfiguratorAttribute('app.config.appeal')]
 class Appeal extends BaseObject
 {
 	public const TARGET_INFO = 'INFO', TARGET_PAY = 'PAY', TARGET_OTHER = 'OTHER';
@@ -20,7 +20,7 @@ class Appeal extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=Table::class, inversedBy="appeals")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Field('table', 'getAppealTable', immutable: true)]
+	#[Field('table', 'getAppealTable', immutable: true, default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	private ?Table $appealTable;
 
@@ -28,14 +28,14 @@ class Appeal extends BaseObject
 	 * @ORM\ManyToOne(targetEntity=User::class, inversedBy="appeals")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	#[Field('user', 'getUser', immutable: true)]
+	#[Field('user', 'getUser', immutable: true, default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	private ?User $user;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Field('target', 'getTarget', immutable: true)]
+	#[Field('target', 'getTarget', immutable: true, default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	#[Assert\Choice([Appeal::TARGET_INFO,Appeal::TARGET_PAY,Appeal::TARGET_OTHER], groups: ["create", "update"])]
 	private string $target;
@@ -49,7 +49,7 @@ class Appeal extends BaseObject
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	#[Field('checked', 'isChecked', setter: 'setChecked', immutable: true)]
+	#[Field('checked', 'isChecked', setter: 'setChecked', immutable: false, default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
 	private bool $checked;
 
@@ -87,9 +87,9 @@ class Appeal extends BaseObject
 		return $this->user;
 	}
 
-	public function setUser(?User $User): self
+	public function setUser(?User $user): self
 	{
-		$this->user = $User;
+		$this->user = $user;
 
 		return $this;
 	}

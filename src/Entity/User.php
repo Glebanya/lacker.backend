@@ -47,7 +47,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	protected Collection|Selectable $tableReserves;
 
 	/**
-	 * @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="User", orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="user", orphanRemoval=true)
 	 */
 	private Collection|Selectable $appeals;
 
