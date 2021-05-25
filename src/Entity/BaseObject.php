@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
+use App\Configurators\Attributes\Field;
+use App\Repository\BaseObjectRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\BaseObjectRepository;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidV4Generator;
-use App\Configurators\Attributes\Field;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @ORM\InheritanceType("JOINED")
@@ -45,13 +45,13 @@ abstract class BaseObject
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'create_time', getter: 'getCrateDate', immutable: true)]
+	#[Field(name: 'create_time', getter: 'getCrateDate', immutable: true, default: true)]
 	protected ?DateTimeInterface $crateDate;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
-	#[Field(name: 'update_time', getter: 'getUpdateDate', immutable: true)]
+	#[Field(name: 'update_time', getter: 'getUpdateDate', immutable: true, default: true)]
 	protected ?DateTimeInterface $updateDate;
 
 	/**
