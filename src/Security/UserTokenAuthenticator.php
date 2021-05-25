@@ -34,7 +34,7 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
 
 	public function getCredentials(Request $request)
 	{
-		return $request->headers->get('Authorization');
+		return $request->headers->get('Authorization') ?? $request->headers->get('X-API-KEY');
 	}
 
 	public function checkCredentials($credentials, UserInterface $user): bool
