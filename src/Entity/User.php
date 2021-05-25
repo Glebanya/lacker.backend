@@ -29,7 +29,7 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
 	#[Field(name: 'google_id',getter: 'getGoogleId', immutable: true, default: true)]
-               	protected ?string $googleId;
+	protected ?string $googleId;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
@@ -46,151 +46,151 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	 */
 	protected Collection|Selectable $tableReserves;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="User", orphanRemoval=true)
-     */
-    private $appeals;
+	/**
+	 * @ORM\OneToMany(targetEntity=Appeal::class, mappedBy="User", orphanRemoval=true)
+	 */
+	private Collection|Selectable $appeals;
 
 
 	public function __construct($params = [])
-               	{
-               		parent::__construct($params);
-               		$this->orders = new ArrayCollection();
-               		$this->tableReserves = new ArrayCollection();
-                 $this->appeals = new ArrayCollection();
-               	}
+	{
+		parent::__construct($params);
+		$this->orders = new ArrayCollection();
+		$this->tableReserves = new ArrayCollection();
+		$this->appeals = new ArrayCollection();
+	}
 
 	public function getGoogleId(): ?string
-               	{
-               		return $this->googleId;
-               	}
+	{
+		return $this->googleId;
+	}
 
 	public function setGoogleId(string $googleId): self
-               	{
-               		$this->googleId = $googleId;
-               
-               		return $this;
-               	}
+	{
+		$this->googleId = $googleId;
+
+		return $this;
+	}
 
 	public function getPassword(): ?string
-               	{
-               		return $this->password;
-               	}
+	{
+		return $this->password;
+	}
 
 	public function setPassword(string $password): self
-               	{
-               		$this->password = $password;
-               
-               		return $this;
-               	}
+	{
+		$this->password = $password;
+
+		return $this;
+	}
 
 	public function getRoles(): ?array
-               	{
-               		return ['ROLE_CLIENT'];
-               	}
+	{
+		return ['ROLE_CLIENT'];
+	}
 
 	public function getSalt(): ?string
-               	{
-               		return Environment::get('USER_SALT');
-               	}
+	{
+		return Environment::get('USER_SALT');
+	}
 
 	public function eraseCredentials()
-               	{
-               	}
+	{
+	}
 
 	#[Reference(name: 'current_order')]
-               	public function getCurrentOrder() : Order|false
-               	{
-               		return $this->getOrders()->matching(
-               			Criteria::create()
-               				->where(
-               					Criteria::expr()->in('status',[Order::STATUS_NEW])
-               				)
-               		)->first();
-               	}
+	public function getCurrentOrder() : Order|false
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_NEW])
+				)
+		)->first();
+	}
 
 	#[Reference(name: 'canceled_orders')]
-               	public function getCanceledOrders() : Collection
-               	{
-               		return $this->getOrders()->matching(
-               			Criteria::create()
-               				->where(
-               					Criteria::expr()->in('status',[Order::STATUS_CANCELED])
-               				)
-               		);
-               	}
+	public function getCanceledOrders() : Collection
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_CANCELED])
+				)
+		);
+	}
 
 	#[Reference(name: 'paid_orders')]
-               	#[AttributeCollection]
-               	public function getPaidOrders() : Collection
-               	{
-               		return $this->getOrders()->matching(
-               			Criteria::create()
-               				->where(
-               					Criteria::expr()->in('status',[Order::STATUS_PAID])
-               				)
-               		);
-               	}
+	#[AttributeCollection]
+	public function getPaidOrders() : Collection
+	{
+		return $this->getOrders()->matching(
+			Criteria::create()
+				->where(
+					Criteria::expr()->in('status',[Order::STATUS_PAID])
+				)
+		);
+	}
 
 	#[Reference(name: 'orders')]
-               	#[AttributeCollection]
-               	public function getOrders(): Collection|Selectable
-               	{
-               		return $this->orders;
-               	}
+	#[AttributeCollection]
+	public function getOrders(): Collection|Selectable
+	{
+		return $this->orders;
+	}
 
 	public function addOrder(Order $order): self
-               	{
-               		if (!$this->orders->contains($order))
-               		{
-               			$this->orders[] = $order;
-               			$order->setUser($this);
-               		}
-               
-               		return $this;
-               	}
+	{
+		if (!$this->orders->contains($order))
+		{
+			$this->orders[] = $order;
+			$order->setUser($this);
+		}
+
+		return $this;
+	}
 
 	#[Reference('reserved_tables')]
-               	#[CollectionAttribute]
-               	public function getTableReserves(): Collection|Selectable
-               	{
-               		return $this->tableReserves;
-               	}
+	#[CollectionAttribute]
+	public function getTableReserves(): Collection|Selectable
+	{
+		return $this->tableReserves;
+	}
 
 	#[Reference('current_reserve')]
-               	public function getCurrentTable() : TableReserve|false|null
-               	{
-               		return $this->getTableReserves()->matching(
-               			Criteria::create()
-               				->where(Criteria::expr()->in('status',[TableReserve::STATUS_NEW]))
-               				->andWhere(Criteria::expr()->eq('deleted',false))
-               		)->first();
-               	}
+	public function getCurrentTable() : TableReserve|false|null
+	{
+		return $this->getTableReserves()->matching(
+			Criteria::create()
+				->where(Criteria::expr()->in('status',[TableReserve::STATUS_NEW]))
+				->andWhere(Criteria::expr()->eq('deleted',false))
+		)->first();
+	}
 
 	public function addTableReserve(TableReserve $tableReserve): self
-               	{
-               		if (!$this->tableReserves->contains($tableReserve))
-               		{
-               			$this->tableReserves[] = $tableReserve;
-               			$tableReserve->setUser($this);
-               		}
-               
-               		return $this;
-               	}
+	{
+		if (!$this->tableReserves->contains($tableReserve))
+		{
+			$this->tableReserves[] = $tableReserve;
+			$tableReserve->setUser($this);
+		}
+
+		return $this;
+	}
 
 	public function removeTableReserve(TableReserve $tableReserve): self
-               	{
-               		if ($this->tableReserves->removeElement($tableReserve))
-               		{
-               			// set the owning side to null (unless already changed)
-               			if ($tableReserve->getUser() === $this)
-               			{
-               				$tableReserve->setUser(null);
-               			}
-               		}
-               
-               		return $this;
-               	}
+	{
+		if ($this->tableReserves->removeElement($tableReserve))
+		{
+			// set the owning side to null (unless already changed)
+			if ($tableReserve->getUser() === $this)
+			{
+				$tableReserve->setUser(null);
+			}
+		}
+
+		return $this;
+	}
 
 	/**
 	 * @ORM\PreUpdate
@@ -198,9 +198,9 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	 * @param PreUpdateEventArgs|null $eventArgs
 	 */
 	public function onUpdate(PreUpdateEventArgs $eventArgs = null)
-               	{
-               		parent::onUpdate($eventArgs);
-               	}
+	{
+		parent::onUpdate($eventArgs);
+	}
 
 	/**
 	 * @ORM\PrePersist
@@ -208,38 +208,37 @@ class User extends BaseUser implements UserInterface, EquatableInterface
 	 * @param LifecycleEventArgs|null $eventArgs
 	 */
 	public function onAdd(LifecycleEventArgs $eventArgs = null)
-               	{
-               		parent::onAdd($eventArgs);
-               	}
+	{
+		parent::onAdd($eventArgs);
+	}
 
-    /**
-     * @return Collection|Appeal[]
-     */
-    public function getAppeals(): Collection
-    {
-        return $this->appeals;
-    }
+	#[Reference(name: 'appeals')]
+	#[AttributeCollection]
+	public function getAppeals(): Collection
+	{
+		return $this->appeals;
+	}
 
-    public function addAppeal(Appeal $appeal): self
-    {
-        if (!$this->appeals->contains($appeal)) {
-            $this->appeals[] = $appeal;
-            $appeal->setUser($this);
-        }
+	public function addAppeal(Appeal $appeal): self
+	{
+		if (!$this->appeals->contains($appeal)) {
+			$this->appeals[] = $appeal;
+			$appeal->setUser($this);
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function removeAppeal(Appeal $appeal): self
-    {
-        if ($this->appeals->removeElement($appeal)) {
-            // set the owning side to null (unless already changed)
-            if ($appeal->getUser() === $this) {
-                $appeal->setUser(null);
-            }
-        }
+	public function removeAppeal(Appeal $appeal): self
+	{
+		if ($this->appeals->removeElement($appeal)) {
+			// set the owning side to null (unless already changed)
+			if ($appeal->getUser() === $this) {
+				$appeal->setUser(null);
+			}
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
 }
