@@ -34,12 +34,10 @@ class SubOrderAccessVoter extends Voter
 
 	protected function canUpdate($subject, TokenInterface $token): bool
 	{
-		return ($user = $token->getUser()) and
-			$subject instanceof SubOrder and
-			$subject->getBaseOrder()->getStatus() === Order::STATUS_NEW and (
+		return ($user = $token->getUser()) and $subject instanceof SubOrder and (
 				($user instanceof User and $subject->getBaseOrder()->getUser()->isEqualTo($user)) or
 				($user instanceof Staff and $subject->getBaseOrder()->getRestaurant()->getId()->equals(
-						other: $user->getRestaurant()->getId()
+						$user->getRestaurant()->getId()
 					)
 				)
 			);
