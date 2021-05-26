@@ -178,10 +178,13 @@ class Restaurant extends BaseObject
 	public function getCheckedSuborders() : Collection|Selectable
 	{
 		return new ArrayCollection(
-			array_merge_recursive(...$this->getCheckedOrders()->map(
+			array_merge_recursive(...$this->getOrders()->map(
 				fn (Order $order) =>
 				$order->getSubOrders()->matching(
 					Criteria::create()
+						->andWhere(
+							Criteria::expr()->eq('checked', true)
+						)
 						->orderBy([
 							'updateDate' => Criteria::DESC
 						])
