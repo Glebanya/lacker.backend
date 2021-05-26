@@ -21,6 +21,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 * @ORM\HasLifecycleCallbacks
 */
 #[ConfiguratorAttribute('app.config.suborder')]
+#[Field('table','getTable', immutable: true, default: true)]
+#[Field('user','getUser', immutable: true, default: true)]
 class SubOrder extends BaseObject
 {
 	/**
@@ -85,6 +87,16 @@ class SubOrder extends BaseObject
 			}
 		}
 		$this->count();
+	}
+
+	public function getTable() : Table|null
+	{
+		return $this->getBaseOrder()->getTable();
+	}
+
+	public function getUser() : User|null
+	{
+		return $this->getBaseOrder()->getUser();
 	}
 
 	/**

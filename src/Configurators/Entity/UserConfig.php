@@ -95,14 +95,7 @@ class UserConfig extends BaseConfigurator
 					{
 						if ($table = $this->manager->find(Table::class,$tableId))
 						{
-							$appeal = new Appeal(
-								user: $user,
-								table: $table,
-								target: $target,
-								comment: array_key_exists('comment',$params) && is_string($params['comment'])?
-										$params['comment']:
-										null
-							);
+							$appeal = new Appeal( user: $user, table: $table, target: $target,);
 							if (count($errors = $this->validator->validate($appeal, groups: "create")) === 0)
 							{
 								$this->manager->persist($appeal);

@@ -60,7 +60,7 @@ class Menu extends BaseObject
 	 */
 	#[Assert\Valid(groups: ["create"])]
 	#[Assert\Count(min:1, groups: ["create", "update"])]
-	#[Field('dishes', 'getDishes', immutable: true)]
+	#[Field('dishes', 'getDishesFull', immutable: true)]
 	protected Collection|Selectable $dishes;
 
 	/**
@@ -145,6 +145,13 @@ class Menu extends BaseObject
 	}
 
 	#[Reference('dishes')]
+	#[CollectionAttribute]
+	public function getDishesFull()
+	{
+		return $this->dishes;
+	}
+
+	#[Reference('dishes_valid')]
 	#[CollectionAttribute]
 	public function getDishes(): Collection|Selectable
 	{

@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ConfiguratorAttribute('app.config.appeal')]
 class Appeal extends BaseObject
 {
-	public const TARGET_INFO = 'INFO', TARGET_PAY = 'PAY', TARGET_OTHER = 'OTHER';
+	public const TARGET_INFO = 'INFO', TARGET_PAY_BANK = 'PAY_BANK', TARGET_PAY_CASH = 'PAY_CASH',TARGET_OTHER = 'OTHER';
 	/**
 	 * @ORM\ManyToOne(targetEntity=Table::class, inversedBy="appeals")
 	 * @ORM\JoinColumn(nullable=false)
@@ -37,14 +37,8 @@ class Appeal extends BaseObject
 	 */
 	#[Field('target', 'getTarget', immutable: true, default: true)]
 	#[Assert\NotNull(groups: ["create", "update"])]
-	#[Assert\Choice([Appeal::TARGET_INFO,Appeal::TARGET_PAY,Appeal::TARGET_OTHER], groups: ["create", "update"])]
+	#[Assert\Choice([Appeal::TARGET_INFO,Appeal::TARGET_PAY_BANK,Appeal::TARGET_PAY_CASH], groups: ["create", "update"])]
 	private string $target;
-
-	/**
-	 * @ORM\Column(type="text", nullable=true)
-	 */
-	#[Field('comment', 'getComment', immutable: true)]
-	private string $comment;
 
 	/**
 	 * @ORM\Column(type="boolean")
@@ -57,12 +51,10 @@ class Appeal extends BaseObject
 		User $user,
 		Table $table,
 		string $target,
-		string $comment = null,
 	)
 	{
 		$this->setUser($user)
 			->setAppealTable($table)
-			->setComment($comment)
 			->setTarget($target)
 			->setChecked(false)
 			;
@@ -106,17 +98,6 @@ class Appeal extends BaseObject
 		return $this;
 	}
 
-	public function getComment(): ?string
-	{
-		return $this->comment;
-	}
-
-	public function setComment(string $comment): self
-	{
-		$this->comment = $comment;
-
-		return $this;
-	}
 
 	public function isChecked(): ?bool
 	{
