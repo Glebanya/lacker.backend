@@ -66,7 +66,7 @@ class RestaurantConfig extends BaseConfigurator implements ConfiguratorInterface
 			{
 				if (array_key_exists('staff',$params) && is_array($rawStaff = $params['staff']))
 				{
-					$object->addStaff($staff = new Staff($rawStaff['staff']));
+					$object->addStaff($staff = new Staff($rawStaff));
 					if (count($errors = $this->validator->validate($staff, groups: "create")) === 0)
 					{
 						$this->manager->persist($staff);
