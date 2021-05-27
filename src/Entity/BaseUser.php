@@ -53,8 +53,8 @@ abstract class BaseUser extends BaseObject implements UserInterface, EquatableIn
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
 	#[Field(name: 'email', getter: 'getEmail',immutable: true, default: true)]
-	#[Assert\Unique(groups: ["create",])]
 	#[Assert\Email(message: 'The email {{ value }} is not a valid email.', groups: ["create"])]
+	#[Assert\NotBlank(message: 'The family name {{ value }} is not a valid name.', groups: ["create", "update"])]
 	#[Assert\Length(
 		min: 1,
 		max: 255,
