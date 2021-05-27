@@ -28,7 +28,6 @@ class Staff extends BaseUser implements UserInterface, EquatableInterface
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	#[Assert\NotCompromisedPassword(groups: ["create"])]
 	#[Assert\NotBlank(groups: ["create"])]
 	#[Assert\Length(
 		min: 6,
