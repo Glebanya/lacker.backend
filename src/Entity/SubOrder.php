@@ -50,7 +50,7 @@ class SubOrder extends BaseObject
 	* @ORM\ManyToOne(targetEntity=Order::class, inversedBy="subOrders")
 	* @ORM\JoinColumn(nullable=false)
 	*/
-	#[Field('order','getBaseOrder', immutable: true)]
+	#[Field('order','getBaseOrder', immutable: true, default: true)]
 	private ?Order $baseOrder;
 
 	/**
