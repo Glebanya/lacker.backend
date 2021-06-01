@@ -14,48 +14,19 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
-	public function __construct(private EntityManagerInterface $manager, private UserPasswordEncoderInterface $encoder)
-	{
-	}
-
 	public function load(ObjectManager $manager)
 	{
-		$restaurant = (new Restaurant())
-			->setName(['ru' => 'ООО Рога и Копыта corp'])
-			->setCurrency('RUB');
-		for ($i = 0; $i < 10; $i++)
-		{
-			$restaurant->addMenu(new Menu([
-					'title' => [
-						'ru' => $i === 0 ? "Главное меню" : "Меню № $i"
-					],
-					'description' => [
-						'ru' => $i === 0 ? "Главное меню для пастофариан" : "Меню для детей"
-					],
-					'tag' => $i === 0 ? Menu::MENU_TAG_MAIN : Menu::MENU_TAG_MINOR,
-					'dishes' => array_map(fn(int $j) => [
-						'title' => [
-							'ru' => "Блюдо № $j"
-						],
-						'description' => [
-							'ru' => "Внатуре четко"
-						],
-						'tags' => [Dish::getTypes()[$i], Dish::getTypes()[$i+1]],
-						'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvnK2svdusyfTDEAhPXRIPxSXEAIjXMj2-fA&usqp=CAU',
-						'portions' => array_map(fn(int $k) => [
-							'sort' => $k * 100,
-							'weight' => $k * 100 + 100,
-							'price' => $k * 100 + 99,
-							'title' => [
-								'ru' => $k === 2 ? "Большой" : ($k === 1 ? "Средний" : "Маленький")
-							]
-						],
-							range(0, 2, 1))
-					],
-						range(0, 10, 1))
-				])
-			);
-		}
+		$restaurant = (new Restaurant())->setName(['ru' => 'ООО Рога и Копыта'])->setCurrency('RUB');
+		$restaurant->addMenu(new Menu([
+				'title' => [
+					'ru' => "Главное меню"
+				],
+				'description' => [
+					'ru' => "Главное меню для пастофариан"
+				],
+				'tag' => Menu::MENU_TAG_MAIN
+			])
+		);
 
 		for ($i = 0; $i < 5; $i++)
 		{
